@@ -9,7 +9,7 @@
 }: {
   imports = [
     # Include the results of the hardware scan
-    ./hardware-configuration.nix
+    # ./hardware-configuration.nix
 
     # System76 hardware support - use nixos-hardware for better compatibility
     # You can add this via: sudo nix-channel --add https://github.com/NixOS/nixos-hardware/archive/master.tar.gz nixos-hardware

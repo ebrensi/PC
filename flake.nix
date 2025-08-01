@@ -28,6 +28,12 @@
     nixos-hardware,
     disko,
   }: {
+    packages.x86_64-linux = let
+      pkgs = import nixpkgs {system = "x86_64-linux";};
+    in {
+      vm = self.nixosConfigurations.adder-nixos.config.system.build.vm;
+    };
+
     nixosConfigurations = {
       # Change "adder-nixos" to match your hostname in configuration.nix
       adder-nixos = nixpkgs.lib.nixosSystem {
