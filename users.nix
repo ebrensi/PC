@@ -5,6 +5,9 @@
   ...
 }: {
   # User Configuration
+  security.sudo.wheelNeedsPassword = false;
+  users.mutableUsers = true;
+
   users.users.efrem = {
     isNormalUser = true;
     description = "Efrem Rensi";
@@ -35,9 +38,14 @@
       gimp
       shotcut
 
-      # Archive tools
-      unzip
-      p7zip
+      # Apps for productivity
+      fastfetch
+      speedtest-cli
+      systemctl-tui
+    ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII//cI1RPUk4caXbGHdMJpQB7VuydedUCP/Kt9mALxVY Efrem-Laptop"
     ];
   };
+  nix.settings.trusted-users = ["efrem"];
 }

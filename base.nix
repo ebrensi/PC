@@ -48,6 +48,11 @@
     curl
     git
     vim
+    bat
+
+    # Archive tools
+    unzip
+    p7zip
 
     # Hardware tools
     pciutils
@@ -66,6 +71,7 @@
     fzf
     tmux
     nnn
+    nix-output-monitor
 
     # Media
     firefox

@@ -10,7 +10,6 @@
 
   # Networking
   networking = {
-    hostName = "adderws";
     networkmanager.enable = true;
 
     # Enable firewall
@@ -77,5 +76,20 @@
   virtualisation = {
     docker.enable = true;
     libvirtd.enable = true;
+  };
+
+  programs.ssh = {
+    startAgent = true;
+    extraConfig = ''
+      Host *.local
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+        ForwardAgent yes
+
+        # Reuse local ssh connections
+        ControlPath /tmp/ssh/%r@%h:%p
+        ControlMaster auto
+        ControlPersist 20
+    '';
   };
 }
