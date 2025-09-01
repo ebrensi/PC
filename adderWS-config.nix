@@ -5,7 +5,7 @@
   ...
 }: {
   imports = [
-    ./hardware-configuration.nix
+    # ./hardware-configuration.nix
   ];
 
   # Networking
@@ -34,13 +34,11 @@
       enable = true;
       powerOnBoot = true;
     };
-
-    # Audio
-    pulseaudio.enable = false; # We'll use PipeWire instead
   };
 
   # Audio with PipeWire (better for modern systems)
   security.rtkit.enable = true;
+  services.pulseaudio.enable = false;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -56,8 +54,7 @@
     printing.enable = true;
 
     # Power management
-    thermald.enable = true;
-    power-profiles-daemon.enable = true;
+    # thermald.enable = true;
 
     # Firmware updates
     fwupd.enable = true;
@@ -67,10 +64,7 @@
   };
 
   # Security
-  security = {
-    sudo.wheelNeedsPassword = true;
-    polkit.enable = true;
-  };
+  security.polkit.enable = true;
 
   # Virtualization (useful for development/testing)
   virtualisation = {
@@ -79,7 +73,7 @@
   };
 
   programs.ssh = {
-    startAgent = true;
+    # startAgent = true;
     extraConfig = ''
       Host *.local
         StrictHostKeyChecking no

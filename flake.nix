@@ -16,11 +16,12 @@
   outputs = {
     self,
     nixpkgs,
+    ...
   }: {
     packages.x86_64-linux = let
       pkgs = import nixpkgs {system = "x86_64-linux";};
     in {
-      test = self.nixosConfigurations.adderWS.config.system.build.toplevel;
+      test = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
     };
     nixosConfigurations = {
       adder-ws = nixpkgs.lib.nixosSystem {
