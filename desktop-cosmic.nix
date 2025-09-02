@@ -3,11 +3,6 @@
   lib,
   ...
 }: {
-  nix.settings = {
-    substituters = ["https://cosmic.cachix.org/"];
-    trusted-public-keys = ["cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="];
-  };
-
   # Cosmic desktop
   services.desktopManager.cosmic.enable = lib.mkDefault true;
   services.displayManager.cosmic-greeter.enable = lib.mkDefault true;
@@ -25,6 +20,7 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    jack.enable = true;
   };
 
   # This is so symbols in Starship prompt are rendered correctly.
