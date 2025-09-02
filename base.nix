@@ -84,7 +84,7 @@
   system.stateVersion = "25.05";
 
   services.avahi = {
-      enable = cfg.enable;
+      enable = true;
       nssmdns4 = true;
       nssmdns6 = false;
       ipv6 = false;
