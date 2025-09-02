@@ -4,9 +4,6 @@
   pkgs,
   ...
 }: {
-  imports = [
-    # ./hardware-configuration.nix
-  ];
 
   # Networking
   networking = {
@@ -47,9 +44,6 @@
 
     # Firmware updates
     fwupd.enable = true;
-
-    # Flatpak support for COSMIC Store
-    flatpak.enable = true;
   };
 
   # Security
@@ -67,23 +61,13 @@
 
   programs = {
     git.enable = true;
+    git.lfs.enable = true;
     firefox.enable = true;
     xwayland.enable = true;
     starship.enable = true;
     command-not-found.enable = true;
     ssh = {
       startAgent = lib.mkForce false;
-      extraConfig = ''
-        Host *.local
-          StrictHostKeyChecking no
-          UserKnownHostsFile /dev/null
-          ForwardAgent yes
-
-          # Reuse local ssh connections
-          ControlPath /tmp/ssh/%r@%h:%p
-          ControlMaster auto
-          ControlPersist 20
-      '';
     };
   };
 

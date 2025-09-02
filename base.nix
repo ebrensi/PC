@@ -72,6 +72,7 @@
     tmux
     nnn
     nix-output-monitor
+    tig
 
     # Media
     firefox
