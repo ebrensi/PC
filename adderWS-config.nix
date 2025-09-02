@@ -63,9 +63,6 @@
 
   hardware.enableRedistributableFirmware = true;
   hardware.firmware = [pkgs.linux-firmware];
-
-  time.timeZone = lib.mkForce "America/Chicago";
-  services.tzupdate.enable = lib.mkForce false;
   services.tailscale.enable = true;
 
   programs = {
