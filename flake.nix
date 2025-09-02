@@ -7,9 +7,6 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-facter-modules = {
-      url = "github:numtide/nixos-facter-modules";
-    };
   };
 
   outputs = {
@@ -39,10 +36,8 @@
           ./desktop-cosmic.nix
           ./adderWS-config.nix
           ./hwconf.nix
-          # ./facter-adder-ws.json
           {
             networking.hostName = "adder-ws";
-            # config.facter.reportPath = ./facter-adder-ws.json;
           }
         ];
       };
