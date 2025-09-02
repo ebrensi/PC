@@ -61,18 +61,36 @@
     libvirtd.enable = true;
   };
 
-  programs.ssh = {
-    # startAgent = true;
-    extraConfig = ''
-      Host *.local
-        StrictHostKeyChecking no
-        UserKnownHostsFile /dev/null
-        ForwardAgent yes
+  hardware.enableRedistributableFirmware = true;
+  hardware.firmware = [pkgs.linux-firmware];
 
-        # Reuse local ssh connections
-        ControlPath /tmp/ssh/%r@%h:%p
-        ControlMaster auto
-        ControlPersist 20
-    '';
+  time.timeZone = lib.mkForce "America/Chicago";
+  services.tzupdate.enable = lib.mkForce false;
+  services.tailscale.enable = true;
+
+  programs = {
+    git.enable = true;
+    firefox.enable = true;
+    xwayland.enable = true;
+    starship.enable = true;
+    command-not-found.enable = true;
+    ssh = {
+      startAgent = lib.mkForce false;
+      extraConfig = ''
+        Host *.local
+          StrictHostKeyChecking no
+          UserKnownHostsFile /dev/null
+          ForwardAgent yes
+
+          # Reuse local ssh connections
+          ControlPath /tmp/ssh/%r@%h:%p
+          ControlMaster auto
+          ControlPersist 20
+      '';
+    };
   };
+
+  environment.systemPackages = with pkgs; [
+    wl-clipboard-x11
+  ];
 }
