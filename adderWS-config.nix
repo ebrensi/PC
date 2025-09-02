@@ -17,15 +17,6 @@
   };
 
   hardware = {
-    nvidia = {
-      modesetting.enable = true;
-      powerManagement.enable = false;
-      powerManagement.finegrained = false;
-      open = false; # Use proprietary driver
-      nvidiaSettings = true;
-      # package = config.boot.kernelPackages.nvidiaPackages.stable;
-    };
-
     # Bluetooth
     bluetooth = {
       enable = true;
