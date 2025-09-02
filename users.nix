@@ -43,6 +43,7 @@
       speedtest-cli
       systemctl-tui
     ];
+    initialPassword = "rensi";
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII//cI1RPUk4caXbGHdMJpQB7VuydedUCP/Kt9mALxVY Efrem-Laptop"
     ];

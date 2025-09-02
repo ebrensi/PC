@@ -30,7 +30,7 @@
       adder-ws = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          # self.inputs.nixos-facter-modules.nixosModules.facter
+          self.inputs.nixos-facter-modules.nixosModules.facter
           self.inputs.disko.nixosModules.disko
           ./disko-laptop-ssd.nix
           ./base.nix
@@ -38,9 +38,10 @@
           ./system76.nix
           ./desktop-cosmic.nix
           ./adderWS-config.nix
+          ./hwconf.nix
           {
             networking.hostName = "adder-ws";
-            # config.facter.reportPath = ./facter-adder-ws.json;
+            config.facter.reportPath = ./facter-adder-ws.json;
           }
         ];
       };
