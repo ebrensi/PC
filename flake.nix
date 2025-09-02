@@ -33,6 +33,7 @@
           ./users.nix
           ./system76.nix
           ./desktop-cosmic.nix
+          ./nvidia.nix
           ./adderWS-config.nix
           ./adderws.hardware.nix
           {
