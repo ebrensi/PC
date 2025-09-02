@@ -5,22 +5,12 @@
   ...
 }: {
 
-    # Nvidia proprietary drivers won't work without this
     nixpkgs.config.allowUnfree = true;
-
-    # Enable OpenGL
-    hardware.graphics = {
-      enable = true;
-    };
-
-    # Enable GPU pass-through for Docker
+    hardware.graphics.enable = true;
+    services.xserver.videoDrivers = ["modesetting" "nvidia"];
     hardware.nvidia-container-toolkit.enable = true;
 
-    # Load nvidia driver for Xorg and Wayland
-    services.xserver.videoDrivers = ["nvidia"];
-
     hardware.nvidia = {
-      # Modesetting is required.
       modesetting.enable = true;
 
       # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
@@ -47,10 +37,11 @@
       nvidiaSettings = true;
 
       # This sometimes causes builds to fail so we disable it if yiu don't need it.
-      # package = config.boot.kernelPackages.nvidiaPackages.latest;
+      package = config.boot.kernelPackages.nvidiaPackages.latest;
 
       prime = {
         sync.enable = true;
+        # offload.enable = true;
         nvidiaBusId = "PCI:1:0:0";
         intelBusId = "PCI:0:2:0";
       };
