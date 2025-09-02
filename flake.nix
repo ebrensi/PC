@@ -39,9 +39,10 @@
           ./desktop-cosmic.nix
           ./adderWS-config.nix
           ./hwconf.nix
+          # ./facter-adder-ws.json
           {
             networking.hostName = "adder-ws";
-            config.facter.reportPath = ./facter-adder-ws.json;
+            # config.facter.reportPath = ./facter-adder-ws.json;
           }
         ];
       };
