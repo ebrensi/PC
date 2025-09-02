@@ -34,7 +34,7 @@
           ./system76.nix
           ./desktop-cosmic.nix
           ./adderWS-config.nix
-          ./addwerws.hardware.nix
+          ./adderws.hardware.nix
           {
             networking.hostName = "adder-ws";
           }
