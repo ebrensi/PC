@@ -54,7 +54,7 @@
     user = "efrem";
   };
 
-  ssh = {
+  programs.ssh = {
       extraConfig = ''
         Host *.local
           StrictHostKeyChecking no
