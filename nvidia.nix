@@ -17,7 +17,7 @@
     hardware.nvidia-container-toolkit.enable = true;
 
     # Load nvidia driver for Xorg and Wayland
-    services.xserver.videoDrivers = ["nvidia" "modesetting"];
+    services.xserver.videoDrivers = ["nvidia"];
 
     hardware.nvidia = {
       # Modesetting is required.
@@ -48,6 +48,12 @@
 
       # This sometimes causes builds to fail so we disable it if yiu don't need it.
       # package = config.boot.kernelPackages.nvidiaPackages.latest;
+
+      prime = {
+        sync.enable = true;
+        nvidiaBusId = "PCI:1:0:0";
+        intelBusId = "PCI:0:2:0";
+      };
     };
 
     # Install nvtop for monitoring GPU usage
