@@ -4,10 +4,6 @@
   pkgs,
   ...
 }: {
-  imports = [
-    # ./hardware-configuration.nix
-  ];
-
   # Networking
   networking = {
     networkmanager.enable = true;
@@ -71,6 +67,11 @@
     xwayland.enable = true;
     starship.enable = true;
     command-not-found.enable = true;
+    yazi.enable = true;
+    wavemon.enable = true;
+    vscode.enable = true;
+    usbtop.enable = true;
+    tmux.enable = true;
     ssh = {
       startAgent = lib.mkForce false;
       extraConfig = ''

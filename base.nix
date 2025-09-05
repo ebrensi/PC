@@ -69,12 +69,8 @@
     ncdu
     tree
     fzf
-    tmux
     nnn
     nix-output-monitor
-
-    # Media
-    firefox
 
     # Networking
     networkmanagerapplet
