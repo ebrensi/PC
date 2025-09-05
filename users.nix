@@ -21,12 +21,6 @@
       vscode
       docker
 
-      # COSMIC applications
-      # cosmic-files
-      # cosmic-edit
-      # cosmic-term
-      # cosmic-settings
-
       # Additional useful applications
       firefox
       google-chrome
