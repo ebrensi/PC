@@ -49,4 +49,42 @@
     ];
   };
   nix.settings.trusted-users = ["efrem"];
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "efrem";
+  };
+
+  programs.ssh = {
+      extraConfig = ''
+        Host *.local
+          StrictHostKeyChecking no
+          UserKnownHostsFile /dev/null
+          ForwardAgent yes
+
+          # Reuse local ssh connections
+          ControlPath /tmp/ssh/%r@%h:%p
+          ControlMaster auto
+          ControlPersist 20
+      
+        Host AP1
+          Hostname 100.85.51.6
+          User guardian
+          ForwardAgent yes
+          IdentityFile /home/efrem/.ssh/angelProtection
+
+        Host ras.angelprotection.com
+          StrictHostKeyChecking no
+          UserKnownHostsFile /dev/null
+          ForwardAgent yes
+
+          ControlPath /tmp/ssh/%r@%h:%p
+          ControlMaster auto
+          ControlPersist 20
+          IdentityFile /home/efrem/.ssh/angelProtection
+        
+        Host vm
+          Hostname 127.0.0.1
+          Port 2222
+      '';
+    };
 }

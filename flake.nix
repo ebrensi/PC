@@ -27,15 +27,15 @@
       adder-ws = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          self.inputs.nixos-facter-modules.nixosModules.facter
           self.inputs.disko.nixosModules.disko
           ./disko-laptop-ssd.nix
           ./base.nix
           ./users.nix
           ./system76.nix
           ./desktop-cosmic.nix
+          ./nvidia.nix
           ./adderWS-config.nix
-          ./hwconf.nix
+          ./adderws.hardware.nix
           {
             networking.hostName = "adder-ws";
           }

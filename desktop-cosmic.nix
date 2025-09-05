@@ -36,4 +36,8 @@
   # systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
+
+  # Flatpak support for COSMIC Store
+  services.flatpak.enable = true;
+  environment.systemPackages = [pkgs.cosmic-store];
 }

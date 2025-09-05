@@ -71,10 +71,27 @@
     fzf
     nnn
     nix-output-monitor
+    tig
 
     # Networking
     networkmanagerapplet
   ];
 
   system.stateVersion = "25.05";
+
+  services.avahi = {
+      enable = true;
+      nssmdns4 = true;
+      nssmdns6 = false;
+      ipv6 = false;
+      openFirewall = true;
+
+      # see https://linux.die.net/man/5/avahi-daemon.conf
+      publish = {
+        enable = true;
+        userServices = true;
+        addresses = true;
+      };
+    };
+
 }
