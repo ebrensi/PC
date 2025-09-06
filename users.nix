@@ -79,13 +79,16 @@
         Port 2222
     '';
   };
+
+  programs.yazi.enable = true;
+  programs.starship.enable = true;
   programs.vscode = {
     enable = true;
     extensions = with pkgs.vscode-extensions; [
       jnoortheen.nix-ide
       bbenoist.nix
 
-      # markdown-pdf
+      yzane.markdown-pdf
       wakatime.vscode-wakatime
       waderyan.gitblame
       timonwong.shellcheck
@@ -99,6 +102,7 @@
       esbenp.prettier-vscode
       davidanson.vscode-markdownlint
       codezombiech.gitignore
+      wmaurer.change-case
 
       arcticicestudio.nord-visual-studio-code
       teabyii.ayu # colors

@@ -38,11 +38,8 @@
     git.lfs.enable = true;
     firefox.enable = true;
     xwayland.enable = true;
-    starship.enable = true;
     command-not-found.enable = true;
-    yazi.enable = true;
     wavemon.enable = true;
-    vscode.enable = true;
     usbtop.enable = true;
     tmux = {
       enable = true;
@@ -55,7 +52,7 @@
       '';
     };
     ssh = {
-      startAgent = lib.mkForce false;
+      startAgent = lib.mkForce false; # we have to do this for some reason
     };
   };
 
@@ -65,12 +62,15 @@
 
   hardware.enableRedistributableFirmware = true;
   hardware.firmware = [pkgs.linux-firmware];
-  hardware.nvidia-container-toolkit.enable = true;
-  hardware.nvidia.prime = {
-    nvidiaBusId = "PCI:1:0:0";
-    intelBusId = "PCI:0:2:0";
+  hardware.nvidia = {
+    open = true;
+    nvidiaSettings = true;
+    prime = {
+      nvidiaBusId = "PCI:1:0:0";
+      intelBusId = "PCI:0:2:0";
+    };
   };
-  hardware.nvidia.nvidiaSettings = true;
+  hardware.nvidia-container-toolkit.enable = true;
   hardware = {
     bluetooth = {
       enable = true;
