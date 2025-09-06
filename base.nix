@@ -74,6 +74,13 @@
     wl-clipboard-rs
   ];
 
+  programs = {
+    nix-index = {
+      enable = true;
+      enableBashIntegration = true;
+    };
+  };
+
   services.avahi = {
     enable = true;
     nssmdns4 = true;

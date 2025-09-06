@@ -38,7 +38,6 @@
     git.lfs.enable = true;
     firefox.enable = true;
     xwayland.enable = true;
-    command-not-found.enable = true;
     wavemon.enable = true;
     usbtop.enable = true;
     tmux = {

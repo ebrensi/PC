@@ -34,6 +34,9 @@
       fastfetch
       speedtest-cli
       systemctl-tui
+
+      nix-direnv
+      direnv
     ];
     initialPassword = "rensi";
     openssh.authorizedKeys.keys = [
@@ -82,6 +85,7 @@
 
   programs.yazi.enable = true;
   programs.starship.enable = true;
+  programs.zoom-us.enable = true;
   programs.vscode = {
     enable = true;
     extensions = with pkgs.vscode-extensions; [
@@ -121,5 +125,10 @@
       # shardulm94.trailing-spaces
       # stephlin.vscode-tmux-keybinding
     ];
+  };
+
+  environment.shellAliases = {
+    pc = "cd ~/dev/PC";
+    ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
   };
 }
