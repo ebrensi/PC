@@ -15,14 +15,6 @@
     };
   };
 
-  hardware = {
-    # Bluetooth
-    bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-    };
-  };
-
   # Display and Desktop Environment
   services = {
     openssh.enable = true;
@@ -39,8 +31,6 @@
     libvirtd.enable = true;
   };
 
-  hardware.enableRedistributableFirmware = true;
-  hardware.firmware = [pkgs.linux-firmware];
   services.tailscale.enable = true;
 
   programs = {
@@ -70,6 +60,21 @@
   };
 
   environment.systemPackages = with pkgs; [
-    wl-clipboard-x11
+    nvtopPackages.nvidia
   ];
+
+  hardware.enableRedistributableFirmware = true;
+  hardware.firmware = [pkgs.linux-firmware];
+  hardware.nvidia-container-toolkit.enable = true;
+  hardware.nvidia.prime = {
+    nvidiaBusId = "PCI:1:0:0";
+    intelBusId = "PCI:0:2:0";
+  };
+  hardware.nvidia.nvidiaSettings = true;
+  hardware = {
+    bluetooth = {
+      enable = true;
+      powerOnBoot = true;
+    };
+  };
 }

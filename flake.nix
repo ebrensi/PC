@@ -47,7 +47,7 @@
           common-cpu-intel
           common-gpu-intel
           common-gpu-nvidia
-          common-gpu-nvidia-sync
+          # common-gpu-nvidia-sync
           common-pc-ssd
           common-pc-laptop
           common-hidpi
@@ -55,7 +55,7 @@
           ./base.nix
           ./users.nix
           ./desktop-cosmic.nix
-          ./nvidia.nix
+          # ./nvidia.nix
           ./adderws-config.nix
           ./adderws.hardware.nix
           {

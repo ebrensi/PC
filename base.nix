@@ -15,22 +15,16 @@
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
-  nix = {
-    settings = {
-      experimental-features = ["nix-command" "flakes"];
-    };
+  nix.optimise = {
+    automatic = true;
+    dates = ["03:45"];
+  };
 
-    optimise = {
-      automatic = true;
-      dates = ["03:45"];
-    };
-
-    # Automatic garbage collection
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 30d";
-    };
+  # Automatic garbage collection
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
   };
 
   # See https://discourse.nixos.org/t/timezones-how-to-setup-on-a-laptop/33853/7
@@ -75,23 +69,29 @@
 
     # Networking
     networkmanagerapplet
+
+    wl-clipboard-x11
+    wl-clipboard-rs
   ];
 
-  system.stateVersion = "25.05";
-
   services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    nssmdns6 = false;
+    ipv6 = false;
+    openFirewall = true;
+
+    # see https://linux.die.net/man/5/avahi-daemon.conf
+    publish = {
       enable = true;
-      nssmdns4 = true;
-      nssmdns6 = false;
-      ipv6 = false;
-      openFirewall = true;
-
-      # see https://linux.die.net/man/5/avahi-daemon.conf
-      publish = {
-        enable = true;
-        userServices = true;
-        addresses = true;
-      };
+      userServices = true;
+      addresses = true;
     };
+  };
 
+  nix.settings = {
+    experimental-features = ["nix-command" "flakes"];
+    trusted-users = ["@wheel"];
+  };
+  system.stateVersion = "25.05";
 }
