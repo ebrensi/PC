@@ -7,6 +7,12 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -17,6 +23,7 @@
     packages.x86_64-linux = let
       pkgs = import nixpkgs {system = "x86_64-linux";};
       nixos-anywhere = "${pkgs.nixos-anywhere}/bin/nixos-anywhere";
+      nom = "${pkgs.nix-output-monitor}/bin/nom";
     in {
       test = pkgs.writeShellScriptBin "install" ''
         flakePath=$1
@@ -35,6 +42,14 @@
         system = "x86_64-linux";
         modules = [
           self.inputs.disko.nixosModules.disko
+          self.inputs.nixos-hardware.nixosModules.system76
+          self.inputs.nixos-hardware.nixosModules.common-cpu-intel
+          self.inputs.nixos-hardware.nixosModules.common-gpu-intel
+          self.inputs.nixos-hardware.nixosModules.common-gpu-nvidia
+          # self.inputs.nixos-hardware.nixosModules.common-gpu-nvidia-sync
+          self.inputs.nixos-hardware.nixosModules.common-pc-ssd
+          self.inputs.nixos-hardware.nixosModules.common-pc-laptop
+          self.inputs.nixos-hardware.nixosModules.common-hidpi
           ./disko-laptop-ssd.nix
           ./base.nix
           ./users.nix
