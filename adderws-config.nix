@@ -76,4 +76,5 @@
       powerOnBoot = true;
     };
   };
+  services.power-profiles-daemon.enable = false;
 }

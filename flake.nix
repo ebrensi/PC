@@ -46,8 +46,8 @@
           system76
           common-cpu-intel
           common-gpu-intel
-          common-gpu-nvidia
-          # common-gpu-nvidia-sync
+          # common-gpu-nvidia
+          common-gpu-nvidia-sync
           common-pc-ssd
           common-pc-laptop
           common-hidpi
