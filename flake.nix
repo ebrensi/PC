@@ -55,7 +55,6 @@
           ./base.nix
           ./users.nix
           ./desktop-cosmic.nix
-          # ./nvidia.nix
           ./adderws-config.nix
           ./adderws.hardware.nix
           {
