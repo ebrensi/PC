@@ -18,11 +18,9 @@
       vim
       neovim
       micro
-      vscode
       docker
 
       # Additional useful applications
-      firefox
       google-chrome
       libreoffice
 
@@ -49,36 +47,75 @@
   };
 
   programs.ssh = {
-      extraConfig = ''
-        Host *.local
-          StrictHostKeyChecking no
-          UserKnownHostsFile /dev/null
-          ForwardAgent yes
+    extraConfig = ''
+      Host *.local
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+        ForwardAgent yes
 
-          # Reuse local ssh connections
-          ControlPath /tmp/ssh/%r@%h:%p
-          ControlMaster auto
-          ControlPersist 20
-      
-        Host AP1
-          Hostname 100.85.51.6
-          User guardian
-          ForwardAgent yes
-          IdentityFile /home/efrem/.ssh/angelProtection
+        # Reuse local ssh connections
+        ControlPath /tmp/ssh/%r@%h:%p
+        ControlMaster auto
+        ControlPersist 20
 
-        Host ras.angelprotection.com
-          StrictHostKeyChecking no
-          UserKnownHostsFile /dev/null
-          ForwardAgent yes
+      Host AP1
+        Hostname 100.85.51.6
+        User guardian
+        ForwardAgent yes
+        IdentityFile /home/efrem/.ssh/angelProtection
 
-          ControlPath /tmp/ssh/%r@%h:%p
-          ControlMaster auto
-          ControlPersist 20
-          IdentityFile /home/efrem/.ssh/angelProtection
-        
-        Host vm
-          Hostname 127.0.0.1
-          Port 2222
-      '';
-    };
+      Host ras.angelprotection.com
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+        ForwardAgent yes
+
+        ControlPath /tmp/ssh/%r@%h:%p
+        ControlMaster auto
+        ControlPersist 20
+        IdentityFile /home/efrem/.ssh/angelProtection
+
+      Host vm
+        Hostname 127.0.0.1
+        Port 2222
+    '';
+  };
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; [
+      jnoortheen.nix-ide
+      bbenoist.nix
+
+      # markdown-pdf
+      wakatime.vscode-wakatime
+      waderyan.gitblame
+      timonwong.shellcheck
+      mechatroner.rainbow-csv
+      kamadorueda.alejandra
+      jgclark.vscode-todo-highlight
+      jeff-hykin.better-nix-syntax
+      irongeek.vscode-env
+      golang.go
+      github.copilot
+      esbenp.prettier-vscode
+      davidanson.vscode-markdownlint
+      codezombiech.gitignore
+
+      arcticicestudio.nord-visual-studio-code
+      teabyii.ayu # colors
+
+      ms-toolsai.jupyter
+      ms-python.python
+      ms-python.vscode-pylance
+      ms-python.pylint
+      # ms-python.flake8
+      ms-python.mypy-type-checker
+      ms-python.isort
+      ms-python.debugpy
+      ms-python.black-formatter
+      charliermarsh.ruff
+
+      # shardulm94.trailing-spaces
+      # stephlin.vscode-tmux-keybinding
+    ];
+  };
 }

@@ -25,14 +25,8 @@
 
   # Display and Desktop Environment
   services = {
-    # Essential services
     openssh.enable = true;
     printing.enable = true;
-
-    # Power management
-    # thermald.enable = true;
-
-    # Firmware updates
     fwupd.enable = true;
   };
 

@@ -18,6 +18,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixos-hardware,
     ...
   }: {
     packages.x86_64-linux = let
@@ -31,7 +32,7 @@
       '';
       apply = pkgs.writeShellScriptBin "apply" ''
         # Apply a system configuration (toplelevel) path to the current system.
-        # This is like `nixos-rebuild switch` but for an arbitrary built system given as a store path. 
+        # This is like `nixos-rebuild switch` but for an arbitrary built system given as a store path.
         storePath=$(realpath $1)
         sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
         sudo $storePath/bin/switch-to-configuration switch
@@ -40,23 +41,22 @@
     nixosConfigurations = {
       adder-ws = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = [
+        modules = with self.inputs.nixos-hardware.nixosModules; [
           self.inputs.disko.nixosModules.disko
-          self.inputs.nixos-hardware.nixosModules.system76
-          self.inputs.nixos-hardware.nixosModules.common-cpu-intel
-          self.inputs.nixos-hardware.nixosModules.common-gpu-intel
-          self.inputs.nixos-hardware.nixosModules.common-gpu-nvidia
-          # self.inputs.nixos-hardware.nixosModules.common-gpu-nvidia-sync
-          self.inputs.nixos-hardware.nixosModules.common-pc-ssd
-          self.inputs.nixos-hardware.nixosModules.common-pc-laptop
-          self.inputs.nixos-hardware.nixosModules.common-hidpi
+          system76
+          common-cpu-intel
+          common-gpu-intel
+          common-gpu-nvidia
+          common-gpu-nvidia-sync
+          common-pc-ssd
+          common-pc-laptop
+          common-hidpi
           ./disko-laptop-ssd.nix
           ./base.nix
           ./users.nix
-          ./system76.nix
           ./desktop-cosmic.nix
           ./nvidia.nix
-          ./adderWS-config.nix
+          ./adderws-config.nix
           ./adderws.hardware.nix
           {
             networking.hostName = "adder-ws";
