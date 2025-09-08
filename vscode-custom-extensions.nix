@@ -65,7 +65,7 @@ in {
     mktplcRef = {
       name = "theme-cobalt2";
       publisher = "wesbos";
-      version = "	2.5.0";
+      version = "2.5.0";
       hash = "";
     };
     meta = {

@@ -99,7 +99,6 @@
         nonylene.dark-molokai-theme
         piousdeer.adwaita-theme
         github.github-vscode-theme
-        ms-vscode.theme-tomorrowkit
         catppuccin.catppuccin-vsc
         dracula-theme.theme-dracula
         hiukky.flate
