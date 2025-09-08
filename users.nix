@@ -23,6 +23,7 @@
       # Additional useful applications
       google-chrome
       libreoffice
+      claude-code
 
       # Media
       vlc
@@ -85,7 +86,9 @@
     zoom-us.enable = true;
     vscode = {
       enable = true;
-      extensions = with pkgs.vscode-extensions; [
+      extensions = with pkgs.vscode-extensions; let
+        custom = import ./vscode-custom-extensions.nix;
+      in [
         # Nix IDE
         jnoortheen.nix-ide
         bbenoist.nix
@@ -109,8 +112,11 @@
         sainnhe.gruvbox-material
         naumovs.theme-oceanicnext
         dhedgecock.radical-vscode
+        custom.ahmadawais.shades-of-purple
+        custom.liviuschera.noctis
 
         # Utilities
+        anthropic.claude-code
         yzane.markdown-pdf
         wakatime.vscode-wakatime
         waderyan.gitblame
@@ -125,6 +131,7 @@
         davidanson.vscode-markdownlint
         codezombiech.gitignore
         wmaurer.change-case
+        custom.ktnrg45.vscode-cython
         # shardulm94.trailing-spaces
         # stephlin.vscode-tmux-keybinding
 
