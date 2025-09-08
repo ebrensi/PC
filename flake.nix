@@ -21,10 +21,6 @@
       nixos-anywhere = "${pkgs.nixos-anywhere}/bin/nixos-anywhere";
       nom = "${pkgs.nix-output-monitor}/bin/nom";
     in rec {
-      test = pkgs.writeShellScriptBin "install" ''
-        flakePath=$1
-        ${nixos-anywhere} --flake "$flakePath" --vm-test
-      '';
       apply = pkgs.writeShellScriptBin "apply" ''
         # Apply a system configuration (toplelevel) path to the current system.
         # This is like `nixos-rebuild switch` but for an arbitrary built system given as a store path.
@@ -37,10 +33,35 @@
         # This is like `nixos-rebuild switch` but for the default system of this flake.
         system=$(${nom} build .#nixosConfigurations.adder-ws.config.system.build.toplevel --print-out-paths --no-link)
         ${apply}/bin/* $system
-        # echo "$system built!"
       '';
     };
     nixosConfigurations = rec {
+      install-target = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          "${nixpkgs}/nixos//modules/installer/cd-dvd/installation-cd-minimal.nix"
+          {
+            networking.hostName = "install-target";
+            services.avahi = {
+              enable = true;
+              nssmdns4 = true;
+              nssmdns6 = true;
+              ipv6 = false;
+              openFirewall = true;
+              publish = {
+                enable = true;
+                userServices = true;
+                addresses = true;
+              };
+            };
+            nix.settings = {
+              experimental-features = ["nix-command" "flakes"];
+              trusted-users = ["@wheel"];
+            };
+            system.stateVersion = "25.05";
+          }
+        ];
+      };
       adder-ws = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = with self.inputs.nixos-hardware.nixosModules; [
@@ -53,12 +74,12 @@
           common-pc-ssd
           common-pc-laptop
           common-hidpi
+          ./adderws.hardware.nix
           ./disko-laptop-ssd.nix
           ./base.nix
-          ./users.nix
           ./desktop-cosmic.nix
           ./adderws-config.nix
-          ./adderws.hardware.nix
+          ./users.nix
           {
             networking.hostName = "adder-ws";
           }
