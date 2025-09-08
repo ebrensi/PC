@@ -41,8 +41,8 @@
         # Build and apply the default system configuration of this flake.
         # This is like `nixos-rebuild switch` but for the default system of this flake.
         system=$(${nom} build .#nixosConfigurations.adder-ws.config.system.build.toplevel --print-out-paths --no-link)
-        # ${apply} $system
-        echo "$system built!"
+        ${apply}/bin/* $system
+        # echo "$system built!"
       '';
     };
     nixosConfigurations = rec {

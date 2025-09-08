@@ -34,9 +34,6 @@
       fastfetch
       speedtest-cli
       systemctl-tui
-
-      nix-direnv
-      direnv
     ];
     initialPassword = "rensi";
     openssh.authorizedKeys.keys = [
@@ -49,84 +46,106 @@
     user = "efrem";
   };
 
-  programs.ssh = {
-    extraConfig = ''
-      Host *.local
-        StrictHostKeyChecking no
-        UserKnownHostsFile /dev/null
-        ForwardAgent yes
+  programs = {
+    ssh = {
+      extraConfig = ''
+        Host *.local
+          StrictHostKeyChecking no
+          UserKnownHostsFile /dev/null
+          ForwardAgent yes
 
-        # Reuse local ssh connections
-        ControlPath /tmp/ssh/%r@%h:%p
-        ControlMaster auto
-        ControlPersist 20
+          # Reuse local ssh connections
+          ControlPath /tmp/ssh/%r@%h:%p
+          ControlMaster auto
+          ControlPersist 20
 
-      Host AP1
-        Hostname 100.85.51.6
-        User guardian
-        ForwardAgent yes
-        IdentityFile /home/efrem/.ssh/angelProtection
+        Host AP1
+          Hostname 100.85.51.6
+          User guardian
+          ForwardAgent yes
+          IdentityFile /home/efrem/.ssh/angelProtection
 
-      Host ras.angelprotection.com
-        StrictHostKeyChecking no
-        UserKnownHostsFile /dev/null
-        ForwardAgent yes
+        Host ras.angelprotection.com
+          StrictHostKeyChecking no
+          UserKnownHostsFile /dev/null
+          ForwardAgent yes
 
-        ControlPath /tmp/ssh/%r@%h:%p
-        ControlMaster auto
-        ControlPersist 20
-        IdentityFile /home/efrem/.ssh/angelProtection
+          ControlPath /tmp/ssh/%r@%h:%p
+          ControlMaster auto
+          ControlPersist 20
+          IdentityFile /home/efrem/.ssh/angelProtection
 
-      Host vm
-        Hostname 127.0.0.1
-        Port 2222
-    '';
-  };
+        Host vm
+          Hostname 127.0.0.1
+          Port 2222
+      '';
+    };
+    yazi.enable = true;
+    starship.enable = true;
+    zoom-us.enable = true;
+    vscode = {
+      enable = true;
+      extensions = with pkgs.vscode-extensions; [
+        # Nix IDE
+        jnoortheen.nix-ide
+        bbenoist.nix
+        jeff-hykin.better-nix-syntax
 
-  programs.yazi.enable = true;
-  programs.starship.enable = true;
-  programs.zoom-us.enable = true;
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; [
-      # Nix stuff
-      jnoortheen.nix-ide
-      bbenoist.nix
-      jeff-hykin.better-nix-syntax
+        # Color Themes
+        arcticicestudio.nord-visual-studio-code
+        teabyii.ayu
+        nonylene.dark-molokai-theme
+        piousdeer.adwaita-theme
+        github.github-vscode-theme
+        ms-vscode.theme-tomorrowkit
+        catppuccin.catppuccin-vsc
+        dracula-theme.theme-dracula
+        hiukky.flate
+        emroussel.atomize-atom-one-dark-theme
+        nur.just-black
+        johnpapa.winteriscoming
+        jdinhlife.gruvbox
+        silofy.hackthebox
+        sainnhe.gruvbox-material
+        naumovs.theme-oceanicnext
+        dhedgecock.radical-vscode
 
-      # Themes
-      arcticicestudio.nord-visual-studio-code
-      teabyii.ayu
+        # Utilities
+        yzane.markdown-pdf
+        wakatime.vscode-wakatime
+        waderyan.gitblame
+        timonwong.shellcheck
+        mechatroner.rainbow-csv
+        kamadorueda.alejandra
+        jgclark.vscode-todo-highlight
+        irongeek.vscode-env
+        golang.go
+        github.copilot
+        esbenp.prettier-vscode
+        davidanson.vscode-markdownlint
+        codezombiech.gitignore
+        wmaurer.change-case
+        # shardulm94.trailing-spaces
+        # stephlin.vscode-tmux-keybinding
 
-      yzane.markdown-pdf
-      wakatime.vscode-wakatime
-      waderyan.gitblame
-      timonwong.shellcheck
-      mechatroner.rainbow-csv
-      kamadorueda.alejandra
-      jgclark.vscode-todo-highlight
-      irongeek.vscode-env
-      golang.go
-      github.copilot
-      esbenp.prettier-vscode
-      davidanson.vscode-markdownlint
-      codezombiech.gitignore
-      wmaurer.change-case
-      # shardulm94.trailing-spaces
-      # stephlin.vscode-tmux-keybinding
-
-      # Python stuff
-      ms-toolsai.jupyter
-      ms-python.python
-      ms-python.vscode-pylance
-      ms-python.pylint
-      # ms-python.flake8
-      ms-python.mypy-type-checker
-      ms-python.isort
-      ms-python.debugpy
-      ms-python.black-formatter
-      charliermarsh.ruff
-    ];
+        # Python IDE
+        ms-toolsai.jupyter
+        ms-python.python
+        ms-python.vscode-pylance
+        ms-python.pylint
+        # ms-python.flake8
+        ms-python.mypy-type-checker
+        ms-python.isort
+        ms-python.debugpy
+        ms-python.black-formatter
+        charliermarsh.ruff
+      ];
+    };
+    direnv = {
+      enable = true;
+      enableBashIntegration = true;
+      nix-direnv.enable = true;
+    };
   };
   services.tailscale.enable = true;
 
