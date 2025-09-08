@@ -97,9 +97,6 @@
         # Color Themes
         teabyii.ayu
         nonylene.dark-molokai-theme
-        piousdeer.adwaita-theme
-        github.github-vscode-theme
-        catppuccin.catppuccin-vsc
         dracula-theme.theme-dracula
         hiukky.flate
         emroussel.atomize-atom-one-dark-theme
