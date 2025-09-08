@@ -89,8 +89,14 @@
   programs.vscode = {
     enable = true;
     extensions = with pkgs.vscode-extensions; [
+      # Nix stuff
       jnoortheen.nix-ide
       bbenoist.nix
+      jeff-hykin.better-nix-syntax
+
+      # Themes
+      arcticicestudio.nord-visual-studio-code
+      teabyii.ayu
 
       yzane.markdown-pdf
       wakatime.vscode-wakatime
@@ -99,7 +105,6 @@
       mechatroner.rainbow-csv
       kamadorueda.alejandra
       jgclark.vscode-todo-highlight
-      jeff-hykin.better-nix-syntax
       irongeek.vscode-env
       golang.go
       github.copilot
@@ -107,10 +112,10 @@
       davidanson.vscode-markdownlint
       codezombiech.gitignore
       wmaurer.change-case
+      # shardulm94.trailing-spaces
+      # stephlin.vscode-tmux-keybinding
 
-      arcticicestudio.nord-visual-studio-code
-      teabyii.ayu # colors
-
+      # Python stuff
       ms-toolsai.jupyter
       ms-python.python
       ms-python.vscode-pylance
@@ -121,11 +126,9 @@
       ms-python.debugpy
       ms-python.black-formatter
       charliermarsh.ruff
-
-      # shardulm94.trailing-spaces
-      # stephlin.vscode-tmux-keybinding
     ];
   };
+  services.tailscale.enable = true;
 
   environment.shellAliases = {
     pc = "cd ~/dev/PC";

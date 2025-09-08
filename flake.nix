@@ -25,7 +25,7 @@
       pkgs = import nixpkgs {system = "x86_64-linux";};
       nixos-anywhere = "${pkgs.nixos-anywhere}/bin/nixos-anywhere";
       nom = "${pkgs.nix-output-monitor}/bin/nom";
-    in {
+    in rec {
       test = pkgs.writeShellScriptBin "install" ''
         flakePath=$1
         ${nixos-anywhere} --flake "$flakePath" --vm-test
@@ -37,8 +37,15 @@
         sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
         sudo $storePath/bin/switch-to-configuration switch
       '';
+      default = pkgs.writeShellScriptBin "default" ''
+        # Build and apply the default system configuration of this flake.
+        # This is like `nixos-rebuild switch` but for the default system of this flake.
+        system=$(${nom} build .#nixosConfigurations.adder-ws.config.system.build.toplevel --print-out-paths --no-link)
+        # ${apply} $system
+        echo "$system built!"
+      '';
     };
-    nixosConfigurations = {
+    nixosConfigurations = rec {
       adder-ws = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = with self.inputs.nixos-hardware.nixosModules; [
