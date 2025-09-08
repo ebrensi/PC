@@ -87,7 +87,7 @@
     vscode = {
       enable = true;
       extensions = with pkgs.vscode-extensions; let
-        custom = import ./vscode-custom-extensions.nix;
+        custom = pkgs.callPackage ./vscode-custom-extensions.nix {};
       in [
         # Nix IDE
         jnoortheen.nix-ide
@@ -116,7 +116,7 @@
         custom.liviuschera.noctis
 
         # Utilities
-        anthropic.claude-code
+        saoudrizwan.claude-dev
         yzane.markdown-pdf
         wakatime.vscode-wakatime
         waderyan.gitblame
