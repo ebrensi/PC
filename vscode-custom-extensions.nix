@@ -1,4 +1,5 @@
 # Some vscode extensions not available in nixpkgs.vscode-extensions.
+# TODO: Contribute these to nixpkgs. https://github.com/nix-community/nix-vscode-extensions?tab=readme-ov-file#contribute
 {
   lib,
   callPackage,
