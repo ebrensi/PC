@@ -40,4 +40,5 @@
   # Flatpak support for COSMIC Store
   services.flatpak.enable = true;
   environment.systemPackages = [pkgs.cosmic-store];
+  programs.ssh.startAgent = lib.mkForce false;
 }
