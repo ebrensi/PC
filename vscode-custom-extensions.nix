@@ -66,7 +66,7 @@ in {
       name = "theme-cobalt2";
       publisher = "wesbos";
       version = "2.5.0";
-      hash = "";
+      hash = "sha256-niIsC1J1pX93GwM6Fff/spk/p8qvBVDRxR7EO/tfcHc=";
     };
     meta = {
       description = "Official Cobalt2 Theme for VS Code by Wes Bos";

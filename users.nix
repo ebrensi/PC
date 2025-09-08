@@ -109,6 +109,7 @@
         dhedgecock.radical-vscode
         custom.ahmadawais.shades-of-purple
         custom.liviuschera.noctis
+        custom.wesbos.theme-cobalt2
 
         # Utilities
         saoudrizwan.claude-dev
