@@ -1,3 +1,4 @@
+# Some vscode extensions not available in nixpkgs.vscode-extensions.
 {
   lib,
   callPackage,
@@ -54,6 +55,24 @@ in {
       downloadPage = "https://marketplace.visualstudio.com/items?itemName=liviuschera.noctis";
       homepage = "https://github.com/liviuschera/noctis";
       changelog = "https://github.com/liviuschera/noctis/blob/master/CHANGELOG.md";
+      license = lib.licenses.mit;
+      maintainers = [];
+      platforms = lib.platforms.all;
+    };
+  };
+
+  wesbos.theme-cobalt2 = mkConfig {
+    mktplcRef = {
+      name = "theme-cobalt2";
+      publisher = "wesbos";
+      version = "	2.5.0";
+      hash = "";
+    };
+    meta = {
+      description = "Official Cobalt2 Theme for VS Code by Wes Bos";
+      downloadPage = "https://marketplace.visualstudio.com/items?itemName=wesbos.theme-cobalt2";
+      homepage = "https://github.com/wesbos/cobalt2-vscode";
+      changelog = "https://github.com/wesbos/cobalt2-vscode/tags";
       license = lib.licenses.mit;
       maintainers = [];
       platforms = lib.platforms.all;

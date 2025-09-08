@@ -95,7 +95,6 @@
         jeff-hykin.better-nix-syntax
 
         # Color Themes
-        arcticicestudio.nord-visual-studio-code
         teabyii.ayu
         nonylene.dark-molokai-theme
         piousdeer.adwaita-theme
