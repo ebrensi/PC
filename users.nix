@@ -49,6 +49,7 @@
 
   programs = {
     ssh = {
+      startAgent = true;
       extraConfig = ''
         Host *.local
           StrictHostKeyChecking no

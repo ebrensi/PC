@@ -4,8 +4,8 @@
   ...
 }: {
   # Cosmic desktop
-  services.desktopManager.cosmic.enable = lib.mkDefault true;
-  services.displayManager.cosmic-greeter.enable = lib.mkDefault true;
+  services.desktopManager.cosmic.enable = true;
+  services.displayManager.cosmic-greeter.enable = true;
 
   environment.sessionVariables = {
     COSMIC_DATA_CONTROL_ENABLED = "1";
@@ -40,5 +40,4 @@
   # Flatpak support for COSMIC Store
   services.flatpak.enable = true;
   environment.systemPackages = [pkgs.cosmic-store];
-  programs.ssh.startAgent = lib.mkForce false;
 }
