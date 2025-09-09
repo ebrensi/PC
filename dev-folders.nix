@@ -59,7 +59,7 @@
         if [ ! -d "$TARGET_DIR" ]; then
           echo "Cloning ${repo.repo} to $TARGET_DIR as $MAIN_USER"
           ${pkgs.coreutils}/bin/mkdir -p "$(dirname $TARGET_DIR)"
-          ${pkgs.sudo}/bin/sudo -u "$MAIN_USER" ${pkgs.git}/bin/git clone "${repo.repo}" "$TARGET_DIR"
+          ${pkgs.git}/bin/git clone "${repo.repo}" "$TARGET_DIR"
           ${pkgs.coreutils}/bin/chown -R "$MAIN_USER:users" "$TARGET_DIR"
         fi
       '')
