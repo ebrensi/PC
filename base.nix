@@ -67,6 +67,7 @@
     # Utilities
     wl-clipboard-x11
     wl-clipboard-rs
+    trash-cli
   ];
 
   programs = {
