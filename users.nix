@@ -3,12 +3,28 @@
   lib,
   pkgs,
   ...
-}: {
-  # User Configuration
+}: let
+  main-user = "efrem";
+  # Desired directory structure for ~/dev and associated
+  # git repositories to clone
+  dev-folders = {
+    AngelProtection = {
+      Guardian = "git@github.com:AngelProtection/Guardian.git";
+      Media = "git@github.com:AngelProtection/Media.git";
+    };
+    Geminae = "git@github.com:Project-Geminae/Geminae.git";
+    heatflask = "git@github.com:ebrensi/heatflask.git";
+    PC = "git@github.com:ebrensi/PC.git";
+  };
+in {
+  imports = [
+    import
+    (./dev-folders.nix {inherit main-user dev-folders;})
+  ];
   security.sudo.wheelNeedsPassword = false;
   users.mutableUsers = true;
 
-  users.users.efrem = {
+  users.users.${main-user} = {
     isNormalUser = true;
     description = "Efrem Rensi";
     extraGroups = ["networkmanager" "wheel" "audio" "video"];
@@ -34,18 +50,18 @@
       speedtest-cli
       systemctl-tui
     ];
-    initialPassword = "rensi";
+    initialPassword = "password";
     openssh.authorizedKeys.keys = [
       # So I can ssh access this machine from my laptop
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII//cI1RPUk4caXbGHdMJpQB7VuydedUCP/Kt9mALxVY Efrem-Laptop"
     ];
   };
-  nix.settings.trusted-users = ["efrem"];
+  nix.settings.trusted-users = [main-user];
 
   # Auto Login
   services.displayManager.autoLogin = {
     enable = true;
-    user = "efrem";
+    user = main-user;
   };
 
   programs = {
@@ -61,13 +77,13 @@
           ControlPath /tmp/ssh/%r@%h:%p
           ControlMaster auto
           ControlPersist 20
-          IdentityFile /home/efrem/.ssh/angelProtection
+          IdentityFile /home/${main-user}/.ssh/angelProtection
 
         Host AP1
           Hostname 100.85.51.6
           User guardian
           ForwardAgent yes
-          IdentityFile /home/efrem/.ssh/angelProtection
+          IdentityFile /home/${main-user}/.ssh/angelProtection
 
         Host ras.angelprotection.com
           StrictHostKeyChecking no
@@ -77,7 +93,7 @@
           ControlPath /tmp/ssh/%r@%h:%p
           ControlMaster auto
           ControlPersist 20
-          IdentityFile /home/efrem/.ssh/angelProtection
+          IdentityFile /home/${main-user}/.ssh/angelProtection
 
         Host vm
           Hostname 127.0.0.1
@@ -158,7 +174,7 @@
   };
 
   environment.shellAliases = let
-    flake-path = "/home/efrem/dev/PC";
+    flake-path = "/home/${main-user}/dev/PC";
   in {
     pc = "cd ${flake-path}";
     ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
