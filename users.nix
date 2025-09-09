@@ -13,6 +13,8 @@
     description = "Efrem Rensi";
     extraGroups = ["networkmanager" "wheel" "audio" "video"];
     packages = with pkgs; [
+      # https://search.nixos.org/packages?channel=unstable&
+
       # Development
       micro-full
 
@@ -34,10 +36,13 @@
     ];
     initialPassword = "rensi";
     openssh.authorizedKeys.keys = [
+      # So I can ssh access this machine from my laptop
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII//cI1RPUk4caXbGHdMJpQB7VuydedUCP/Kt9mALxVY Efrem-Laptop"
     ];
   };
   nix.settings.trusted-users = ["efrem"];
+
+  # Auto Login
   services.displayManager.autoLogin = {
     enable = true;
     user = "efrem";
@@ -45,6 +50,7 @@
 
   programs = {
     ssh = {
+      # This is what would go in ~/.ssh/config in a traditional linux distro
       extraConfig = ''
         Host *.local
           StrictHostKeyChecking no
@@ -86,6 +92,9 @@
       extensions = with pkgs.vscode-extensions; let
         custom = pkgs.callPackage ./vscode-custom-extensions.nix {};
       in [
+        # For all extenstions
+        # see https://search.nixos.org/packages?channel=unstable&query=vscode-extensions
+
         # Nix IDE
         jnoortheen.nix-ide
         bbenoist.nix
@@ -148,10 +157,15 @@
     };
   };
 
-  environment.shellAliases = {
-    pc = "cd ~/dev/PC";
+  environment.shellAliases = let
+    flake-path = "/home/efrem/dev/PC";
+  in {
+    pc = "cd ${flake-path}";
     ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
+    flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
+    yay = "nixos-rebuild switch --flake ${flake-path} --sudo";
   };
+
   environment.variables = {
     EDITOR = "micro";
     VISUAL = "micro";

@@ -64,6 +64,7 @@
     # Networking
     networkmanagerapplet
 
+    # Utilities
     wl-clipboard-x11
     wl-clipboard-rs
   ];
@@ -83,9 +84,10 @@
     tmux = {
       enable = true;
       clock24 = true;
+      terminal = "screen-256color";
+      plugins = [pkgs.tmuxPlugins.cpu];
       extraConfig = ''
         set -g mouse on
-        set -g default-terminal "screen-256color"
         set -g status-right "#[fg=black,bg=color15] #{cpu_percentage} %H:%M"
         run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
       '';
