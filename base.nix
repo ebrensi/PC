@@ -39,6 +39,9 @@
   environment.systemPackages = with pkgs; [
     # see https://search.nixos.org/packages?channel=unstable
 
+    # Admin
+    autossh
+
     # System essentials
     wget
     curl
@@ -89,7 +92,9 @@
       enable = true;
       clock24 = true;
       terminal = "screen-256color";
-      plugins = [pkgs.tmuxPlugins.cpu];
+      plugins = [
+        pkgs.tmuxPlugins.cpu
+      ];
       extraConfig = ''
         set -g mouse on
         set -g status-right "#[fg=black,bg=color15] #{cpu_percentage} %H:%M"
