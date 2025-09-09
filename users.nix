@@ -48,14 +48,6 @@
     user = "efrem";
   };
 
-  # Prevent accidental shutdowns from power button
-  services.logind.extraConfig = ''
-    # Dont sleep when lid is closed on external power
-    HandleLidSwitchExternalPower=ignore
-    # Dont sleep when lid is closed we are connected to a docking station
-    HandleLidSwitchDocked=ignore
-  '';
-
   programs = {
     ssh = {
       # This is what would go in ~/.ssh/config in a traditional linux distro
