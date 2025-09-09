@@ -166,7 +166,8 @@
     yay = "nixos-rebuild switch --flake ${flake-path} --sudo";
   };
 
-  environment.variables = {
+  # Environment Variables (for this user)
+  environment.sessionVariables = {
     EDITOR = "micro";
     VISUAL = "micro";
     MICRO_TRUECOLOR = 1;
