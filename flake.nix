@@ -34,13 +34,29 @@
         system=$(${nom} build .#nixosConfigurations.adder-ws.config.system.build.toplevel --print-out-paths --no-link)
         ${apply}/bin/* $system
       '';
+      make-install-target = pkgs.writeShellScriptBin "make-install-target" ''
+        dest=$1
+        if [ -z "$dest" ]; then
+          echo "Usage: make-install-target <destination-file>"
+          exit 1
+        fi
+        echo "Building installation ISO image..."
+        isoPath=$(${nom} build .#nixosConfigurations.install-target.config.system.build.isoImage --print-out-paths --no-link)
+        isoFile=$(ls $isoPath/*.iso)
+        echo "Copying $isoFile to $dest..."
+        sudo dd if=$isoFile of=$dest bs=4M status=progress oflag=sync
+        sudo eject $dest || true
+      '';
     };
     nixosConfigurations = rec {
       install-target = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          "${nixpkgs}/nixos//modules/installer/cd-dvd/installation-cd-minimal.nix"
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
           {
+            services.openssh.enable = true;
+            # Paste your SSH public key here to enable SSH access to the installation target.
+            users.users.root.openssh.authorizedKeys.keys = ["my-ssh-pubkey"];
             networking.hostName = "install-target";
             services.avahi = {
               enable = true;
