@@ -18,7 +18,6 @@
       vim
       neovim
       micro
-      docker
 
       # Additional useful applications
       google-chrome

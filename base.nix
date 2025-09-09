@@ -40,9 +40,6 @@
     # System essentials
     wget
     curl
-    git
-    vim
-    bat
 
     # Archive tools
     unzip
@@ -57,12 +54,9 @@
     # Development
     gcc
     gnumake
-    htop
-    iotop
     btop
     ncdu
     tree
-    fzf
     nnn
     nix-output-monitor
     tig
@@ -75,12 +69,17 @@
   ];
 
   programs = {
+    bat.enable = true;
     git.enable = true;
     git.lfs.enable = true;
+    lazygit.enable = true;
     firefox.enable = true;
     xwayland.enable = true;
     wavemon.enable = true;
     usbtop.enable = true;
+    htop.enable = true;
+    iotop.enable = true;
+    fzf.fuzzyCompletion = true;
     tmux = {
       enable = true;
       clock24 = true;
@@ -94,6 +93,10 @@
     nix-index = {
       enable = true;
       enableBashIntegration = true;
+    };
+    neovim = {
+      enable = true;
+      vimAlias = true;
     };
   };
 
