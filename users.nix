@@ -17,10 +17,7 @@
     PC = "git@github.com:ebrensi/PC.git";
   };
 in {
-  imports = [
-    import
-    (./dev-folders.nix {inherit main-user;})
-  ];
+  imports = [./dev-folders.nix];
   security.sudo.wheelNeedsPassword = false;
   users.mutableUsers = true;
 

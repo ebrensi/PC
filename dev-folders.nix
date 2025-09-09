@@ -4,10 +4,9 @@
 {
   config,
   pkgs,
-  #
-  main-user,
   ...
 }: let
+  main-user = "efrem";
   dev-folders = {
     AngelProtection = {
       Guardian = "git@github.com:AngelProtection/Guardian.git";
