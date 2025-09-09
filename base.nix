@@ -37,6 +37,8 @@
 
   # System packages
   environment.systemPackages = with pkgs; [
+    # see https://search.nixos.org/packages?channel=unstable
+
     # System essentials
     wget
     curl
@@ -70,6 +72,7 @@
     trash-cli
   ];
 
+  # https://search.nixos.org/options?channel=unstable&query=programs
   programs = {
     bat.enable = true;
     git.enable = true;
@@ -92,10 +95,6 @@
         set -g status-right "#[fg=black,bg=color15] #{cpu_percentage} %H:%M"
         run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
       '';
-    };
-    nix-index = {
-      enable = true;
-      enableBashIntegration = true;
     };
     neovim = {
       enable = true;

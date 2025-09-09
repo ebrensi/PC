@@ -19,6 +19,7 @@
   services = {
     openssh.enable = true;
     printing.enable = true;
+    printing.cups-pdf.enable = true;
     fwupd.enable = true;
   };
 
