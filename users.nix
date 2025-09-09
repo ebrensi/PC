@@ -150,7 +150,6 @@
       nix-direnv.enable = true;
     };
   };
-  services.tailscale.enable = true;
 
   environment.shellAliases = {
     pc = "cd ~/dev/PC";
