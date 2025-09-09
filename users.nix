@@ -14,10 +14,7 @@
     extraGroups = ["networkmanager" "wheel" "audio" "video"];
     packages = with pkgs; [
       # Development
-      git
-      vim
-      neovim
-      micro
+      micro-full
 
       # Additional useful applications
       google-chrome

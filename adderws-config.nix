@@ -31,8 +31,13 @@
     libvirtd.enable = true;
   };
 
+  # see https://wiki.archlinux.org/title/Hardware_video_acceleration#Verification
   environment.systemPackages = with pkgs; [
     nvtopPackages.nvidia
+    libva-utils # for vainfo
+    vdpauinfo # vdpauinfo
+    vulkan-tools # vulkaninfo
+    intel-gpu-tools # intel_gpu_top
   ];
 
   hardware.enableRedistributableFirmware = true;
