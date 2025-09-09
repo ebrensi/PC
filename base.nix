@@ -73,6 +73,9 @@
     wl-clipboard-x11
     wl-clipboard-rs
     trash-cli
+    fastfetch
+    speedtest-cli
+    systemctl-tui
   ];
 
   # https://search.nixos.org/options?channel=unstable&query=programs

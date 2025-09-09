@@ -16,7 +16,7 @@
     heatflask = "git@github.com:ebrensi/heatflask.git";
     PC = "git@github.com:ebrensi/PC.git";
   };
-  # Helper function to flatten nested attribute set into path/repo pairs
+  # Helper function to flatten nested attributcde set into path/repo pairs
   flattenDevFolders = attrSet: path: let
     processValue = name: value: let
       newPath =

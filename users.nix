@@ -5,17 +5,6 @@
   ...
 }: let
   main-user = "efrem";
-  # Desired directory structure for ~/dev and associated
-  # git repositories to clone
-  dev-folders = {
-    AngelProtection = {
-      Guardian = "git@github.com:AngelProtection/Guardian.git";
-      Media = "git@github.com:AngelProtection/Media.git";
-    };
-    Geminae = "git@github.com:Project-Geminae/Geminae.git";
-    heatflask = "git@github.com:ebrensi/heatflask.git";
-    PC = "git@github.com:ebrensi/PC.git";
-  };
 in {
   imports = [./dev-folders.nix];
   security.sudo.wheelNeedsPassword = false;
@@ -41,11 +30,6 @@ in {
       ffmpeg
       gimp
       shotcut
-
-      # Apps for productivity
-      fastfetch
-      speedtest-cli
-      systemctl-tui
     ];
     initialPassword = "password";
     openssh.authorizedKeys.keys = [
