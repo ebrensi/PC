@@ -6,9 +6,17 @@
   pkgs,
   #
   main-user,
-  dev-folders,
   ...
 }: let
+  dev-folders = {
+    AngelProtection = {
+      Guardian = "git@github.com:AngelProtection/Guardian.git";
+      Media = "git@github.com:AngelProtection/Media.git";
+    };
+    Geminae = "git@github.com:Project-Geminae/Geminae.git";
+    heatflask = "git@github.com:ebrensi/heatflask.git";
+    PC = "git@github.com:ebrensi/PC.git";
+  };
   # Helper function to flatten nested attribute set into path/repo pairs
   flattenDevFolders = attrSet: path: let
     processValue = name: value: let
