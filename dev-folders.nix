@@ -50,17 +50,17 @@
 
     # Create base dev directory if it doesn't exist
     if [ ! -d "$DEV_DIR" ]; then
-      mkdir -p "$DEV_DIR"
-      chown "$MAIN_USER:users" "$DEV_DIR"
+      ${pkgs.coreutils}/bin/mkdir -p "$DEV_DIR"
+      ${pkgs.coreutils}/bin/chown "$MAIN_USER:users" "$DEV_DIR"
     fi
 
     ${builtins.concatStringsSep "\n" (map (repo: ''
         TARGET_DIR="$DEV_DIR/${repo.path}"
         if [ ! -d "$TARGET_DIR" ]; then
           echo "Cloning ${repo.repo} to $TARGET_DIR as $MAIN_USER"
-          mkdir -p "$(dirname $TARGET_DIR)"
-          ${pkgs.sudo}/bin/sudo -u "$MAIN_USER" git clone "${repo.repo}" "$TARGET_DIR"
-          chown -R "$MAIN_USER:users" "$TARGET_DIR"
+          ${pkgs.coreutils}/bin/mkdir -p "$(dirname $TARGET_DIR)"
+          ${pkgs.sudo}/bin/sudo -u "$MAIN_USER" ${pkgs.git}/bin/git clone "${repo.repo}" "$TARGET_DIR"
+          ${pkgs.coreutils}/bin/chown -R "$MAIN_USER:users" "$TARGET_DIR"
         fi
       '')
       reposToClone)}
