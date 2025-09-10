@@ -78,26 +78,34 @@
           }
         ];
       };
+      # System76 Adder WS (Laptop WorkStation)
       adder-ws = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = with self.inputs.nixos-hardware.nixosModules; [
+        specialArgs = {inherit (self.inputs) nixos-hardware;};
+        modules = [
           self.inputs.disko.nixosModules.disko
-          system76
-          common-cpu-intel
-          common-gpu-intel
-          # common-gpu-nvidia
-          common-gpu-nvidia-sync
-          common-pc-ssd
-          common-pc-laptop
-          common-hidpi
-          ./adderws.hardware.nix
-          ./disko-laptop-ssd.nix
           ./base.nix
           ./desktop-cosmic.nix
           ./adderws-config.nix
           ./users.nix
           {
             networking.hostName = "adder-ws";
+          }
+        ];
+      };
+      # Lenovo ThinkPad X1 Carbon 11th Gen
+      thinkpad = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          self.inputs.disko.nixosModules.disko
+          self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
+          # ./thinkpad.hardware.nix
+          ./disko-laptop-ssd.nix
+          ./base.nix
+          ./desktop-cosmic.nix
+          ./users.nix
+          {
+            networking.hostName = "thinkpad";
           }
         ];
       };

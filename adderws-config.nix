@@ -1,36 +1,24 @@
+# Configuration Specific to System76 Adder WS Laptop WorkStation
 {
   config,
   lib,
   pkgs,
+  nixos-hardware,
   ...
 }: {
-  # Networking
-  networking = {
-    networkmanager.enable = true;
-
-    # Enable firewall
-    firewall = {
-      enable = true;
-      allowedTCPPorts = [22]; # SSH
-    };
-  };
-
-  # Display and Desktop Environment
-  services = {
-    openssh.enable = true;
-    printing.enable = true;
-    printing.cups-pdf.enable = true;
-    fwupd.enable = true;
-  };
-
-  # Security
-  security.polkit.enable = true;
-
-  # Virtualization (useful for development/testing)
-  virtualisation = {
-    docker.enable = true;
-    libvirtd.enable = true;
-  };
+  # hardware profiles from nixos-hardware
+  imports = with nixos-hardware.nixosModules; [
+    system76
+    common-cpu-intel
+    common-gpu-intel
+    # common-gpu-nvidia # (GPU Offload mode)
+    common-gpu-nvidia-sync # (GPU Sync mode)
+    common-pc-ssd
+    common-pc-laptop
+    common-hidpi
+    ./adderws.hardware.nix # From hardware scan
+    ./disko-laptop-ssd.nix # Drive format config for disko
+  ];
 
   # see https://wiki.archlinux.org/title/Hardware_video_acceleration#Verification
   environment.systemPackages = with pkgs; [
@@ -57,12 +45,8 @@
     pkgs.intel-media-driver # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-va-api-intel
     pkgs.vpl-gpu-rt # https://wiki.nixos.org/wiki/Intel_Graphics
   ];
-  hardware = {
-    bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-    };
-  };
+
+  # See https://support.system76.com/articles/system76-software/
   services.power-profiles-daemon.enable = false;
 
   # This is a laptop machine acting as a server so we don't want it to sleep

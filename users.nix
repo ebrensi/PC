@@ -81,22 +81,11 @@ in {
           Port 2222
       '';
     };
-    yazi.enable = true;
-    starship.enable = true;
     zoom-us.enable = true;
     vscode = {
-      enable = true;
       extensions = with pkgs.vscode-extensions; let
         custom = pkgs.callPackage ./vscode-custom-extensions.nix {};
       in [
-        # For all extenstions
-        # see https://search.nixos.org/packages?channel=unstable&query=vscode-extensions
-
-        # Nix IDE
-        jnoortheen.nix-ide
-        bbenoist.nix
-        jeff-hykin.better-nix-syntax
-
         # Color Themes
         teabyii.ayu
         nonylene.dark-molokai-theme
@@ -124,7 +113,6 @@ in {
         kamadorueda.alejandra
         jgclark.vscode-todo-highlight
         irongeek.vscode-env
-        golang.go
         github.copilot
         esbenp.prettier-vscode
         davidanson.vscode-markdownlint
@@ -133,18 +121,6 @@ in {
         custom.ktnrg45.vscode-cython
         # shardulm94.trailing-spaces
         # stephlin.vscode-tmux-keybinding
-
-        # Python IDE
-        ms-toolsai.jupyter
-        ms-python.python
-        ms-python.vscode-pylance
-        ms-python.pylint
-        # ms-python.flake8
-        ms-python.mypy-type-checker
-        ms-python.isort
-        ms-python.debugpy
-        ms-python.black-formatter
-        charliermarsh.ruff
       ];
     };
     direnv = {
@@ -174,6 +150,8 @@ in {
     NNN_OPTS = "EAoau";
   };
 
+  # This runs when a new shell is started (for this user)
+  # This would be like putting stuff in ~/.bashrc
   environment.interactiveShellInit = ''
     n ()
     {

@@ -23,12 +23,6 @@
     jack.enable = true;
   };
 
-  # This is so symbols in Starship prompt are rendered correctly.
-  fonts.packages = with pkgs; [
-    nerd-fonts.fira-code
-    nerd-fonts.droid-sans-mono
-  ];
-
   boot.kernelParams = ["nvidia_drm.fbdev=1"];
 
   # prevent system from auto-sleeping
@@ -37,8 +31,6 @@
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
-  # Flatpak support for COSMIC Store
-  services.flatpak.enable = true;
-  environment.systemPackages = [pkgs.cosmic-store];
+  # We have to disable this ssh agent because it conflicts with the one that Cosmic starts
   programs.ssh.startAgent = lib.mkForce false;
 }
