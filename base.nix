@@ -126,6 +126,9 @@
     fastfetch
     speedtest-cli
     systemctl-tui
+    jq
+
+    go
   ];
 
   # https://search.nixos.org/options?channel=unstable&query=programs
@@ -196,6 +199,7 @@
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
     trusted-users = ["@wheel"];
+    nixPath = ["nixpkgs=${pkgs.path}"];
   };
   system.stateVersion = "25.05";
 }

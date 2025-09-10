@@ -184,4 +184,8 @@ in {
         }
     }
   '';
+  nix.settings.substituters = lib.mkBefore [
+    "https://guardian-ops-nix.s3.amazonaws.com" # Guardian nix cache
+  ];
+  nix.settings.trusted-public-keys = ["guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="];
 }
