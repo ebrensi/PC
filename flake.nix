@@ -60,9 +60,6 @@
             networking.hostName = "install-target";
             services.avahi = {
               enable = true;
-              nssmdns4 = true;
-              nssmdns6 = true;
-              ipv6 = false;
               openFirewall = true;
               publish = {
                 enable = true;
