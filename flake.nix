@@ -48,9 +48,7 @@
         sudo eject $dest || true
       '';
     };
-    nixosConfigurations = let
-      hardware = self.inputs.nixos-hardware.nixosModules;
-    in rec {
+    nixosConfigurations = rec {
       install-target = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
@@ -83,18 +81,9 @@
       # System76 Adder WS (Laptop WorkStation)
       adder-ws = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
+        specialArgs = {inherit (self.inputs) nixos-hardware;};
         modules = [
           self.inputs.disko.nixosModules.disko
-          hardware.system76
-          hardware.common-cpu-intel
-          hardware.common-gpu-intel
-          hardware.common-gpu-nvidia # (GPU Offload mode)
-          hardware.common-gpu-nvidia-sync # (GPU Sync mode)
-          hardware.common-pc-ssd
-          hardware.common-pc-laptop
-          hardware.common-hidpi
-          ./adderws.hardware.nix
-          ./disko-laptop-ssd.nix
           ./base.nix
           ./desktop-cosmic.nix
           ./adderws-config.nix
@@ -104,21 +93,16 @@
           }
         ];
       };
+      # Lenovo ThinkPad X1 Carbon 11th Gen
       thinkpad = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = with self.inputs.nixos-hardware.nixosModules; [
+        modules = [
           self.inputs.disko.nixosModules.disko
-          thinkpad
-          common-cpu-intel
-          common-gpu-intel
-          common-pc-ssd
-          common-pc-laptop
-          common-hidpi
-          ./thinkpad.hardware.nix
+          self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
+          # ./thinkpad.hardware.nix
           ./disko-laptop-ssd.nix
           ./base.nix
           ./desktop-cosmic.nix
-          ./thinkpad-config.nix
           ./users.nix
           {
             networking.hostName = "thinkpad";
