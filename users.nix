@@ -174,6 +174,8 @@ in {
     NNN_OPTS = "EAoau";
   };
 
+  # This runs when a new shell is started (for this user)
+  # This would be like putting stuff in ~/.bashrc
   environment.interactiveShellInit = ''
     n ()
     {
