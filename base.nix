@@ -199,7 +199,7 @@
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
     trusted-users = ["@wheel"];
-    nixPath = ["nixpkgs=${pkgs.path}"];
   };
+  nix.nixPath = ["nixpkgs=${pkgs.path}"];
   system.stateVersion = "25.05";
 }
