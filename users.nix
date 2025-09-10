@@ -188,4 +188,20 @@ in {
     "https://guardian-ops-nix.s3.amazonaws.com" # Guardian nix cache
   ];
   nix.settings.trusted-public-keys = ["guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="];
+  nix.buildMachines = [
+    {
+      hostName = "AP1";
+      protocol = "ssh-ng";
+      systems = ["x86_64-linux" "aarch64-linux"];
+      maxJobs = 3;
+      speedFactor = 2;
+      supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
+      # mandatoryFeatures = [];
+    }
+  ];
+  nix.distributedBuilds = true;
+  # optional, useful when the builder has a faster internet connection than yours
+  nix.extraOptions = ''
+    builders-use-substitutes = true
+  '';
 }
