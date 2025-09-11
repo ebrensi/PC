@@ -134,6 +134,15 @@ in {
       enableBashIntegration = true;
       nix-direnv.enable = true;
     };
+    git.config = {
+      init.defaultBranch = "main";
+      user = {
+        name = "Efrem";
+        email = "rensi.efrem@gmail.com";
+      };
+      color.ui = "auto";
+      push.autosetupremote = true;
+    };
   };
 
   environment.shellAliases = let
