@@ -19,6 +19,7 @@ in {
 
       # Development
       micro-full
+      ghq
 
       # Additional useful applications
       google-chrome
@@ -191,7 +192,9 @@ in {
   nix.buildMachines = [
     {
       hostName = "AP1";
+      sshUser = "efrem";
       protocol = "ssh-ng";
+      sshKey = "/home/efrem/.ssh/angelProtection.pub";
       systems = ["x86_64-linux" "aarch64-linux"];
       maxJobs = 3;
       speedFactor = 2;
