@@ -46,6 +46,11 @@ in {
     user = main-user;
   };
 
+  systemd.tmpfiles.rules = [
+      "d /tmp/ssh                 777 root root -"
+      "d /home/${main-user}/dev   775 ${main-user} ${main-user} -"
+    ];
+    
   programs = {
     ssh = {
       # This is what would go in ~/.ssh/config in a traditional linux distro
