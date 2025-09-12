@@ -57,7 +57,6 @@
     ${builtins.concatStringsSep "\n" (map (repo: ''
         TARGET_DIR="$DEV_DIR/${repo.path}"
         if [ ! -d "$TARGET_DIR" ]; then
-          echo "Cloning ${repo.repo} to $TARGET_DIR as $MAIN_USER"
           mkdir -p "$(dirname $TARGET_DIR)"
           (git clone "${repo.repo}" "$TARGET_DIR" && echo "Successfully cloned ${repo.repo}" || echo "Failed to clone ${repo.repo}") &
         fi
