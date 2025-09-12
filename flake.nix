@@ -87,6 +87,7 @@
           ./desktop-cosmic.nix
           ./adderws-config.nix
           ./users.nix
+          ./dev-folders.nix
           {
             networking.hostName = "adder-ws";
             # use older version of tailscale that builds, since the latest doesn't

@@ -48,8 +48,8 @@ in {
 
   systemd.tmpfiles.rules = [
     "d /tmp/ssh                 777 root root -"
-    "d /home/${main-user}/dev   775 ${main-user} ${main-user} -"
-    "d /home/${main-user}/dev2   775 ${main-user} ${main-user} -"
+    "d /home/${main-user}/dev   775 ${main-user} users -"
+    "d /home/${main-user}/dev2   775 ${main-user} users -"
   ];
 
   programs = {
@@ -156,7 +156,7 @@ in {
     ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
     flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
     yay = "nixos-rebuild switch --flake ${flake-path} --sudo";
-    gq = "ghq get -l -p -P";
+    gq = "ghq get -p -P";
   };
 
   # Environment Variables (for this user)

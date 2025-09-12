@@ -44,36 +44,44 @@
 
     MAIN_USER="${main-user}"
     MAIN_USER_HOME=/home/$MAIN_USER
-    DEV_DIR="$MAIN_USER_HOME/dev"
+    DEV_DIR="$MAIN_USER_HOME/dev2"
 
     echo "Setting up dev folders for user $MAIN_USER at $DEV_DIR"
 
     # Create base dev directory if it doesn't exist
     if [ ! -d "$DEV_DIR" ]; then
-      ${pkgs.coreutils}/bin/mkdir -p "$DEV_DIR"
-      ${pkgs.coreutils}/bin/chown "$MAIN_USER:users" "$DEV_DIR"
+      mkdir -p "$DEV_DIR"
+      chown "$MAIN_USER:users" "$DEV_DIR"
     fi
 
     ${builtins.concatStringsSep "\n" (map (repo: ''
         TARGET_DIR="$DEV_DIR/${repo.path}"
         if [ ! -d "$TARGET_DIR" ]; then
           echo "Cloning ${repo.repo} to $TARGET_DIR as $MAIN_USER"
-          ${pkgs.coreutils}/bin/mkdir -p "$(dirname $TARGET_DIR)"
-          ${pkgs.git}/bin/git clone "${repo.repo}" "$TARGET_DIR"
-          ${pkgs.coreutils}/bin/chown -R "$MAIN_USER:users" "$TARGET_DIR"
+          mkdir -p "$(dirname $TARGET_DIR)"
+          git clone "${repo.repo}" "$TARGET_DIR" &
+          # chown -R "$MAIN_USER:users" "$TARGET_DIR"
         fi
       '')
       reposToClone)}
 
+    wait # Wait for all background git clone processes to finish
     echo "Dev folder setup complete"
   '';
 in {
-  # Add activation script
-  system.activationScripts.setupDevFolders = {
-    text = ''
-      echo "Running dev folders setup..."
-      ${cloneScript}
-    '';
-    deps = ["users" "groups"]; # Run after users and groups are set up
+  systemd.services.setup-dev-folders = {
+    description = "Setup development folders";
+    wantedBy = ["multi-user.target"];
+    after = ["network-online.target"];
+    wants = ["network-online.target"];
+
+    serviceConfig = {
+      Type = "oneshot";
+      User = main-user;
+      Group = "users";
+      ExecStart = "${cloneScript}";
+      RemainAfterExit = true;
+    };
+    path = with pkgs; [git coreutils openssh];
   };
 }
