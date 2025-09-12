@@ -44,7 +44,7 @@
 
     MAIN_USER="${main-user}"
     MAIN_USER_HOME=/home/$MAIN_USER
-    DEV_DIR="$MAIN_USER_HOME/dev2"
+    DEV_DIR="$MAIN_USER_HOME/dev"
 
     echo "Setting up dev folders for user $MAIN_USER at $DEV_DIR"
 
@@ -59,14 +59,10 @@
         if [ ! -d "$TARGET_DIR" ]; then
           echo "Cloning ${repo.repo} to $TARGET_DIR as $MAIN_USER"
           mkdir -p "$(dirname $TARGET_DIR)"
-          git clone "${repo.repo}" "$TARGET_DIR" &
-          # chown -R "$MAIN_USER:users" "$TARGET_DIR"
+          (git clone "${repo.repo}" "$TARGET_DIR" && echo "Successfully cloned ${repo.repo}" || echo "Failed to clone ${repo.repo}") &
         fi
       '')
       reposToClone)}
-
-    wait # Wait for all background git clone processes to finish
-    echo "Dev folder setup complete"
   '';
 in {
   systemd.services.setup-dev-folders = {
