@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -13,6 +14,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-stable,
     nixos-hardware,
     ...
   }: {
@@ -87,6 +89,8 @@
           ./users.nix
           {
             networking.hostName = "adder-ws";
+            # use older version of tailscale that builds, since the latest doesn't
+            services.tailscale.package = let pkgs-stable = import nixpkgs-stable {system = "x86_64-linux";}; in pkgs-stable.tailscale;
           }
         ];
       };
