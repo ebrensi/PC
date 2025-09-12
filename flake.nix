@@ -71,44 +71,42 @@
             };
             nix.settings = {
               experimental-features = ["nix-command" "flakes"];
-              trusted-users = ["@wheel"];
+              trusted-users = ["@wheel" "efrem"];
             };
             system.stateVersion = "25.05";
           }
         ];
       };
-      # System76 Adder WS (Laptop WorkStation)
-      adder-ws = nixpkgs.lib.nixosSystem {
+
+      base-system = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {inherit (self.inputs) nixos-hardware;};
         modules = [
           self.inputs.disko.nixosModules.disko
-          ./base.nix
-          ./desktop-cosmic.nix
-          ./adderws-config.nix
-          ./users.nix
-          ./dev-folders.nix
-          {
-            networking.hostName = "adder-ws";
-            # use older version of tailscale that builds, since the latest doesn't
-            services.tailscale.package = let pkgs-stable = import nixpkgs-stable {system = "x86_64-linux";}; in pkgs-stable.tailscale;
-          }
-        ];
-      };
-      # Lenovo ThinkPad X1 Carbon 11th Gen
-      thinkpad = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          self.inputs.disko.nixosModules.disko
-          self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
-          # ./thinkpad.hardware.nix
           ./disko-laptop-ssd.nix
           ./base.nix
           ./desktop-cosmic.nix
           ./users.nix
           {
-            networking.hostName = "thinkpad";
+            networking.hostName = nixpkgs.lib.mkDefault "base-system";
+            # use older version of tailscale that builds, since the latest doesn't
+            services.tailscale.package = let pkgs-stable = import nixpkgs-stable {system = "x86_64-linux";}; in pkgs-stable.tailscale;
           }
+        ];
+      };
+      # System76 Adder WS (Laptop WorkStation)
+      adder-ws = base-system.extendModules {
+        modules = [
+          ./adderws-config.nix
+          {networking.hostName = "adder-ws";}
+        ];
+      };
+
+      # Lenovo ThinkPad X1 Carbon 11th Gen
+      thinkpad = base-system.extendModules {
+        modules = [
+          self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
+          {networking.hostName = "thinkpad";}
         ];
       };
     };

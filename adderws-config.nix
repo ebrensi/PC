@@ -17,7 +17,6 @@
     common-pc-laptop
     common-hidpi
     ./adderws.hardware.nix # From hardware scan
-    ./disko-laptop-ssd.nix # Drive format config for disko
   ];
 
   # see https://wiki.archlinux.org/title/Hardware_video_acceleration#Verification

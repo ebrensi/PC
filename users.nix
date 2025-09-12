@@ -6,7 +6,8 @@
 }: let
   main-user = "efrem";
 in {
-  # imports = [./dev-folders.nix];
+  imports = [./dev-folders.nix];
+
   security.sudo.wheelNeedsPassword = false;
   users.mutableUsers = true;
 
