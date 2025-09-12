@@ -47,10 +47,11 @@ in {
   };
 
   systemd.tmpfiles.rules = [
-      "d /tmp/ssh                 777 root root -"
-      "d /home/${main-user}/dev   775 ${main-user} ${main-user} -"
-    ];
-    
+    "d /tmp/ssh                 777 root root -"
+    "d /home/${main-user}/dev   775 ${main-user} ${main-user} -"
+    "d /home/${main-user}/dev2   775 ${main-user} ${main-user} -"
+  ];
+
   programs = {
     ssh = {
       # This is what would go in ~/.ssh/config in a traditional linux distro
@@ -142,6 +143,9 @@ in {
       };
       color.ui = "auto";
       push.autosetupremote = true;
+      ghq = {
+        root = "/home/${main-user}/dev2";
+      };
     };
   };
 
@@ -152,6 +156,7 @@ in {
     ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
     flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
     yay = "nixos-rebuild switch --flake ${flake-path} --sudo";
+    gq = "ghq get -l -p -P";
   };
 
   # Environment Variables (for this user)
@@ -163,6 +168,7 @@ in {
     NNN_OPEN = "micro";
     NNN_GUI = 0;
     NNN_OPTS = "EAoau";
+    GHQ_ROOT = "/home/${main-user}/dev2";
   };
 
   # This runs when a new shell is started (for this user)
@@ -199,26 +205,29 @@ in {
         }
     }
   '';
-  nix.settings.substituters = lib.mkBefore [
-    "https://guardian-ops-nix.s3.amazonaws.com" # Guardian nix cache
-  ];
-  nix.settings.trusted-public-keys = ["guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="];
-  nix.buildMachines = [
-    {
-      hostName = "AP1";
-      sshUser = "efrem";
-      protocol = "ssh-ng";
-      sshKey = "/home/efrem/.ssh/angelProtection.pub";
-      systems = ["x86_64-linux" "aarch64-linux"];
-      maxJobs = 3;
-      speedFactor = 2;
-      supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
-      # mandatoryFeatures = [];
-    }
-  ];
-  nix.distributedBuilds = true;
-  # optional, useful when the builder has a faster internet connection than yours
-  nix.extraOptions = ''
-    builders-use-substitutes = true
-  '';
+
+  nix = {
+    distributedBuilds = true;
+    # optional, useful when the builder has a faster internet connection than yours
+    extraOptions = ''
+      builders-use-substitutes = true
+    '';
+    settings.substituters = lib.mkBefore [
+      "https://guardian-ops-nix.s3.amazonaws.com" # Guardian nix cache
+    ];
+    settings.trusted-public-keys = ["guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="];
+    buildMachines = [
+      {
+        hostName = "AP1";
+        sshUser = "efrem";
+        protocol = "ssh-ng";
+        sshKey = "/home/efrem/.ssh/angelProtection.pub";
+        systems = ["x86_64-linux" "aarch64-linux"];
+        maxJobs = 3;
+        speedFactor = 2;
+        supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
+        # mandatoryFeatures = [];
+      }
+    ];
+  };
 }

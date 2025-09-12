@@ -90,7 +90,7 @@
           {
             networking.hostName = "adder-ws";
             # use older version of tailscale that builds, since the latest doesn't
-            services.tailscale.package = let pkgs-stable = import nixpkgs-stable {inherit system;}; in pkgs-stable.tailscale;
+            services.tailscale.package = let pkgs-stable = import nixpkgs-stable {system = "x86_64-linux";}; in pkgs-stable.tailscale;
           }
         ];
       };
