@@ -114,6 +114,7 @@
     tree
     nnn
     nix-output-monitor
+    nixos-anywhere
     tig
 
     # Networking
