@@ -57,32 +57,25 @@ in {
     ssh = {
       # This is what would go in ~/.ssh/config in a traditional linux distro
       extraConfig = ''
-        Host *.local
-          StrictHostKeyChecking no
-          UserKnownHostsFile /dev/null
-          ForwardAgent yes
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+        IdentityFile /home/${main-user}/.ssh/angelProtection
 
-          # Reuse local ssh connections
-          ControlPath /tmp/ssh/%r@%h:%p
-          ControlMaster auto
-          ControlPersist 20
-          IdentityFile /home/${main-user}/.ssh/angelProtection
+        # Reuse local ssh connections
+        ControlPath /tmp/ssh/%r@%h:%p
+        ControlMaster auto
+        ControlPersist 20
+
+        Host *.local
+          ForwardAgent yes
 
         Host AP1
           Hostname 100.85.51.6
           User guardian
           ForwardAgent yes
-          IdentityFile /home/${main-user}/.ssh/angelProtection
 
         Host ras.angelprotection.com
-          StrictHostKeyChecking no
-          UserKnownHostsFile /dev/null
           ForwardAgent yes
-
-          ControlPath /tmp/ssh/%r@%h:%p
-          ControlMaster auto
-          ControlPersist 20
-          IdentityFile /home/${main-user}/.ssh/angelProtection
 
         Host vm
           Hostname 127.0.0.1
@@ -208,27 +201,27 @@ in {
   '';
 
   nix = {
-    distributedBuilds = true;
-    # optional, useful when the builder has a faster internet connection than yours
-    extraOptions = ''
-      builders-use-substitutes = true
-    '';
     settings.substituters = lib.mkBefore [
       "https://guardian-ops-nix.s3.amazonaws.com" # Guardian nix cache
     ];
     settings.trusted-public-keys = ["guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="];
-    buildMachines = [
-      {
-        hostName = "AP1";
-        sshUser = "efrem";
-        protocol = "ssh-ng";
-        sshKey = "/home/efrem/.ssh/angelProtection.pub";
-        systems = ["x86_64-linux" "aarch64-linux"];
-        maxJobs = 3;
-        speedFactor = 2;
-        supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
-        # mandatoryFeatures = [];
-      }
-    ];
+    # distributedBuilds = true;
+    # # optional, useful when the builder has a faster internet connection than yours
+    # extraOptions = ''
+    #   builders-use-substitutes = true
+    # '';
+    # buildMachines = [
+    #   {
+    #     hostName = "AP1";
+    #     sshUser = "efrem";
+    #     protocol = "ssh-ng";
+    #     sshKey = "/home/efrem/.ssh/angelProtection.pub";
+    #     systems = ["x86_64-linux" "aarch64-linux"];
+    #     maxJobs = 3;
+    #     speedFactor = 2;
+    #     supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
+    #     # mandatoryFeatures = [];
+    #   }
+    # ];
   };
 }
