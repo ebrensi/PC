@@ -116,6 +116,7 @@
     nix-output-monitor
     nixos-anywhere
     tig
+    nodePackages_latest.prettier
 
     # Networking
     networkmanagerapplet
