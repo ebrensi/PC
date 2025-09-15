@@ -5,8 +5,8 @@ base configuration that contains non machine-specific stuff.  Everything that I 
 
 
  ## Initial Setup/Install
- For now you will need a system with NixOS already on it and configured to use flakes. Then copy this folder to there or `git clone git@github.com:ebrensi/PC.git`.
- Then build it with 
+ For now you will need a system with NixOS already on it and configured to use flakes. Then copy this folder to there or `git clone git@github.com:ebrensi/PC.git`.  Any accessible folder is ok.  We will assume you are working in that folder.
+ Build the system closure with 
  ```bash
  nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
  ```
@@ -22,7 +22,7 @@ Then your system will be the one defined in flake.nix nixosConfigurations as `<h
 
 Note this could have also been done with
 ```bash
-nixos-rebuild switch --flake .#<hostname>
+sudo nixos-rebuild switch --flake .#<hostname>
 ```
 
 In [./users.nix](./users.nix) I defined a few aliases to make updating the system a terminal shortcut `yay`.
