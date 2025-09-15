@@ -18,9 +18,11 @@ This flake provides a convenient script `apply` to switch to an arbitrary system
 nix run .#apply ./result
 ```
 
-Then your system will be the one defined in the configuration as `<hostname>`.
+Then your system will be the one defined in flake.nix nixosConfigurations as `<hostname>`.
 
 Note this could have also been done with
-```
+```bash
 nixos-rebuild switch --flake .#<hostname>
 ```
+
+In [./users.nix](./users.nix) I defined a few aliases to make updating the system a terminal shortcut `yay`.

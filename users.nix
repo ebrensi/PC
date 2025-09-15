@@ -52,10 +52,10 @@ in {
     };
   };
 
+  # Some files/folders that should exist
   systemd.tmpfiles.rules = [
     "d /tmp/ssh                 777 root root -"
     "d /home/${main-user}/dev   775 ${main-user} users -"
-    "d /home/${main-user}/dev2   775 ${main-user} users -"
   ];
 
   programs = {
@@ -154,7 +154,6 @@ in {
       ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
       flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
       yay = "nixos-rebuild switch --flake ${flake-path} --sudo";
-      gq = "ghq get -p -P";
     };
 
     # Environment Variables (for this user)
@@ -166,7 +165,6 @@ in {
       NNN_OPEN = "micro";
       NNN_GUI = 0;
       NNN_OPTS = "EAoau";
-      GHQ_ROOT = "/home/${main-user}/dev2";
     };
 
     # This runs when a new shell is started (for this user)
