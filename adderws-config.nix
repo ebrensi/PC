@@ -28,32 +28,57 @@
     intel-gpu-tools # intel_gpu_top
   ];
 
-  hardware.enableRedistributableFirmware = true;
-  hardware.firmware = [pkgs.linux-firmware];
-  hardware.nvidia = {
-    open = true;
-    nvidiaSettings = true;
-    prime = {
-      nvidiaBusId = "PCI:1:0:0";
-      intelBusId = "PCI:0:2:0";
+  hardware = {
+    enableRedistributableFirmware = true;
+    firmware = [pkgs.linux-firmware];
+    nvidia = {
+      open = true;
+      nvidiaSettings = true;
+      prime = {
+        nvidiaBusId = "PCI:1:0:0";
+        intelBusId = "PCI:0:2:0";
+      };
+    };
+    nvidia-container-toolkit.enable = true;
+    graphics.extraPackages = [
+      pkgs.intel-compute-runtime # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-opencl-intel
+      pkgs.intel-media-driver # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-va-api-intel
+      pkgs.vpl-gpu-rt # https://wiki.nixos.org/wiki/Intel_Graphics
+    ];
+
+    bluetooth = {
+      enable = true;
+      powerOnBoot = true;
+    };
+
+    pulseaudio = {
+      enable = true;
+      package = pkgs.pulseaudioFull;
+      configFile = pkgs.writeText "default.pa" ''
+        load-module module-bluetooth-policy
+        load-module module-bluetooth-discover
+        # load-module module-switch-on-connect
+
+        ## module fails to load with
+        ##   module-bluez5-device.c: Failed to get device path from module arguments
+        ##   module.c: Failed to load module "module-bluez5-device" (argument: ""): initialization failed.
+        # load-module module-bluez5-device
+        # load-module module-bluez5-discover
+      '';
     };
   };
-  hardware.nvidia-container-toolkit.enable = true;
-  hardware.graphics.extraPackages = [
-    pkgs.intel-compute-runtime # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-opencl-intel
-    pkgs.intel-media-driver # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-va-api-intel
-    pkgs.vpl-gpu-rt # https://wiki.nixos.org/wiki/Intel_Graphics
-  ];
 
-  # See https://support.system76.com/articles/system76-software/
-  services.power-profiles-daemon.enable = false;
+  services = {
+    # See https://support.system76.com/articles/system76-software/
+    power-profiles-daemon.enable = false;
 
-  # This is a laptop machine acting as a server so we don't want it to sleep
-  # When hooked to a dock or external power
-  services.logind.settings.Login = {
-    # Dont sleep when lid is closed on external power
-    HandleLidSwitchExternalPower = "ignore";
-    # Dont sleep when lid is closed we are connected to a docking station
-    HandleLidSwitchDocked = "ignore";
+    # This is a laptop machine acting as a server so we don't want it to sleep
+    # When hooked to a dock or external power
+    logind.settings.Login = {
+      # Dont sleep when lid is closed on external power
+      HandleLidSwitchExternalPower = "ignore";
+      # Dont sleep when lid is closed we are connected to a docking station
+      HandleLidSwitchDocked = "ignore";
+    };
   };
 }

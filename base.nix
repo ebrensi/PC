@@ -26,13 +26,6 @@
     };
   };
 
-  hardware = {
-    bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-    };
-  };
-
   # Display and Desktop Environment
   services = {
     openssh.enable = true;
