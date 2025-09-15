@@ -25,7 +25,8 @@
     in rec {
       apply = pkgs.writeShellScriptBin "apply" ''
         # Apply a system configuration (toplelevel) path to the current system.
-        # This is like `nixos-rebuild switch` but for an arbitrary built system given as a store path.
+        # This is like `nixos-rebuild switch` but for an arbitrary
+        #  built system given as a store path (or link to store path, like ./result).
         storePath=$(realpath $1)
         sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
         sudo $storePath/bin/switch-to-configuration switch

@@ -1,2 +1,1 @@
-# PC
-NixOS flake for personal PC configurations
+# NixOS flake for personal/developer PC configurations
