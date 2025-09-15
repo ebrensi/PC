@@ -41,10 +41,15 @@ in {
   };
   nix.settings.trusted-users = [main-user];
 
-  # Auto Login
-  services.displayManager.autoLogin = {
-    enable = true;
-    user = main-user;
+  services = {
+    # cosmic doesn't have good bluetooth support yet, so use blueman for now
+    blueman.enable = true;
+
+    # Auto Login
+    displayManager.autoLogin = {
+      enable = true;
+      user = main-user;
+    };
   };
 
   systemd.tmpfiles.rules = [
@@ -137,68 +142,68 @@ in {
       };
       color.ui = "auto";
       push.autosetupremote = true;
-      ghq = {
-        root = "/home/${main-user}/dev2";
-      };
     };
   };
 
-  environment.shellAliases = let
-    flake-path = "/home/${main-user}/dev/PC";
-  in {
-    pc = "cd ${flake-path}";
-    ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
-    flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
-    yay = "nixos-rebuild switch --flake ${flake-path} --sudo";
-    gq = "ghq get -p -P";
+  environment = {
+    # Convenient keyboard aliases
+    shellAliases = let
+      flake-path = "/home/${main-user}/dev/PC";
+    in {
+      pc = "cd ${flake-path}";
+      ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
+      flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
+      yay = "nixos-rebuild switch --flake ${flake-path} --sudo";
+      gq = "ghq get -p -P";
+    };
+
+    # Environment Variables (for this user)
+    sessionVariables = {
+      EDITOR = "micro";
+      VISUAL = "micro";
+      MICRO_TRUECOLOR = 1;
+      NNN_TRASH = 1; # trash (needs trash-cli) instead of delete
+      NNN_OPEN = "micro";
+      NNN_GUI = 0;
+      NNN_OPTS = "EAoau";
+      GHQ_ROOT = "/home/${main-user}/dev2";
+    };
+
+    # This runs when a new shell is started (for this user)
+    # This would be like putting stuff in ~/.bashrc
+    interactiveShellInit = ''
+      n ()
+      {
+          # Block nesting of nnn in subshells
+          [ "''${NNNLVL:-0}" -eq 0 ] || {
+              echo "nnn is already running"
+              return
+          }
+
+          # The behaviour is set to cd on quit (nnn checks if NNN_TMPFILE is set)
+          # If NNN_TMPFILE is set to a custom path, it must be exported for nnn to
+          # see. To cd on quit only on ^G, remove the "export" and make sure not to
+          # use a custom path, i.e. set NNN_TMPFILE *exactly* as follows:
+          NNN_TMPFILE="''${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+          # export NNN_TMPFILE="''${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+
+          # Unmask ^Q (, ^V etc.) (if required, see `stty -a`) to Quit nnn
+          # stty start undef
+          # stty stop undef
+          # stty lwrap undef
+          # stty lnext undef
+
+          # The command builtin allows one to alias nnn to n, if desired, without
+          # making an infinitely recursive alias
+          command nnn "$@"
+
+          [ ! -f "$NNN_TMPFILE" ] || {
+              . "$NNN_TMPFILE"
+              rm -f -- "$NNN_TMPFILE" > /dev/null
+          }
+      }
+    '';
   };
-
-  # Environment Variables (for this user)
-  environment.sessionVariables = {
-    EDITOR = "micro";
-    VISUAL = "micro";
-    MICRO_TRUECOLOR = 1;
-    NNN_TRASH = 1; # trash (needs trash-cli) instead of delete
-    NNN_OPEN = "micro";
-    NNN_GUI = 0;
-    NNN_OPTS = "EAoau";
-    GHQ_ROOT = "/home/${main-user}/dev2";
-  };
-
-  # This runs when a new shell is started (for this user)
-  # This would be like putting stuff in ~/.bashrc
-  environment.interactiveShellInit = ''
-    n ()
-    {
-        # Block nesting of nnn in subshells
-        [ "''${NNNLVL:-0}" -eq 0 ] || {
-            echo "nnn is already running"
-            return
-        }
-
-        # The behaviour is set to cd on quit (nnn checks if NNN_TMPFILE is set)
-        # If NNN_TMPFILE is set to a custom path, it must be exported for nnn to
-        # see. To cd on quit only on ^G, remove the "export" and make sure not to
-        # use a custom path, i.e. set NNN_TMPFILE *exactly* as follows:
-        NNN_TMPFILE="''${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-        # export NNN_TMPFILE="''${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-
-        # Unmask ^Q (, ^V etc.) (if required, see `stty -a`) to Quit nnn
-        # stty start undef
-        # stty stop undef
-        # stty lwrap undef
-        # stty lnext undef
-
-        # The command builtin allows one to alias nnn to n, if desired, without
-        # making an infinitely recursive alias
-        command nnn "$@"
-
-        [ ! -f "$NNN_TMPFILE" ] || {
-            . "$NNN_TMPFILE"
-            rm -f -- "$NNN_TMPFILE" > /dev/null
-        }
-    }
-  '';
 
   nix = {
     settings.substituters = lib.mkBefore [
