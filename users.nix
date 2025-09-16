@@ -146,6 +146,14 @@ in {
   };
 
   environment = {
+    etc."tigrc".text = ''
+      # tig configuration here
+      set mouse = yes
+      set mouse-scroll = 3
+      set mouse-wheel-cursor = no
+
+      bind status P !git push origin
+    '';
     # Convenient keyboard aliases
     shellAliases = let
       flake-path = "/home/${main-user}/dev/PC";
