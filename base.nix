@@ -28,7 +28,10 @@
 
   # Display and Desktop Environment
   services = {
-    openssh.enable = true;
+    openssh = {
+      enable = true;
+      AllowAgentForwarding = true;
+    };
     tailscale.enable = true;
     printing.enable = true;
     printing.cups-pdf.enable = true;

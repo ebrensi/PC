@@ -66,22 +66,16 @@ in {
         StrictHostKeyChecking no
         UserKnownHostsFile /dev/null
         IdentityFile /home/${main-user}/.ssh/angelProtection
+        ForwardAgent yes
 
         # Reuse local ssh connections
         ControlPath /tmp/ssh/%r@%h:%p
         ControlMaster auto
         ControlPersist 20
 
-        Host *.local
-          ForwardAgent yes
-
         Host AP1
           Hostname 100.85.51.6
           User guardian
-          ForwardAgent yes
-
-        Host ras.angelprotection.com
-          ForwardAgent yes
 
         Host vm
           Hostname 127.0.0.1
