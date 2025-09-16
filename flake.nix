@@ -51,8 +51,12 @@
 
       # TODO: generalize this to all nixosConfigurations
       #  maybe with a loop and using `lib.attrNames self.nixosConfigurations`?
+      # Note that we can make installers without getting hardware info first,
+      #  because we have hardware (mostly) pre-configured via nixos-hardware.
       thinkpad-offline-installer-iso = mkInstaller "thinkpad";
       adder-ws-offline-installer-iso = mkInstaller "adder-ws";
+
+      # TODO: maybe make "online" installer that only packages things not in official nix cache
     };
 
     nixosConfigurations = let
