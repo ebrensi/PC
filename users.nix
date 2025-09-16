@@ -144,9 +144,8 @@ in {
       push.autosetupremote = true;
     };
   };
-
   environment = {
-    etc."tigrc".text = ''
+    etc."tig/config".text = ''
       # tig configuration here
       set mouse = yes
       set mouse-scroll = 3
@@ -166,6 +165,7 @@ in {
 
     # Environment Variables (for this user)
     sessionVariables = {
+      TIGRC_USER = "/etc/tig/config";
       EDITOR = "micro";
       VISUAL = "micro";
       MICRO_TRUECOLOR = 1;
