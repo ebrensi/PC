@@ -51,8 +51,8 @@
 
       # TODO: generalize this to all nixosConfigurations
       #  maybe with a loop and using `lib.attrNames self.nixosConfigurations`?
-      thinkpad-installer-iso = mkInstaller "thinkpad";
-      adder-ws-installer-iso = mkInstaller "adder-ws";
+      thinkpad-offline-installer-iso = mkInstaller "thinkpad";
+      adder-ws-offline-installer-iso = mkInstaller "adder-ws";
     };
 
     nixosConfigurations = let

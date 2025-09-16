@@ -46,4 +46,6 @@ in {
   services.getty.autologinUser = pkgs.lib.mkForce "nixos";
   environment.interactiveShellInit = "${install-script}/bin/*";
   services.getty.helpLine = pkgs.lib.mkForce "Run `install-${hostName}` from the command line to install aarch64-builder to a disk";
+  isoImage.edition = hostName;
+  # isoImage.includeSystemBuildDependencies = true;
 }
