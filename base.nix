@@ -78,6 +78,10 @@
   # Allow unfree packages (needed for NVIDIA drivers and some software)
   nixpkgs.config.allowUnfree = true;
 
+  # Unless otherwise specified, this configuration is gonna be built on and for x86_64-linux
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  nixpkgs.buildPlatform = lib.mkDefault "x86_64-linux";
+
   # System packages
   environment.systemPackages = with pkgs; [
     # see https://search.nixos.org/packages?channel=unstable

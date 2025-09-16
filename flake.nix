@@ -22,6 +22,15 @@
       pkgs = import nixpkgs {system = "x86_64-linux";};
       nixos-anywhere = "${pkgs.nixos-anywhere}/bin/nixos-anywhere";
       nom = "${pkgs.nix-output-monitor}/bin/nom";
+      installer-base = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = ["${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"];
+      };
+      mkInstaller = hostname:
+        (installer-base.extendModules {
+          modules = [./install-script.nix];
+          specialArgs = {systemToInstall = self.nixosConfigurations.${hostname};};
+        }).config.system.build.isoImage;
     in rec {
       apply = pkgs.writeShellScriptBin "apply" ''
         # Apply a system configuration (toplelevel) path to the current system.
@@ -39,24 +48,26 @@
         system=$(${nom} build ".#nixosConfigurations.$hostname.config.system.build.toplevel" --print-out-paths --no-link)
         ${apply}/bin/* $system
       '';
+
+      # TODO: generalize this to all nixosConfigurations
+      #  maybe with a loop and using `lib.attrNames self.nixosConfigurations`?
+      thinkpad-installer-iso = mkInstaller "thinkpad";
+      adder-ws-installer-iso = mkInstaller "adder-ws";
     };
 
-    nixosConfigurations = rec {
-      base-system = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+    nixosConfigurations = let
+      system-base = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit (self.inputs) nixos-hardware;};
         modules = [
           self.inputs.disko.nixosModules.disko
           ./base.nix
           ./desktop-cosmic.nix
           ./users.nix
-          {
-            networking.hostName = nixpkgs.lib.mkDefault "base-system";
-          }
         ];
       };
+    in {
       # System76 Adder WS (Laptop WorkStation)
-      adder-ws = base-system.extendModules {
+      adder-ws = system-base.extendModules {
         modules = [
           ./adderws-config.nix
           {networking.hostName = "adder-ws";}
@@ -64,7 +75,7 @@
       };
 
       # Lenovo ThinkPad X1 Carbon 11th Gen
-      thinkpad = base-system.extendModules {
+      thinkpad = system-base.extendModules {
         modules = [
           self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
           ./disko-laptop-ssd.nix
