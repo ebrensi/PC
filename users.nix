@@ -165,7 +165,6 @@ in {
 
     # Environment Variables (for this user)
     sessionVariables = {
-      TIGRC_USER = "/etc/tig/config";
       EDITOR = "micro";
       VISUAL = "micro";
       MICRO_TRUECOLOR = 1;
@@ -208,6 +207,11 @@ in {
               rm -f -- "$NNN_TMPFILE" > /dev/null
           }
       }
+
+      # Create ~/.tigrc symlink if it doesn't exist
+      if [[ ! -e ~/.tigrc ]]; then
+          ln -s /etc/tig/config ~/.tigrc
+      fi
     '';
   };
 
