@@ -67,6 +67,7 @@ in {
         UserKnownHostsFile /dev/null
         IdentityFile /home/${main-user}/.ssh/angelProtection
         ForwardAgent yes
+        AddKeysToAgent yes
 
         # Reuse local ssh connections
         ControlPath /tmp/ssh/%r@%h:%p
@@ -202,6 +203,8 @@ in {
               rm -f -- "$NNN_TMPFILE" > /dev/null
           }
       }
+
+      ssh-add ~/.ssh/angelProtection &>/dev/null
     '';
   };
 

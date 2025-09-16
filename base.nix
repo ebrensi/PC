@@ -5,32 +5,27 @@
   ...
 }: {
   boot = {
-    # Use the systemd-boot EFI boot loader
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
-
-    # Latest kernel for best hardware support
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
-  # Networking
   networking = {
     networkmanager.enable = true;
-
-    # Enable firewall
     firewall = {
       enable = true;
-      allowedTCPPorts = [22]; # SSH
+      allowedTCPPorts = [22];
     };
   };
 
-  # Display and Desktop Environment
   services = {
     openssh = {
       enable = true;
-      AllowAgentForwarding = true;
+      settings = {
+        AllowAgentForwarding = true;
+      };
     };
     tailscale.enable = true;
     printing.enable = true;

@@ -32,5 +32,6 @@
   systemd.targets.hybrid-sleep.enable = false;
 
   # We have to disable this ssh agent because it conflicts with the one that Cosmic starts
-  programs.ssh.startAgent = lib.mkForce false;
+  programs.ssh.startAgent = lib.mkForce true;
+  services.gnome.gcr-ssh-agent.enable = lib.mkForce false;
 }
