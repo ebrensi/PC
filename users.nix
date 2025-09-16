@@ -56,6 +56,7 @@ in {
   systemd.tmpfiles.rules = [
     "d /tmp/ssh                 777 root root -"
     "d /home/${main-user}/dev   775 ${main-user} users -"
+    "L %h/.tigrc - - - - /etc/tig/config"
   ];
 
   programs = {
@@ -207,11 +208,6 @@ in {
               rm -f -- "$NNN_TMPFILE" > /dev/null
           }
       }
-
-      # Create ~/.tigrc symlink if it doesn't exist
-      if [[ ! -e ~/.tigrc ]]; then
-          ln -s /etc/tig/config ~/.tigrc
-      fi
     '';
   };
 
