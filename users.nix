@@ -56,7 +56,7 @@ in {
   systemd.tmpfiles.rules = [
     "d /tmp/ssh                 777 root root -"
     "d /home/${main-user}/dev   775 ${main-user} users -"
-    "L %h/.tigrc - - - - /etc/tig/config"
+    "L /home/${main-user}/.tigrc - - - - /etc/tig/config"
   ];
 
   programs = {
