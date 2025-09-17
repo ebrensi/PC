@@ -4,11 +4,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -20,7 +20,6 @@
   }: {
     packages.x86_64-linux = let
       pkgs = import nixpkgs {system = "x86_64-linux";};
-      nixos-anywhere = "${pkgs.nixos-anywhere}/bin/nixos-anywhere";
       nom = "${pkgs.nix-output-monitor}/bin/nom";
       installer-base = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -64,6 +63,7 @@
         specialArgs = {inherit (self.inputs) nixos-hardware;};
         modules = [
           self.inputs.disko.nixosModules.disko
+          self.inputs.sops-nix.nixosModules.sops
           ./base.nix
           ./desktop-cosmic.nix
           ./users.nix
@@ -84,6 +84,17 @@
           self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
           ./disko-laptop-ssd.nix
           {networking.hostName = "thinkpad";}
+        ];
+      };
+    };
+
+    # Development Shells
+    devShells.x86_64-linux = let
+      pkgs = import nixpkgs {system = "x86_64-linux";};
+    in {
+      default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          sops # for managing secrets (see https://github.com/Mic92/sops-nix)
         ];
       };
     };

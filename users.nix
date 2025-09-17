@@ -106,6 +106,7 @@ in {
         custom.wesbos.theme-cobalt2
 
         # Utilities
+        redhat.vscode-yaml
         saoudrizwan.claude-dev
         yzane.markdown-pdf
         wakatime.vscode-wakatime
