@@ -55,7 +55,8 @@
       thinkpad-offline-installer-iso = mkInstaller "thinkpad";
       adder-ws-offline-installer-iso = mkInstaller "adder-ws";
 
-      # TODO: maybe make "online" installer that only packages things not in official nix cache
+      thinkpad = self.nixosConfigurations.thinkpad.config.system.build.toplevel;
+      adder-ws = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
     };
 
     nixosConfigurations = let
