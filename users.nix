@@ -19,7 +19,7 @@ in {
       # https://search.nixos.org/packages?channel=unstable&
 
       # Development
-      micro-full
+      micro
       ghq
 
       # Additional useful applications
@@ -214,23 +214,5 @@ in {
       "https://guardian-ops-nix.s3.amazonaws.com" # Guardian nix cache
     ];
     settings.trusted-public-keys = ["guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="];
-    # distributedBuilds = true;
-    # # optional, useful when the builder has a faster internet connection than yours
-    # extraOptions = ''
-    #   builders-use-substitutes = true
-    # '';
-    # buildMachines = [
-    #   {
-    #     hostName = "AP1";
-    #     sshUser = "efrem";
-    #     protocol = "ssh-ng";
-    #     sshKey = "/home/efrem/.ssh/angelProtection.pub";
-    #     systems = ["x86_64-linux" "aarch64-linux"];
-    #     maxJobs = 3;
-    #     speedFactor = 2;
-    #     supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
-    #     # mandatoryFeatures = [];
-    #   }
-    # ];
   };
 }

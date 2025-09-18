@@ -74,6 +74,7 @@
       adder-ws = system-base.extendModules {
         modules = [
           ./adderws-config.nix
+          ./home-server.nix
           {networking.hostName = "adder-ws";}
         ];
       };
