@@ -10,6 +10,15 @@
   in [
     {
       inherit sshKey sshUser protocol;
+      hostName = "home";
+      systems = ["x86_64-linux"];
+      maxJobs = 1;
+      speedFactor = 2;
+      supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
+    }
+
+    {
+      inherit sshKey sshUser protocol;
       hostName = "AP1";
       systems = ["x86_64-linux"];
       maxJobs = 1;
@@ -34,23 +43,22 @@
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
-    StrictHostKeyChecking no
-    UserKnownHostsFile /dev/null
-    IdentityFile /home/efrem/.ssh/angelProtection
     ForwardAgent yes
-    AddKeysToAgent yes
-
-    # Reuse local ssh connections
-    ControlPath /tmp/ssh/%r@%h:%p
+    UserKnownHostsFile /dev/null
+    StrictHostKeyChecking no
+    ControlPath ~/.ssh/controlmasters/%r@%h:%p
     ControlMaster auto
-    ControlPersist 20
+    ControlPersist 20m
+    IdentityFile ~/.ssh/angelProtection
+
+    Host home
+      Hostname 100.108.117.58
 
     Host jetson
-      Hostname jetson-native.local
+        ProxyJump home
 
     Host AP1
       Hostname 100.85.51.6
-      User guardian
 
     Host vm
       Hostname 127.0.0.1

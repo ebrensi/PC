@@ -20,7 +20,6 @@ in {
 
       # Development
       micro
-      ghq
 
       # Additional useful applications
       google-chrome
@@ -60,29 +59,6 @@ in {
   ];
 
   programs = {
-    ssh = {
-      # This is what would go in ~/.ssh/config in a traditional linux distro
-      extraConfig = ''
-        StrictHostKeyChecking no
-        UserKnownHostsFile /dev/null
-        IdentityFile /home/${main-user}/.ssh/angelProtection
-        ForwardAgent yes
-        AddKeysToAgent yes
-
-        # Reuse local ssh connections
-        ControlPath /tmp/ssh/%r@%h:%p
-        ControlMaster auto
-        ControlPersist 20
-
-        Host AP1
-          Hostname 100.85.51.6
-          User guardian
-
-        Host vm
-          Hostname 127.0.0.1
-          Port 2222
-      '';
-    };
     zoom-us.enable = true;
     vscode = {
       extensions = with pkgs.vscode-extensions; let

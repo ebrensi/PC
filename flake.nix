@@ -66,7 +66,7 @@
           self.inputs.sops-nix.nixosModules.sops
           ./base.nix
           ./desktop-cosmic.nix
-          ./users.nix
+          ./user-efrem.nix
         ];
       };
     in {
@@ -84,6 +84,7 @@
         modules = [
           self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
           ./disko-laptop-ssd.nix
+          ./personal-laptop.nix
           {networking.hostName = "thinkpad";}
         ];
       };
