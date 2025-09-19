@@ -6,6 +6,8 @@
   # Cosmic desktop
   services.desktopManager.cosmic.enable = true;
   services.displayManager.cosmic-greeter.enable = true;
+  # cosmic doesn't have good bluetooth support yet, so use blueman for now
+  services.blueman.enable = true;
 
   environment.sessionVariables = {
     COSMIC_DATA_CONTROL_ENABLED = "1";

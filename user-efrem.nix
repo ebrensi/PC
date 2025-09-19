@@ -42,9 +42,6 @@ in {
   nix.settings.trusted-users = [main-user];
 
   services = {
-    # cosmic doesn't have good bluetooth support yet, so use blueman for now
-    blueman.enable = true;
-
     # Auto Login
     displayManager.autoLogin = {
       enable = true;
