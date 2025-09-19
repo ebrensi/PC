@@ -12,17 +12,6 @@
     NIXOS_OZONE_WL = "1";
   };
 
-  # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-  };
-
   boot.kernelParams = ["nvidia_drm.fbdev=1"];
 
   # prevent system from auto-sleeping

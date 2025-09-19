@@ -46,11 +46,6 @@
       pkgs.intel-media-driver # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-va-api-intel
       pkgs.vpl-gpu-rt # https://wiki.nixos.org/wiki/Intel_Graphics
     ];
-
-    bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-    };
   };
 
   services = {

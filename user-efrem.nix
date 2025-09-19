@@ -1,3 +1,4 @@
+# Configuration specific to user "efrem"
 {
   config,
   lib,
@@ -133,7 +134,7 @@ in {
       pc = "cd ${flake-path}";
       ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
       flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
-      yay = "nixos-rebuild switch --flake ${flake-path} --sudo";
+      yay = "nixos-rebuild switch --flake ${flake-path} --sudo |& nom";
     };
 
     # Environment Variables (for this user)
