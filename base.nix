@@ -185,6 +185,21 @@
       # Go
       golang.go
     ];
+
+    # This would go in /etc/ssh/ssh_config in a traditional linux distro
+    ssh.extraConfig = ''
+      # Base config for all hosts
+      Host *
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+        ForwardAgent yes
+        AddKeysToAgent yes
+
+        # Reuse local ssh connections
+        ControlPath /tmp/ssh/%r@%h:%p
+        ControlMaster auto
+        ControlPersist 20
+    '';
   };
 
   # This is so symbols in Starship prompt are rendered correctly.
@@ -213,6 +228,11 @@
       };
     };
   };
+
+  systemd.tmpfiles.rules = [
+    # Ensure the /tmp/ssh directory exists for ssh ControlPath
+    "d /tmp/ssh                 777 root root -"
+  ];
 
   # Enable sound with pipewire (not Pulse Audio).
   # https://wiki.nixos.org/wiki/PipeWire

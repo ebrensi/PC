@@ -34,17 +34,7 @@
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
-    StrictHostKeyChecking no
-    UserKnownHostsFile /dev/null
-    IdentityFile /home/efrem/.ssh/angelProtection
-    ForwardAgent yes
-    AddKeysToAgent yes
-
-    # Reuse local ssh connections
-    ControlPath /tmp/ssh/%r@%h:%p
-    ControlMaster auto
-    ControlPersist 20
-
+    # SSH config for remote home-server
     Host jetson
       Hostname jetson-native.local
 

@@ -43,14 +43,7 @@
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
-    ForwardAgent yes
-    UserKnownHostsFile /dev/null
-    StrictHostKeyChecking no
-    ControlPath ~/.ssh/controlmasters/%r@%h:%p
-    ControlMaster auto
-    ControlPersist 20m
-    IdentityFile ~/.ssh/angelProtection
-
+    # SSH config for personal laptop
     Host home
       Hostname 100.108.117.58
 

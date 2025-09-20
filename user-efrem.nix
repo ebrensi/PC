@@ -51,7 +51,6 @@ in {
 
   # Some files/folders that should exist
   systemd.tmpfiles.rules = [
-    "d /tmp/ssh                 777 root root -"
     "d /home/${main-user}/dev   775 ${main-user} users -"
     "L /home/${main-user}/.tigrc - - - - /etc/tig/config"
   ];
@@ -114,6 +113,11 @@ in {
       color.ui = "auto";
       push.autosetupremote = true;
     };
+    # This would go in /etc/ssh/ssh_config in a traditional linux distro
+    programs.ssh.extraConfig = ''
+      Host *
+        IdentityFile /home/efrem/.ssh/angelProtection
+    '';
   };
   environment = {
     etc."tig/config".text = ''
