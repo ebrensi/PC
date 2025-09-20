@@ -192,6 +192,7 @@ in {
     settings.substituters = let
       mkArgstr = args: builtins.concatStringsSep "&" (map (k: "${k}=${args.${k}}") (builtins.attrNames args));
       url-args = {
+        # see https://nix.dev/manual/nix/2.25/store/types/http-binary-cache-store
         parallel-compression = "true";
         compression = "zstd";
         compression-level = "3";
