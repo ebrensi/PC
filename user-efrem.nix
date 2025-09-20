@@ -189,8 +189,20 @@ in {
   };
 
   nix = {
-    settings.substituters = lib.mkBefore [
-      "https://guardian-ops-nix.s3.amazonaws.com" # Guardian nix cache
+    settings.substituters = let
+      mkArgstr = args: builtins.concatStringsSep "&" (map (k: "${k}=${args.${k}}") (builtins.attrNames args));
+      url-args = {
+        parallel-compression = "true";
+        compression = "zstd";
+        compression-level = "3";
+        path-info-cache-size = "131072";
+        region = "us-west-2";
+        want-mass-query = "true";
+      };
+      args = mkArgstr url-args;
+    in [
+      "https://guardian-ops-nix.s3.amazonaws.com?${args}&priority=1"
+      "https://cache.nixos.org?${args}&priority=10"
     ];
     settings.trusted-public-keys = ["guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="];
   };
