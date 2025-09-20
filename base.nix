@@ -196,7 +196,7 @@
         AddKeysToAgent yes
 
         # Reuse local ssh connections
-        ControlPath /tmp/ssh/%r@%h:%p
+        ControlPath /tmp/ssh-%r@%h:%p
         ControlMaster auto
         ControlPersist 20
     '';
@@ -228,11 +228,6 @@
       };
     };
   };
-
-  systemd.tmpfiles.rules = [
-    # Ensure the /tmp/ssh directory exists for ssh ControlPath
-    "d /tmp/ssh                 777 root root -"
-  ];
 
   # Enable sound with pipewire (not Pulse Audio).
   # https://wiki.nixos.org/wiki/PipeWire
