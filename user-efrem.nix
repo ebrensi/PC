@@ -114,7 +114,8 @@ in {
       push.autosetupremote = true;
     };
     # This would go in /etc/ssh/ssh_config in a traditional linux distro
-    programs.ssh.extraConfig = ''
+    ssh.extraConfig = ''
+      # Global SSH config for user efrem
       Host *
         IdentityFile /home/efrem/.ssh/angelProtection
     '';
