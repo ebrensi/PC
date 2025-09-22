@@ -98,7 +98,11 @@
       default = pkgs.mkShell {
         buildInputs = with pkgs; [
           sops # for managing secrets (see https://github.com/Mic92/sops-nix)
+          nix-fast-build
         ];
+        NIX_CONFIG = ''
+          warn-dirty = false  # We don't need to see this warning on every build
+        '';
       };
     };
   };
