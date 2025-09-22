@@ -3,6 +3,9 @@
   pkgs,
   ...
 }: {
+  nix.settings.extra-platforms = ["aarch64-linux"];
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+
   nix.buildMachines = let
     sshKey = "/home/efrem/.ssh/angelProtection";
     sshUser = "efrem";
