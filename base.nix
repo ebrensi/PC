@@ -109,6 +109,7 @@
     tree
     nnn
     nix-output-monitor
+    nix-fast-build
     nixos-anywhere
     tig
     nodePackages_latest.prettier
