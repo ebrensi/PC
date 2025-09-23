@@ -186,6 +186,15 @@ in {
       }
 
       ssh-add ~/.ssh/angelProtection &>/dev/null
+
+      write-zst-image () {
+        # Usage: write-zst-image image.img.zst /dev/sdX
+        image=$1
+        device=$2
+        echo "Writing $image to $device"
+        ${pkgs.zstd}/bin/zstd -d $image -c | sudo dd if=$image of=$device status=progress bs=4M conv=fsync oflag=direct && sudo eject $device && echo "Device $device ejected. You may now remove it."
+      }
+      export -f write-zst-image
     '';
   };
 
