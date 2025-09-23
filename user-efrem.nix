@@ -103,6 +103,7 @@ in {
       enable = true;
       enableBashIntegration = true;
       nix-direnv.enable = true;
+      silent = true;
     };
     git.config = {
       init.defaultBranch = "main";
