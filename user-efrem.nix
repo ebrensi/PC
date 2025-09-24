@@ -213,6 +213,7 @@ in {
         # Start a tmux named session if not already inside one
         tmux new-session -As $1
       }
+      export -f topen
     '';
   };
 
