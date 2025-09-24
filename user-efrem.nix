@@ -63,6 +63,7 @@ in {
       plugins = [
         pkgs.tmuxPlugins.cpu
         pkgs.tmuxPlugins.continuum
+        pkgs.tmuxPlugins.resurrect
       ];
       extraConfig = ''
         set -g mouse on
