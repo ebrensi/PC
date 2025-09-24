@@ -57,6 +57,19 @@ in {
 
   programs = {
     zoom-us.enable = true;
+    tmux = {
+      clock24 = true;
+      terminal = "screen-256color";
+      plugins = [
+        pkgs.tmuxPlugins.cpu
+        pkgs.tmuxPlugins.continuum
+      ];
+      extraConfig = ''
+        set -g mouse on
+        set -g status-right "#[fg=black,bg=color15] #{cpu_percentage} %H:%M"
+        run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
+      '';
+    };
     vscode = {
       extensions = with pkgs.vscode-extensions; let
         custom = pkgs.callPackage ./vscode-custom-extensions.nix {};
