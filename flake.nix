@@ -48,10 +48,6 @@
         ${apply}/bin/* $system
       '';
 
-      # TODO: generalize this to all nixosConfigurations
-      #  maybe with a loop and using `lib.attrNames self.nixosConfigurations`?
-      # Note that we can make installers without getting hardware info first,
-      #  because we have hardware (mostly) pre-configured via nixos-hardware.
       thinkpad-offline-installer-iso = mkInstaller "thinkpad";
       adder-ws-offline-installer-iso = mkInstaller "adder-ws";
 

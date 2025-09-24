@@ -195,6 +195,11 @@ in {
         ${pkgs.zstd}/bin/zstd -d $image -c | sudo dd if=$image of=$device status=progress bs=4M conv=fsync oflag=direct && sudo eject $device && echo "Device $device ejected. You may now remove it."
       }
       export -f write-zst-image
+
+      topen () {
+        # Start a tmux named session if not already inside one
+        tmux new-session -As $1
+      }
     '';
   };
 
