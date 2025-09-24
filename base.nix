@@ -144,19 +144,7 @@
     htop.enable = true;
     iotop.enable = true;
     fzf.fuzzyCompletion = true;
-    tmux = {
-      enable = true;
-      clock24 = true;
-      terminal = "screen-256color";
-      plugins = [
-        pkgs.tmuxPlugins.cpu
-      ];
-      extraConfig = ''
-        set -g mouse on
-        set -g status-right "#[fg=black,bg=color15] #{cpu_percentage} %H:%M"
-        run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
-      '';
-    };
+    tmux.enable = true;
     neovim = {
       enable = true;
       vimAlias = true;
