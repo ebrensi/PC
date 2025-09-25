@@ -199,8 +199,6 @@ in {
           }
       }
 
-      ssh-add ~/.ssh/angelProtection &>/dev/null
-
       write-zst-image () {
         # Usage: write-zst-image image.img.zst /dev/sdX
         image=$1
@@ -222,6 +220,8 @@ in {
         tmux new-session -As $1
       }
       export -f tmx
+
+      ssh-add ~/.ssh/angelProtection &>/dev/null
     '';
   };
 
