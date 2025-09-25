@@ -210,6 +210,12 @@ in {
       }
       export -f write-zst-image
 
+      title () {
+        # Set terminal title
+        echo -ne "\033]0;$1\007"
+      }
+      export -f title
+
       topen () {
         # Start a tmux named session if not already inside one
         tmux new-session -As $1
