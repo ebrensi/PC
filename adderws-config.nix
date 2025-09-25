@@ -11,8 +11,8 @@
     system76
     common-cpu-intel
     common-gpu-intel
-    # common-gpu-nvidia # (GPU Offload mode)
-    common-gpu-nvidia-sync # (GPU Sync mode)
+    common-gpu-nvidia # (GPU Offload mode)
+    # common-gpu-nvidia-sync # (GPU Sync mode)
     common-pc-ssd
     common-pc-laptop
     common-hidpi
@@ -35,7 +35,10 @@
     nvidia = {
       open = true;
       nvidiaSettings = true;
+      powerManagement.enable = true;
+      powerManagement.finegrained = true;
       prime = {
+        offload.enable = true;
         nvidiaBusId = "PCI:1:0:0";
         intelBusId = "PCI:0:2:0";
       };
