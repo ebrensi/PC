@@ -216,7 +216,8 @@ in {
       }
       export -f title
 
-      topen () {
+      tmx () {
+        title "$1"
         # Start a tmux named session if not already inside one
         tmux new-session -As $1
       }
