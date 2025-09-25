@@ -12,7 +12,7 @@
       inherit sshKey sshUser protocol;
       hostName = "home";
       systems = ["x86_64-linux" "aarch64-linux"];
-      maxJobs = 4;
+      maxJobs = 16;
       speedFactor = 2;
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     }
@@ -21,7 +21,7 @@
       inherit sshKey sshUser protocol;
       hostName = "AP1";
       systems = ["x86_64-linux" "aarch64-linux"];
-      maxJobs = 16; # This machine is pretty beefy
+      maxJobs = 32; # This machine is pretty beefy
       speedFactor = 3;
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     }
