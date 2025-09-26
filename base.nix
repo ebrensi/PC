@@ -113,6 +113,7 @@
     nixos-anywhere
     tig
     nodePackages_latest.prettier
+    nvtopPackages.full
 
     # Networking
     networkmanagerapplet
@@ -125,8 +126,6 @@
     speedtest-cli
     systemctl-tui
     jq
-
-    go
   ];
 
   # https://search.nixos.org/options?channel=unstable&query=programs
