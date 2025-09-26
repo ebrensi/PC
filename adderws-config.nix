@@ -19,7 +19,6 @@
     common-pc-laptop
     common-hidpi
     ./disko-laptop-ssd.nix # Disk formatting
-    ./adderws.hardware.nix # From hardware scan
   ];
 
   boot = {
