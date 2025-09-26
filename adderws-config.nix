@@ -4,10 +4,12 @@
   lib,
   pkgs,
   nixos-hardware,
+  modulesPath,
   ...
 }: {
   # hardware profiles from nixos-hardware
   imports = with nixos-hardware.nixosModules; [
+    "${modulesPath}/installer/scan/not-detected.nix"
     system76
     common-cpu-intel
     common-gpu-intel
@@ -20,8 +22,17 @@
     ./adderws.hardware.nix # From hardware scan
   ];
 
+  boot = {
+    initrd.availableKernelModules = ["xhci_pci" "nvme" "thunderbolt" "uas" "sd_mod" "sdhci_pci"];
+    initrd.kernelModules = [];
+    kernelModules = ["kvm-intel"];
+    extraModulePackages = [];
+  };
+  networking.useDHCP = lib.mkDefault true;
+
   hardware = {
     enableRedistributableFirmware = true;
+    cpu.intel.updateMicrocode = true;
     firmware = [pkgs.linux-firmware];
     nvidia = {
       open = true;
