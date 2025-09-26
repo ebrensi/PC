@@ -115,9 +115,6 @@
     nodePackages_latest.prettier
     nvtopPackages.full
 
-    # Networking
-    networkmanagerapplet
-
     # Utilities
     wl-clipboard-x11
     wl-clipboard-rs
