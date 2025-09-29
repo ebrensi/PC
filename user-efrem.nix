@@ -15,7 +15,7 @@ in {
   users.users.${main-user} = {
     isNormalUser = true;
     description = "Efrem Rensi";
-    extraGroups = ["networkmanager" "wheel" "audio" "video"];
+    extraGroups = ["networkmanager" "wheel" "audio" "video" "lp"];
     packages = with pkgs; [
       # https://search.nixos.org/packages?channel=unstable&
 

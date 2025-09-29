@@ -28,8 +28,18 @@
       };
     };
     tailscale.enable = true;
-    printing.enable = true;
-    printing.cups-pdf.enable = true;
+
+    printing = {
+      # see https://wiki.nixos.org/wiki/Printing
+      enable = true;
+      cups-pdf.enable = true;
+      browsing = true;
+      drivers = [
+        pkgs.cups-filters
+        pkgs.cups-browsed
+      ];
+    };
+
     fwupd.enable = true;
 
     # See https://discourse.nixos.org/t/timezones-how-to-setup-on-a-laptop/33853/7
