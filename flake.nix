@@ -64,13 +64,14 @@
           ./base.nix
           ./desktop-cosmic.nix
           ./user-efrem.nix
+          ./disko-laptop-ssd.nix
         ];
       };
     in {
       # System76 Adder WS (Laptop WorkStation)
       adder-ws = system-base.extendModules {
         modules = [
-          ./adderws-config.nix
+          ./machines/system76-adderws.nix
           ./home-server.nix
           {networking.hostName = "adder-ws";}
         ];
@@ -80,7 +81,6 @@
       thinkpad = system-base.extendModules {
         modules = [
           self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
-          ./disko-laptop-ssd.nix
           ./personal-laptop.nix
           {networking.hostName = "thinkpad";}
         ];

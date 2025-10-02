@@ -18,7 +18,6 @@
     common-pc-ssd
     common-pc-laptop
     common-hidpi
-    ./disko-laptop-ssd.nix # Disk formatting
   ];
 
   boot = {
