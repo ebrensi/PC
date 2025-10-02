@@ -212,7 +212,7 @@ in {
         # Usage: write-zst-image image.img.zst /dev/sdX
         zippedImage=$1
         device=$2
-        ${pkgs.zstd}/bin/zstd -d $zippedImage -c | write-image - $device"
+        ${pkgs.zstd}/bin/zstd -d $zippedImage -c | write-image - $device
       }
       export -f write-zst-image
 
