@@ -199,12 +199,20 @@ in {
           }
       }
 
-      write-zst-image () {
-        # Usage: write-zst-image image.img.zst /dev/sdX
+      write-image () {
+        # Usage: write-image image.img /dev/sdX
         image=$1
         device=$2
         echo "Writing $image to $device"
-        ${pkgs.zstd}/bin/zstd -d $image -c | sudo dd if=$image of=$device status=progress bs=4M conv=fsync oflag=direct && sudo eject $device && echo "Device $device ejected. You may now remove it."
+        sudo dd if=$image of=$device status=progress bs=4M conv=fsync oflag=direct && sudo eject $device && echo "Device $device ejected. You may now remove it."
+      }
+      export -f write-image
+
+      write-zst-image () {
+        # Usage: write-zst-image image.img.zst /dev/sdX
+        zippedImage=$1
+        device=$2
+        ${pkgs.zstd}/bin/zstd -d $zippedImage -c | write-image - $device"
       }
       export -f write-zst-image
 
@@ -215,8 +223,8 @@ in {
       export -f title
 
       tmx () {
+        # Start a tmux named session if not already inside one and set the terminal title
         title "$1"
-        # Start a tmux named session if not already inside one
         tmux new-session -As $1
       }
       export -f tmx
