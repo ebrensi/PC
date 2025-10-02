@@ -87,7 +87,6 @@
       };
 
       mac-mini = system-base.extendModules {
-        system = "aarch64-linux";
         specialArgs = {inherit (self.inputs) nixos-apple-silicon;};
         modules = [
           ./machines/m1-mac-mini.nix

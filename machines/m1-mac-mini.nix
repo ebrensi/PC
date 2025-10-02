@@ -10,14 +10,12 @@
   ];
 
   nixpkgs.config = {
-    allowUnsupportedSystem = true;
+    # allowUnsupportedSystem = true;
+    hostPlatform = "aarch64-linux";
+    buildPlatform = "aarch64-linux";
   };
 
-  hardware.asahi = {
-    withRust = true;
-    # useExperimentalGPUDriver = true;
-    # experimentalGPUInstallMode = "replace";
-  };
+  hardware.asahi.enable = true;
 
   environment.sessionVariables = rec {
     # COGL_DEBUG = "sync-frame";
@@ -27,4 +25,13 @@
   boot.extraModprobeConfig = ''
     # options hid_apple swap_fn_leftctrl=1
   '';
+
+  nix.settings = {
+    extra-substituters = [
+      "https://nixos-apple-silicon.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20="
+    ];
+  };
 }
