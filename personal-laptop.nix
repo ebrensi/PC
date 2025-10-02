@@ -44,17 +44,20 @@
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
     # SSH config for personal laptop
+    Host vm
+      Hostname 127.0.0.1
+      Port 2222
+
     Host home
       Hostname 100.108.117.58
 
     Host jetson
         ProxyJump home
 
+    Host m1
+      ProxyJump home
+
     Host AP1
       Hostname 100.85.51.6
-
-    Host vm
-      Hostname 127.0.0.1
-      Port 2222
   '';
 }
