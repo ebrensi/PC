@@ -9,13 +9,13 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-apple-silicon.url = "github:tpwrules/nixos-apple-silicon";
   };
 
   outputs = {
     self,
     nixpkgs,
     nixpkgs-stable,
-    nixos-hardware,
     ...
   }: {
     packages.x86_64-linux = let
@@ -83,6 +83,15 @@
           self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
           ./personal-laptop.nix
           {networking.hostName = "thinkpad";}
+        ];
+      };
+
+      mac-mini = system-base.extendModules {
+        system = "aarch64-linux";
+        specialArgs = {inherit (self.inputs) nixos-apple-silicon;};
+        modules = [
+          ./machines/m1-mac-mini.nix
+          {networking.hostName = "mac-mini";}
         ];
       };
     };
