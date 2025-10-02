@@ -14,7 +14,6 @@
 
     Host AP1
       Hostname 100.85.51.6
-      User guardian
 
     Host vm
       Hostname 127.0.0.1
