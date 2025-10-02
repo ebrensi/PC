@@ -26,7 +26,7 @@
       Hostname 192.168.1.91
 
     Host m1
-      Hostname 192.168.1.16
+      Hostname 192.168.1.162
   '';
 
   nix.buildMachines = let
