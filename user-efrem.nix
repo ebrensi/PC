@@ -154,6 +154,7 @@ in {
       ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
       flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
       yay = "nixos-rebuild switch --flake ${flake-path} --sudo |& nom";
+      N = "sudo -E nnn -dH";
     };
 
     # Environment Variables (for this user)
@@ -164,7 +165,7 @@ in {
       NNN_TRASH = 1; # trash (needs trash-cli) instead of delete
       NNN_OPEN = "micro";
       NNN_GUI = 0;
-      NNN_OPTS = "EAoau";
+      NNN_OPTS = "EAoaux";
     };
 
     # This runs when a new shell is started (for this user)
