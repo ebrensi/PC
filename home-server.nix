@@ -56,14 +56,14 @@
       inherit sshKey sshUser protocol supportedFeatures;
       hostName = "t1";
       system = "x86_64-linux";
-      maxJobs = 1;
+      maxJobs = 2;
       speedFactor = 1;
     }
     {
       inherit sshKey sshUser protocol supportedFeatures;
       hostName = "t2";
       system = "x86_64-linux";
-      maxJobs = 1;
+      maxJobs = 2;
       speedFactor = 1;
     }
 
