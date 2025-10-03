@@ -14,12 +14,6 @@
       "ipv4.route-metric" = 0;
       "ipv6.route-metric" = 0;
     };
-
-    connection-ethernet = {
-      match-device = "type:ethernet";
-      "ipv4.route-metric" = 500;
-      "ipv6.route-metric" = 500;
-    };
   };
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
@@ -54,12 +48,31 @@
     {
       inherit sshKey sshUser protocol supportedFeatures;
       hostName = "AP1";
-      systems = [
-        "x86_64-linux"
-        # "aarch64-linux"
-      ];
+      system = "x86_64-linux";
       maxJobs = 32;
       speedFactor = 4;
+    }
+    {
+      inherit sshKey sshUser protocol supportedFeatures;
+      hostName = "t1";
+      system = "x86_64-linux";
+      maxJobs = 1;
+      speedFactor = 1;
+    }
+    {
+      inherit sshKey sshUser protocol supportedFeatures;
+      hostName = "t2";
+      system = "x86_64-linux";
+      maxJobs = 1;
+      speedFactor = 1;
+    }
+
+    {
+      inherit sshKey sshUser protocol supportedFeatures;
+      hostName = "AP1";
+      system = "aarch64-linux";
+      maxJobs = 4;
+      speedFactor = 1;
     }
 
     {
@@ -69,22 +82,6 @@
       maxJobs = 8;
       speedFactor = 4;
     }
-
-    # {
-    #   inherit sshKey sshUser protocol supportedFeatures;
-    #   hostName = "t1";
-    #   systems = ["x86_64-linux"];
-    #   maxJobs = 8;
-    #   speedFactor = 1;
-    # }
-
-    # {
-    #   inherit sshKey sshUser protocol supportedFeatures;
-    #   hostName = "t2";
-    #   systems = ["x86_64-linux"];
-    #   maxJobs = 1;
-    #   speedFactor = 1;
-    # }
   ];
   nix.distributedBuilds = true;
   # optional, useful when the builder has a faster internet connection than yours
