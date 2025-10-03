@@ -40,7 +40,7 @@
       hostName = "AP1";
       systems = [
         "x86_64-linux"
-        "aarch64-linux"
+        # "aarch64-linux"
       ];
       maxJobs = 32;
       speedFactor = 4;

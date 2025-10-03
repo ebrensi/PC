@@ -25,7 +25,7 @@
       hostName = "AP1";
       systems = [
         "x86_64-linux"
-        "aarch64-linux" # emulated, slow
+        # "aarch64-linux" # emulated, slow
       ];
       maxJobs = 32; # This machine is pretty beefy
       speedFactor = 3;
