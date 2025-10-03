@@ -27,8 +27,8 @@
       enable = true;
       settings = {
         AllowAgentForwarding = true;
-        AllowTcpForwarding = true;
-        AllowStreamLocalForwarding = true;
+        # AllowTcpForwarding = true;
+        # AllowStreamLocalForwarding = true;
       };
     };
     tailscale.enable = true;

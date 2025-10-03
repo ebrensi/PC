@@ -29,14 +29,20 @@
       Hostname 127.0.0.1
       Port 2222
 
-    Host t1
-      Hostname 192.168.1.95
+    # Host t1
+    #   # Hostname 192.168.1.95
+    #   Hostname t1.local
 
-    Host t2
-      Hostname 192.168.1.91
+    # Host t2
+    #   # Hostname 192.168.1.91
+    #   Hostname t2.local
 
-    Host m1
-      Hostname 192.168.1.162
+    # Host m1
+    #   # Hostname 192.168.1.162
+    #   Hostname m1.local
+
+    Hostname t1 t2 m1
+      Hostname %h.local
   '';
 
   nix.buildMachines = let
