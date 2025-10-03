@@ -54,6 +54,7 @@
 
       thinkpad = self.nixosConfigurations.thinkpad.config.system.build.toplevel;
       adder-ws = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
+      m1 = self.nixosConfigurations.m1.config.system.build.toplevel;
     };
 
     nixosConfigurations = let
