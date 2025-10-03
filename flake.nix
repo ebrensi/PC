@@ -7,6 +7,7 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-apple-silicon.url = "github:nix-community/nixos-apple-silicon";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -83,6 +84,16 @@
           self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
           ./personal-laptop.nix
           {networking.hostName = "thinkpad";}
+        ];
+      };
+
+      m1 = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          self.inputs.nixos-apple-silicon.nixosModules.apple-silicon-support
+          ./machines/mac-mini-m1.nix
+          ./builder.nix
+          {networking.hostName = "m1";}
         ];
       };
     };

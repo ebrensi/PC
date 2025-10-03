@@ -3,8 +3,8 @@
   pkgs,
   ...
 }: {
-  # nix.settings.extra-platforms = ["aarch64-linux"];
-  # boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  nix.settings.extra-platforms = ["aarch64-linux"];
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
   networking.networkmanager.settings = {
     # Prefer wifi over wired ethernet when both are available
@@ -71,7 +71,7 @@
       inherit sshKey sshUser protocol supportedFeatures;
       hostName = "AP1";
       system = "aarch64-linux";
-      maxJobs = 4;
+      maxJobs = 8;
       speedFactor = 1;
     }
 
