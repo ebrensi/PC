@@ -41,48 +41,48 @@
 
   nix.buildMachines = let
     sshKey = "/home/efrem/.ssh/angelProtection";
-    sshUser = "efrem";
-    protocol = "ssh-ng";
-    supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
-  in [
-    {
-      inherit sshKey sshUser protocol supportedFeatures;
-      hostName = "AP1";
-      system = "x86_64-linux";
-      maxJobs = 32;
-      speedFactor = 4;
-    }
-    {
-      inherit sshKey sshUser protocol supportedFeatures;
-      hostName = "t1";
-      system = "x86_64-linux";
-      maxJobs = 2;
-      speedFactor = 1;
-    }
-    {
-      inherit sshKey sshUser protocol supportedFeatures;
-      hostName = "t2";
-      system = "x86_64-linux";
-      maxJobs = 2;
-      speedFactor = 1;
-    }
+    base = {
+      sshUser = "efrem";
+      protocol = "ssh-ng";
+      supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
+    };
+    machines = [
+      {
+        hostName = "AP1";
+        system = "x86_64-linux";
+        maxJobs = 32;
+        speedFactor = 4;
+      }
+      {
+        hostName = "t1";
+        system = "x86_64-linux";
+        maxJobs = 2;
+        speedFactor = 1;
+      }
+      {
+        hostName = "t2";
+        system = "x86_64-linux";
+        maxJobs = 2;
+        speedFactor = 1;
+      }
 
-    {
-      inherit sshKey sshUser protocol supportedFeatures;
-      hostName = "AP1";
-      system = "aarch64-linux";
-      maxJobs = 8;
-      speedFactor = 1;
-    }
+      {
+        hostName = "AP1";
+        system = "aarch64-linux";
+        maxJobs = 8;
+        speedFactor = 1;
+      }
 
-    {
-      inherit sshKey sshUser protocol supportedFeatures;
-      hostName = "m1";
-      system = "aarch64-linux";
-      maxJobs = 8;
-      speedFactor = 4;
-    }
-  ];
+      {
+        hostName = "m1";
+        system = "aarch64-linux";
+        maxJobs = 8;
+        speedFactor = 4;
+      }
+    ];
+  in
+    map (m: m // base) machines;
+
   nix.distributedBuilds = true;
   # optional, useful when the builder has a faster internet connection than yours
   nix.extraOptions = ''

@@ -7,9 +7,10 @@
     sshKey = "/home/efrem/.ssh/angelProtection";
     sshUser = "efrem";
     protocol = "ssh-ng";
+    supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
   in [
     {
-      inherit sshKey sshUser protocol;
+      inherit sshKey sshUser protocol supportedFeatures;
       hostName = "home";
       systems = [
         "x86_64-linux"
@@ -17,11 +18,10 @@
       ];
       maxJobs = 16;
       speedFactor = 2;
-      supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     }
 
     {
-      inherit sshKey sshUser protocol;
+      inherit sshKey sshUser protocol supportedFeatures;
       hostName = "AP1";
       systems = [
         "x86_64-linux"
@@ -29,16 +29,14 @@
       ];
       maxJobs = 32; # This machine is pretty beefy
       speedFactor = 3;
-      supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     }
 
     {
-      inherit sshKey sshUser protocol;
+      inherit sshKey sshUser protocol supportedFeatures;
       hostName = "m1";
       systems = "aarch64-linux";
       maxJobs = 8;
       speedFactor = 4;
-      supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     }
   ];
   nix.distributedBuilds = true;
