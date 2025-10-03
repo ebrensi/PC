@@ -3,8 +3,8 @@
   pkgs,
   ...
 }: {
-  nix.settings.extra-platforms = ["aarch64-linux"];
-  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  # nix.settings.extra-platforms = ["aarch64-linux"];
+  # boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
@@ -38,17 +38,20 @@
     {
       inherit sshKey sshUser protocol supportedFeatures;
       hostName = "AP1";
-      systems = ["x86_64-linux" "aarch64-linux"];
+      systems = [
+        "x86_64-linux"
+        # "aarch64-linux"
+      ];
       maxJobs = 32;
-      speedFactor = 3;
+      speedFactor = 4;
     }
 
     {
       inherit sshKey sshUser protocol supportedFeatures;
-      hostName = "jetson";
-      systems = ["aarch64-linux"];
-      maxJobs = 1;
-      speedFactor = 1;
+      hostName = "m1";
+      system = "aarch64-linux";
+      maxJobs = 8;
+      speedFactor = 4;
     }
 
     # {

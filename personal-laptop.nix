@@ -11,7 +11,10 @@
     {
       inherit sshKey sshUser protocol;
       hostName = "home";
-      systems = ["x86_64-linux" "aarch64-linux"];
+      systems = [
+        "x86_64-linux"
+        # "aarch64-linux" # emulated, slow
+      ];
       maxJobs = 16;
       speedFactor = 2;
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
@@ -20,7 +23,10 @@
     {
       inherit sshKey sshUser protocol;
       hostName = "AP1";
-      systems = ["x86_64-linux" "aarch64-linux"];
+      systems = [
+        "x86_64-linux"
+        # "aarch64-linux"  # emulated, slow
+      ];
       maxJobs = 32; # This machine is pretty beefy
       speedFactor = 3;
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
@@ -28,10 +34,10 @@
 
     {
       inherit sshKey sshUser protocol;
-      hostName = "jetson";
-      systems = ["aarch64-linux"];
-      maxJobs = 1;
-      speedFactor = 1;
+      hostName = "m1";
+      systems = "aarch64-linux";
+      maxJobs = 8;
+      speedFactor = 4;
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     }
   ];
