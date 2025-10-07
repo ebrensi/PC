@@ -9,7 +9,7 @@
     userControlled.enable = true;
     networks.CiscoKid = {
       ssid = "CiscoKid";
-      psk = "8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55";
+      pskRaw = "8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55";
     };
   };
   networking.networkmanager = {
