@@ -8,7 +8,7 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-apple-silicon.url = "github:nix-community/nixos-apple-silicon";
-    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.url = "github:Mic92/sops-nix"; #TODO: either get rid of this or make it work
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -19,44 +19,6 @@
     nixos-hardware,
     ...
   }: {
-    packages.x86_64-linux = let
-      pkgs = import nixpkgs {system = "x86_64-linux";};
-      nom = "${pkgs.nix-output-monitor}/bin/nom";
-      installer-base = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = ["${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"];
-      };
-      mkInstaller = hostname:
-        (installer-base.extendModules {
-          modules = [./install-script.nix];
-          specialArgs = {systemToInstall = self.nixosConfigurations.${hostname};};
-        }).config.system.build.isoImage;
-    in rec {
-      apply = pkgs.writeShellScriptBin "apply" ''
-        # Apply a system configuration (toplelevel) path to the current system.
-        # This is like `nixos-rebuild switch` but for an arbitrary path to a
-        #  nixosSystem toplevel.
-
-        storePath=$(realpath $1)
-        sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
-        sudo $storePath/bin/switch-to-configuration switch
-      '';
-      default = pkgs.writeShellScriptBin "default" ''
-        # Build and apply the default system configuration of this flake.
-        # This is like `nixos-rebuild switch` but for the default system of this flake.
-        hostname=$(hostname)
-        system=$(${nom} build ".#nixosConfigurations.$hostname.config.system.build.toplevel" --print-out-paths --no-link)
-        ${apply}/bin/* $system
-      '';
-
-      thinkpad-offline-installer-iso = mkInstaller "thinkpad";
-      adder-ws-offline-installer-iso = mkInstaller "adder-ws";
-
-      thinkpad = self.nixosConfigurations.thinkpad.config.system.build.toplevel;
-      adder-ws = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
-      m1 = self.nixosConfigurations.m1.config.system.build.toplevel;
-    };
-
     nixosConfigurations = let
       system-base = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit (self.inputs) nixos-hardware;};
@@ -88,6 +50,7 @@
         ];
       };
 
+      # Apple Mac Mini M1 configured as aarch64 builder
       m1 = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
@@ -97,6 +60,67 @@
           {networking.hostName = "m1";}
         ];
       };
+    };
+
+    packages.x86_64-linux = let
+      pkgs = import nixpkgs {system = "x86_64-linux";};
+      nom = "${pkgs.nix-output-monitor}/bin/nom";
+      installer-base = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = ["${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"];
+      };
+      mkInstaller = hostname:
+        (installer-base.extendModules {
+          modules = [./install-script.nix];
+          specialArgs = {systemToInstall = self.nixosConfigurations.${hostname};};
+        }).config.system.build.isoImage;
+    in rec {
+      install-direct = pkgs.writeShellScriptBin "install-direct" ''
+        # Usage: install-direct <flakePath> <host:port>
+
+        flakePath=$1
+        hostAndPort=$2
+        IFS=':' read -r host port <<< "$hostAndPort"
+        [ -n "$port" ] && PORT_OPT="-p $port"
+
+        systemPath=$(${nom} build $flakePath.config.system.build.toplevel --no-link --print-out-paths) || {
+          echo "Failed to build system closure"
+          exit 1
+        }
+        diskoScript=$(nix build $flakePath.config.system.build.diskoScript --no-link --print-out-paths) || {
+          echo "Failed to build disko script"
+          exit 1
+        }
+        echo "Installing $flakePath on $hostAndPort"
+        ${pkgs.nixos-anywhere}/bin/nixos-anywhere  \
+            --no-substitute-on-destination \
+            --build-on local \
+            --store-paths $diskoScript $systemPath \
+            --target-host $host $PORT_OPT
+      '';
+      apply = pkgs.writeShellScriptBin "apply" ''
+        # Apply a system configuration (toplelevel) path to the current system.
+        # This is like `nixos-rebuild switch` but for an arbitrary path to a
+        #  nixosSystem toplevel.
+
+        storePath=$(realpath $1)
+        sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
+        sudo $storePath/bin/switch-to-configuration switch
+      '';
+      default = pkgs.writeShellScriptBin "default" ''
+        # Build and apply the default system configuration of this flake.
+        # This is like `nixos-rebuild switch` but for the default system of this flake.
+        hostname=$(hostname)
+        system=$(${nom} build ".#nixosConfigurations.$hostname.config.system.build.toplevel" --print-out-paths --no-link)
+        ${apply}/bin/* $system
+      '';
+
+      thinkpad-offline-installer-iso = mkInstaller "thinkpad";
+      adder-ws-offline-installer-iso = mkInstaller "adder-ws";
+
+      thinkpad = self.nixosConfigurations.thinkpad.config.system.build.toplevel;
+      adder-ws = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
+      m1 = self.nixosConfigurations.m1.config.system.build.toplevel;
     };
 
     # Development Shells
