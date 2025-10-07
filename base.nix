@@ -148,7 +148,7 @@
     firefox.enable = true;
     xwayland.enable = true;
     wavemon.enable = true;
-    usbtop.enable = true;
+    # usbtop.enable = true;  # not building
     htop.enable = true;
     iotop.enable = true;
     fzf.fuzzyCompletion = true;
