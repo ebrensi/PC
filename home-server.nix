@@ -6,6 +6,16 @@
   nix.settings.extra-platforms = ["aarch64-linux"];
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
+  networking.networkmanager.settings = {
+    # Prefer wifi over wired ethernet when both are available
+    # since wired connection is a relatively slow Powerline connection
+    connection-wifi = {
+      match-device = "type:wifi";
+      "ipv4.route-metric" = 0;
+      "ipv6.route-metric" = 0;
+    };
+  };
+
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
     # SSH config for remote home-server

@@ -29,7 +29,6 @@
           ./desktop-cosmic.nix
           ./user-efrem.nix
           ./disko-laptop-ssd.nix
-          ./home-wifi.nix
         ];
       };
     in {
