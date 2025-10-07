@@ -64,7 +64,7 @@
     nix-output-monitor
     fastfetch
     micro
-    speedtest-rs
+    speedtest-cli
   ];
 
   programs = {
