@@ -74,6 +74,7 @@
           modules = [./install-script.nix];
           specialArgs = {systemToInstall = self.nixosConfigurations.${hostname};};
         }).config.system.build.isoImage;
+      sshOpts = "-A -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ConnectionAttempts=5 -o ConnectTimeout=3";
     in rec {
       install-direct = pkgs.writeShellScriptBin "install-direct" ''
         # Usage: install-direct <flakePath> <host:port>
@@ -98,6 +99,46 @@
             --store-paths $diskoScript $systemPath \
             --target-host $host $PORT_OPT
       '';
+
+      copy-to = pkgs.writeShellScriptBin "copy-to" ''
+        # Copy a nix store path directly to a remote machine via ssh
+        # usage: copy-to <host:port> <path>
+
+        targetHost=$1
+        storePath=$2
+        echo "Copying $storePath closure to $host..." >&2
+        sshOpts="${sshOpts}"
+
+        NIX_SSHOPTS="$sshOpts" nix copy  \
+          --no-check-sigs \
+          --no-update-lock-file \
+          --to ssh-ng://"$targetHost"\
+          "$storePath"
+
+        # NIX_SSHOPTS="$sshOpts" nix-copy-closure -s --gzip --to "$targetHost" "$storePath"
+        echo "Done Copying."
+      '';
+      deploy-direct = pkgs.writeShellScriptBin "deploy-direct" ''
+        # Build toplevel of an arbitrary flake path locally, copy the closure it directly to a remote machine,
+        #  and activate it there. Use this script to update the NixOS system already running on a remote machine,
+        #  without using the remote cache.
+        # Usage: deploy-direct <flakePath> <host:port>
+
+        flakePath=$1
+        targetHost=$2
+        systemPath=$(${pkgs.nixos-output-monitor}/bin/nom $flakePath.config.system.build.toplevel) || {
+          echo "Failed to build system closure"
+          exit 1
+        }
+        ${copy-to}/bin/* $targetHost $systemPath || {
+          echo "Failed to copy system closure to remote machine"
+          exit 1
+        }
+        ssh $sshOpts $targetHost "sudo nix-env -p /nix/var/nix/profiles/system --set $systemPath && sudo $systemPath/bin/switch-to-configuration switch" || {
+          echo "Failed to activate new configuration on remote machine"
+          exit 1
+        }
+      '';
       apply = pkgs.writeShellScriptBin "apply" ''
         # Apply a system configuration (toplelevel) path to the current system.
         # This is like `nixos-rebuild switch` but for an arbitrary path to a
@@ -106,13 +147,6 @@
         storePath=$(realpath $1)
         sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
         sudo $storePath/bin/switch-to-configuration switch
-      '';
-      default = pkgs.writeShellScriptBin "default" ''
-        # Build and apply the default system configuration of this flake.
-        # This is like `nixos-rebuild switch` but for the default system of this flake.
-        hostname=$(hostname)
-        system=$(${nom} build ".#nixosConfigurations.$hostname.config.system.build.toplevel" --print-out-paths --no-link)
-        ${apply}/bin/* $system
       '';
 
       thinkpad-offline-installer-iso = mkInstaller "thinkpad";
