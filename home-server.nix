@@ -38,50 +38,24 @@
   '';
 
   nix.buildMachines = let
-    mkBuilder = args: {
-      inherit (args) hostName system maxJobs speedFactor;
+    mkBuilder = hostName: system: maxJobs: speedFactor: {
+      inherit hostName system maxJobs speedFactor;
       sshKey = "/home/efrem/.ssh/angelProtection";
       sshUser = "efrem";
       protocol = "ssh-ng";
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      {
-        hostName = "AP1";
-        system = "x86_64-linux";
-        maxJobs = 32;
-        speedFactor = 4;
-      }
-      {
-        hostName = "t1";
-        system = "x86_64-linux";
-        maxJobs = 2;
-        speedFactor = 1;
-      }
-      {
-        hostName = "t2";
-        system = "x86_64-linux";
-        maxJobs = 2;
-        speedFactor = 1;
-      }
-      {
-        hostName = "AP1";
-        system = "aarch64-linux";
-        maxJobs = 8;
-        speedFactor = 1;
-      }
-      {
-        hostName = "m1";
-        system = "aarch64-linux";
-        maxJobs = 8;
-        speedFactor = 4;
-      }
+      ["AP1" "x86_64-linux" 32 4]
+      ["t1" "x86_64-linux" 2 1]
+      ["t2" "x86_64-linux" 2 1]
+      ["AP1" "aarch64-linux" 8 1]
+      ["m1" "aarch64-linux" 8 4]
     ];
   in
-    map mkBuilder machines;
+    map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
 
   nix.distributedBuilds = true;
-  # optional, useful when the builder has a faster internet connection than yours
   nix.extraOptions = ''
     builders-use-substitutes = true
   '';

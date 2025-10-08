@@ -3,48 +3,6 @@
   pkgs,
   ...
 }: {
-  nix.buildMachines = let
-    sshKey = "/home/efrem/.ssh/angelProtection";
-    sshUser = "efrem";
-    protocol = "ssh-ng";
-    supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
-  in [
-    {
-      inherit sshKey sshUser protocol supportedFeatures;
-      hostName = "home";
-      systems = [
-        "x86_64-linux"
-        # "aarch64-linux" # emulated, slow
-      ];
-      maxJobs = 16;
-      speedFactor = 2;
-    }
-
-    {
-      inherit sshKey sshUser protocol supportedFeatures;
-      hostName = "AP1";
-      systems = [
-        "x86_64-linux"
-        # "aarch64-linux" # emulated, slow
-      ];
-      maxJobs = 32; # This machine is pretty beefy
-      speedFactor = 3;
-    }
-
-    {
-      inherit sshKey sshUser protocol supportedFeatures;
-      hostName = "m1";
-      systems = "aarch64-linux";
-      maxJobs = 8;
-      speedFactor = 4;
-    }
-  ];
-  nix.distributedBuilds = true;
-  # optional, useful when the builder has a faster internet connection than yours
-  nix.extraOptions = ''
-    builders-use-substitutes = true
-  '';
-
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
     # SSH config for personal laptop
@@ -55,13 +13,37 @@
     Host home
       Hostname 100.108.117.58
 
-    Host jetson
+    Host t1 t2 m1
         ProxyJump home
-
-    Host m1
-      ProxyJump home
 
     Host AP1
       Hostname 100.85.51.6
+  '';
+
+  nix.settings.extra-platforms = ["aarch64-linux"];
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+
+  nix.buildMachines = let
+    mkBuilder = hostName: system: maxJobs: speedFactor: {
+      inherit hostName system maxJobs speedFactor;
+      sshKey = "/home/efrem/.ssh/angelProtection";
+      sshUser = "efrem";
+      protocol = "ssh-ng";
+      supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
+    };
+    machines = [
+      ["AP1" "x86_64-linux" 32 8]
+      ["home" "x86_64-linux" 16 4]
+      ["t1" "x86_64-linux" 2 1]
+      ["t2" "x86_64-linux" 2 1]
+      ["AP1" "aarch64-linux" 8 1]
+      ["m1" "aarch64-linux" 8 4]
+    ];
+  in
+    map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
+
+  nix.distributedBuilds = true;
+  nix.extraOptions = ''
+    builders-use-substitutes = true
   '';
 }
