@@ -19,8 +19,6 @@
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
     # SSH config for remote home-server
-    Host jetson
-      Hostname jetson-native.local
 
     Host AP1
       Hostname 100.85.51.6
@@ -40,8 +38,9 @@
   '';
 
   nix.buildMachines = let
-    sshKey = "/home/efrem/.ssh/angelProtection";
-    base = {
+    mkBuilder = args: {
+      inherit (args) hostName system maxJobs speedFactor;
+      sshKey = "/home/efrem/.ssh/angelProtection";
       sshUser = "efrem";
       protocol = "ssh-ng";
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
@@ -65,14 +64,12 @@
         maxJobs = 2;
         speedFactor = 1;
       }
-
       {
         hostName = "AP1";
         system = "aarch64-linux";
         maxJobs = 8;
         speedFactor = 1;
       }
-
       {
         hostName = "m1";
         system = "aarch64-linux";
@@ -81,7 +78,7 @@
       }
     ];
   in
-    map (m: m // base) machines;
+    map mkBuilder machines;
 
   nix.distributedBuilds = true;
   # optional, useful when the builder has a faster internet connection than yours

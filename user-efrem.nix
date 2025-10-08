@@ -24,14 +24,15 @@ in {
 
       # Additional useful applications
       google-chrome
-      libreoffice
       claude-code
 
       # Media
       vlc
+      pinta # simple image editor
       ffmpeg
-      gimp
-      shotcut
+      # gimp
+      # shotcut
+      # libreoffice-fresh
     ];
     initialPassword = "password";
     openssh.authorizedKeys.keys = [
