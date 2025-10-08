@@ -21,6 +21,7 @@
       enable = true;
       allowedTCPPorts = [22];
     };
+    timeServers = options.networking.timeServers.default ++ ["time.aws.com"];
   };
 
   services = {
@@ -48,7 +49,6 @@
     # See https://discourse.nixos.org/t/timezones-how-to-setup-on-a-laptop/33853/7
     automatic-timezoned.enable = true;
     geoclue2.geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
-    networking.timeServers = options.networking.timeServers.default ++ ["time.aws.com"];
 
     avahi = {
       enable = true;
