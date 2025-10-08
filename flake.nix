@@ -126,7 +126,7 @@
 
         flakePath=$1
         targetHost=$2
-        systemPath=$(${pkgs.nix-output-monitor}/bin/nom $flakePath.config.system.build.toplevel) || {
+        systemPath=$(${pkgs.nix-output-monitor}/bin/nom build $flakePath.config.system.build.toplevel) || {
           echo "Failed to build system closure"
           exit 1
         }
