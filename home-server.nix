@@ -49,8 +49,9 @@
       ["AP1" "x86_64-linux" 32 4]
       ["t1" "x86_64-linux" 2 1]
       ["t2" "x86_64-linux" 2 1]
-      ["AP1" "aarch64-linux" 8 1]
+      #
       ["m1" "aarch64-linux" 8 4]
+      ["AP1" "aarch64-linux" 8 1]
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
