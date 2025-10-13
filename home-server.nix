@@ -35,6 +35,9 @@
 
     Host m1
       Hostname 192.168.1.162
+
+    Host jetson
+      Hostname 192.168.1.156
   '';
 
   nix.buildMachines = let
@@ -46,12 +49,12 @@
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      ["t1" "x86_64-linux" 4 2]
-      ["t2" "x86_64-linux" 4 2]
+      ["t1" "x86_64-linux" 1 2]
+      ["t2" "x86_64-linux" 1 2]
       #
       ["m1" "aarch64-linux" 8 4]
-      ["t1" "aarch64-linux" 4 2]
-      ["t2" "aarch64-linux" 4 2]
+      # ["t1" "aarch64-linux" 1 2]
+      # ["t2" "aarch64-linux" 1 2]
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
