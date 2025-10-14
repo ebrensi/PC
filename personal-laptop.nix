@@ -29,6 +29,9 @@
   nix.settings.substituters = [
     "ssh-ng://efrem@home"
   ];
+  nix.settingss.trusted-public-keys = [
+    "home-cache:J+HKp0Hm3fkc1jK8ovnt5bPbRuH7Coq3d+Ukxx/pW2w="
+  ];
   nix.buildMachines = let
     mkBuilder = hostName: system: maxJobs: speedFactor: {
       inherit hostName system maxJobs speedFactor;

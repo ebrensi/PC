@@ -4,7 +4,7 @@
   modulesPath,
   ...
 }: {
-  imports = with nixos-hardware.nixosModules; [
+  imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
   ];
   nix.settings.extra-platforms = ["aarch64-linux"];
@@ -67,4 +67,11 @@
   nix.extraOptions = ''
     builders-use-substitutes = true
   '';
+
+  age.secrets.home-nix-cache = {
+    file = ./secrets/home-nix-cache.age;
+    mode = "600";
+    owner = "efrem";
+  };
+  nix.settings.secret-key-files = [config.age.secrets.home-nix-cache.path];
 }
