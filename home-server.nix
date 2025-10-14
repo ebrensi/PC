@@ -68,10 +68,6 @@
     builders-use-substitutes = true
   '';
 
-  age.secrets.home-nix-cache = {
-    file = ./secrets/home-nix-cache.age;
-    mode = "600";
-    owner = "efrem";
-  };
+  age.secrets.home-nix-cache.file = ./secrets/home-nix-cache.age;
   nix.settings.secret-key-files = [config.age.secrets.home-nix-cache.path];
 }
