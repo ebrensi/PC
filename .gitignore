@@ -1,5 +1,5 @@
 result
-settings.json
 *.qcow2
 
 .direnv
+.vscode
