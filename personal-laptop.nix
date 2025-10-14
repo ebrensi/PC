@@ -24,9 +24,11 @@
       Hostname 100.85.51.6
   '';
 
-  nix.settings.extra-platforms = ["aarch64-linux"];
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
-
+  nix.settings.extra-platforms = ["aarch64-linux"];
+  nix.settings.substituters = [
+    "ssh-ng://efrem@home"
+  ];
   nix.buildMachines = let
     mkBuilder = hostName: system: maxJobs: speedFactor: {
       inherit hostName system maxJobs speedFactor;

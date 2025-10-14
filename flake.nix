@@ -70,7 +70,7 @@
       };
       mkInstaller = hostname:
         (installer-base.extendModules {
-          modules = [./install-script.nix];
+          modules = [./offline-installer.nix];
           specialArgs = {systemToInstall = self.nixosConfigurations.${hostname};};
         }).config.system.build.isoImage;
     in rec {
@@ -80,6 +80,32 @@
       thinkpad = self.nixosConfigurations.thinkpad.config.system.build.toplevel;
       adder-ws = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
       m1 = self.nixosConfigurations.m1.config.system.build.toplevel;
+
+      network-installer-iso =
+        (installer-base.extendModules
+          {
+            modules = [
+              self.inputs.agenix.nixosModules.default
+              ({
+                pkgs,
+                lib,
+                ...
+              }: {
+                networking.hostName = lib.mkForce "installer";
+                networking.firewall = {
+                  enable = true;
+                  allowedTCPPorts = [22];
+                };
+                services.openssh = {
+                  enable = true;
+                  settings.PermitRootLogin = lib.mkForce "yes";
+                };
+                services.getty.greetingLine = lib.mkForce "   Check your network for installer.local";
+                users.users.nixos.initialHashedPassword = lib.mkForce "p";
+                # users.users.root.openssh.authorizedKeys.keys = config.users.users.guardian.openssh.authorizedKeys.keys;
+              })
+            ];
+          }).config.system.build.isoImage;
     };
 
     # Development Shells
