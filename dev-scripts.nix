@@ -38,7 +38,7 @@ in rec {
     NIX_SSHOPTS="$sshOpts" nix copy  \
       --no-check-sigs \
       --no-update-lock-file \
-      --to ssh-ng://"$targetHost"\
+      --to "ssh-ng://$targetHost" \
       "$storePath"
 
     # NIX_SSHOPTS="$sshOpts" nix-copy-closure -s --gzip --to "$targetHost" "$storePath"
@@ -52,18 +52,17 @@ in rec {
 
     flakePath=$1
     targetHost=$2
-    systemPath=$(${nom} build $flakePath.config.system.build.toplevel) || {
+    system=$(${nom} build $flakePath.config.system.build.toplevel) || {
       echo "Failed to build system closure"
       exit 1
     }
-    ${copy-to}/bin/* $targetHost $systemPath || {
+    ${copy-to}/bin/* "$targetHost" $system || {
       echo "Failed to copy system closure to remote machine"
       exit 1
     }
-    ssh $sshOpts $targetHost "sudo nix-env -p /nix/var/nix/profiles/system --set $systemPath && sudo $systemPath/bin/switch-to-configuration switch" || {
-      echo "Failed to activate new configuration on remote machine"
-      exit 1
-    }
+    sshOpts="${sshOpts}"
+    ssh $sshOpts $targetHost "sudo nix-env -p /nix/var/nix/profiles/system --set $system"
+    ssh $sshOpts $targetHost "sudo $system/bin/switch-to-configuration switch"
   '';
   apply = pkgs.writeShellScriptBin "apply" ''
     # Apply a system configuration (toplelevel) path to the current system.
