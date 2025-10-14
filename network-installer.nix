@@ -16,7 +16,7 @@
   users.users.nixos.initialHashedPassword = lib.mkForce "p";
   networking.networkmanager.enable = lib.mkForce false;
   networking.wireless.enable = lib.mkForce true;
-  avahi = {
+  services.avahi = {
     enable = true;
     nssmdns4 = true;
     openFirewall = true;

@@ -4,7 +4,7 @@
   modulesPath,
   ...
 }: {
-  imports = with nixos-hardware.nixosModules; [
+  imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
   ];
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
@@ -29,7 +29,7 @@
   nix.settings.substituters = [
     "ssh-ng://efrem@home"
   ];
-  nix.settingss.trusted-public-keys = [
+  nix.settings.trusted-public-keys = [
     "home-cache:J+HKp0Hm3fkc1jK8ovnt5bPbRuH7Coq3d+Ukxx/pW2w="
   ];
   nix.buildMachines = let
