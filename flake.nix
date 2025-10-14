@@ -17,8 +17,6 @@
   outputs = {
     self,
     nixpkgs,
-    nixpkgs-stable,
-    nixos-hardware,
     ...
   }: {
     nixosConfigurations = let
@@ -66,7 +64,6 @@
 
     packages.x86_64-linux = let
       pkgs = import nixpkgs {system = "x86_64-linux";};
-      nom = "${pkgs.nix-output-monitor}/bin/nom";
       installer-base = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = ["${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"];
@@ -76,81 +73,7 @@
           modules = [./install-script.nix];
           specialArgs = {systemToInstall = self.nixosConfigurations.${hostname};};
         }).config.system.build.isoImage;
-      sshOpts = "-A -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ConnectionAttempts=5 -o ConnectTimeout=3";
     in rec {
-      install-direct = pkgs.writeShellScriptBin "install-direct" ''
-        # Usage: install-direct <flakePath> <host:port>
-
-        flakePath=$1
-        hostAndPort=$2
-        IFS=':' read -r host port <<< "$hostAndPort"
-        [ -n "$port" ] && PORT_OPT="-p $port"
-
-        systemPath=$(${nom} build $flakePath.config.system.build.toplevel --no-link --print-out-paths) || {
-          echo "Failed to build system closure"
-          exit 1
-        }
-        diskoScript=$(nix build $flakePath.config.system.build.diskoScript --no-link --print-out-paths) || {
-          echo "Failed to build disko script"
-          exit 1
-        }
-        echo "Installing $flakePath on $hostAndPort"
-        ${pkgs.nixos-anywhere}/bin/nixos-anywhere  \
-            --no-substitute-on-destination \
-            --build-on local \
-            --store-paths $diskoScript $systemPath \
-            --target-host $host $PORT_OPT
-      '';
-
-      copy-to = pkgs.writeShellScriptBin "copy-to" ''
-        # Copy a nix store path directly to a remote machine via ssh
-        # usage: copy-to <host:port> <path>
-
-        targetHost=$1
-        storePath=$2
-        echo "Copying $storePath closure to $host..." >&2
-        sshOpts="${sshOpts}"
-
-        NIX_SSHOPTS="$sshOpts" nix copy  \
-          --no-check-sigs \
-          --no-update-lock-file \
-          --to ssh-ng://"$targetHost"\
-          "$storePath"
-
-        # NIX_SSHOPTS="$sshOpts" nix-copy-closure -s --gzip --to "$targetHost" "$storePath"
-        echo "Done Copying."
-      '';
-      deploy-direct = pkgs.writeShellScriptBin "deploy-direct" ''
-        # Build toplevel of an arbitrary flake path locally, copy the closure it directly to a remote machine,
-        #  and activate it there. Use this script to update the NixOS system already running on a remote machine,
-        #  without using the remote cache.
-        # Usage: deploy-direct <flakePath> <host:port>
-
-        flakePath=$1
-        targetHost=$2
-        systemPath=$(${pkgs.nix-output-monitor}/bin/nom build $flakePath.config.system.build.toplevel) || {
-          echo "Failed to build system closure"
-          exit 1
-        }
-        ${copy-to}/bin/* $targetHost $systemPath || {
-          echo "Failed to copy system closure to remote machine"
-          exit 1
-        }
-        ssh $sshOpts $targetHost "sudo nix-env -p /nix/var/nix/profiles/system --set $systemPath && sudo $systemPath/bin/switch-to-configuration switch" || {
-          echo "Failed to activate new configuration on remote machine"
-          exit 1
-        }
-      '';
-      apply = pkgs.writeShellScriptBin "apply" ''
-        # Apply a system configuration (toplelevel) path to the current system.
-        # This is like `nixos-rebuild switch` but for an arbitrary path to a
-        #  nixosSystem toplevel.
-
-        storePath=$(realpath $1)
-        sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
-        sudo $storePath/bin/switch-to-configuration switch
-      '';
-
       thinkpad-offline-installer-iso = mkInstaller "thinkpad";
       adder-ws-offline-installer-iso = mkInstaller "adder-ws";
 
@@ -160,14 +83,13 @@
     };
 
     # Development Shells
+    # Make deployment/etc scripts available with `nix develop`
     devShells.x86_64-linux = let
       pkgs = import nixpkgs {system = "x86_64-linux";};
+      dev-scripts = builtins.attrValues (import ./dev-scripts.nix {inherit pkgs;});
     in {
       default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          self.inputs.agenix.packages.x86_64-linux.agenix
-          nix-fast-build
-        ];
+        buildInputs = [self.inputs.agenix.packages.x86_64-linux.agenix] ++ dev-scripts;
         NIX_CONFIG = ''
           warn-dirty = false  # We don't need to see this warning on every build
         '';
