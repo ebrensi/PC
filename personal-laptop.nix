@@ -1,8 +1,12 @@
 {
   config,
   pkgs,
+  modulesPath,
   ...
 }: {
+  imports = with nixos-hardware.nixosModules; [
+    "${modulesPath}/installer/scan/not-detected.nix"
+  ];
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
     # SSH config for personal laptop
@@ -32,11 +36,10 @@
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      ["AP1" "x86_64-linux" 32 8]
-      ["home" "x86_64-linux" 16 4]
+      ["home" "x86_64-linux" 4 4]
       ["t1" "x86_64-linux" 2 1]
       ["t2" "x86_64-linux" 2 1]
-      ["AP1" "aarch64-linux" 8 1]
+      #
       ["m1" "aarch64-linux" 8 4]
     ];
   in

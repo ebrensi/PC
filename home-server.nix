@@ -1,8 +1,12 @@
 {
   config,
   pkgs,
+  modulesPath,
   ...
 }: {
+  imports = with nixos-hardware.nixosModules; [
+    "${modulesPath}/installer/scan/not-detected.nix"
+  ];
   nix.settings.extra-platforms = ["aarch64-linux"];
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
