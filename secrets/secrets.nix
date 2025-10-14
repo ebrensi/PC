@@ -1,10 +1,9 @@
 let
   # Your system's SSH host public keys
-  # laptop = "ssh-ed25519 AAAAC3Nza...your-laptop-key";
   home-server = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINjqqggoXpaVqylXWGG1myX89SZeYpWkM78w+4t350TJ root@adder-ws";
-
+  laptop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHA+n6JXJc1/RzoiDdKswMZL7toAQurB7lRULXUGJ4PS root@thinkpad";
   allSystems = [
-    # laptop
+    laptop
     home-server
   ];
 in {

@@ -85,7 +85,7 @@
         AddKeysToAgent yes
 
         # Reuse local ssh connections
-        ControlPath /tmp/ssh-%L-%r@%h:%p
+        ControlPath /tmp/ssh-%C
         ControlMaster auto
         ControlPersist 1
     '';
