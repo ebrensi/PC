@@ -64,6 +64,7 @@
 
     packages.x86_64-linux = let
       pkgs = import nixpkgs {system = "x86_64-linux";};
+      dev-scripts-attrs = import ./dev-scripts.nix {inherit pkgs;};
       installer-base = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = ["${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"];
@@ -73,36 +74,38 @@
           modules = [./offline-installer.nix];
           specialArgs = {systemToInstall = self.nixosConfigurations.${hostname};};
         }).config.system.build.isoImage;
-    in rec {
-      thinkpad-offline-installer-iso = mkInstaller "thinkpad";
-      adder-ws-offline-installer-iso = mkInstaller "adder-ws";
+    in
+      rec {
+        thinkpad-offline-installer-iso = mkInstaller "thinkpad";
+        adder-ws-offline-installer-iso = mkInstaller "adder-ws";
 
-      thinkpad = self.nixosConfigurations.thinkpad.config.system.build.toplevel;
-      adder-ws = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
-      m1 = self.nixosConfigurations.m1.config.system.build.toplevel;
+        thinkpad = self.nixosConfigurations.thinkpad.config.system.build.toplevel;
+        adder-ws = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
+        m1 = self.nixosConfigurations.m1.config.system.build.toplevel;
 
-      network-installer-iso =
-        (installer-base.extendModules
-          {
-            modules = [
-              self.inputs.agenix.nixosModules.default
-              ./network-installer.nix
-              {
-                networking.wireless.networks.CiscoKid.pskRaw = "8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55";
-                users.users.root.openssh.authorizedKeys.keys = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII//cI1RPUk4caXbGHdMJpQB7VuydedUCP/Kt9mALxVY efrem-angelProtection"];
-              }
-            ];
-          }).config.system.build.isoImage;
-    };
+        network-installer-iso =
+          (installer-base.extendModules
+            {
+              modules = [
+                self.inputs.agenix.nixosModules.default
+                ./network-installer.nix
+                {
+                  networking.wireless.networks.CiscoKid.pskRaw = "8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55";
+                  users.users.root.openssh.authorizedKeys.keys = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII//cI1RPUk4caXbGHdMJpQB7VuydedUCP/Kt9mALxVY efrem-angelProtection"];
+                }
+              ];
+            }).config.system.build.isoImage;
+      }
+      // dev-scripts-attrs;
 
     # Development Shells
     # Make deployment/etc scripts available with `nix develop`
     devShells.x86_64-linux = let
       pkgs = import nixpkgs {system = "x86_64-linux";};
-      dev-scripts = builtins.attrValues (import ./dev-scripts.nix {inherit pkgs;});
+      dev-scripts-list = builtins.attrValues (import ./dev-scripts.nix {inherit pkgs;});
     in {
       default = pkgs.mkShell {
-        buildInputs = [self.inputs.agenix.packages.x86_64-linux.agenix] ++ dev-scripts;
+        buildInputs = [self.inputs.agenix.packages.x86_64-linux.agenix] ++ dev-scripts-list;
         NIX_CONFIG = ''
           warn-dirty = false  # We don't need to see this warning on every build
         '';
