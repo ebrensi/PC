@@ -135,9 +135,27 @@ in {
     ssh.extraConfig = ''
       # Global SSH config for user efrem
       Host *
-        IdentityFile /home/efrem/.ssh/angelProtection
+        IdentityFile ${config.age.secrets.angelProtection.path}
+
+      Host github.com
+        IdentitiesOnly yes
+        IdentityFile ${config.age.secrets.github-key.path}
     '';
   };
+
+  age.secrets = {
+    github-key = {
+      file = ./secrets/github-key.age;
+      mode = "600";
+      owner = "efrem";
+    };
+    angelProtection = {
+      file = ./secrets/angelProtection.age;
+      mode = "600";
+      owner = "efrem";
+    };
+  };
+
   environment = {
     etc."tig/config".text = ''
       # tig configuration here
