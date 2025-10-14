@@ -8,8 +8,10 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-apple-silicon.url = "github:nix-community/nixos-apple-silicon";
-    sops-nix.url = "github:Mic92/sops-nix"; #TODO: either get rid of this or make it work
-    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -24,7 +26,7 @@
         specialArgs = {inherit (self.inputs) nixos-hardware;};
         modules = [
           self.inputs.disko.nixosModules.disko
-          self.inputs.sops-nix.nixosModules.sops
+          self.inputs.agenix.nixosModules.default
           ./base.nix
           ./desktop-cosmic.nix
           ./user-efrem.nix
@@ -163,7 +165,7 @@
     in {
       default = pkgs.mkShell {
         buildInputs = with pkgs; [
-          sops # for managing secrets (see https://github.com/Mic92/sops-nix)
+          self.inputs.agenix.packages.x86_64-linux.agenix
           nix-fast-build
         ];
         NIX_CONFIG = ''
