@@ -26,7 +26,7 @@
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
   nix.settings.extra-platforms = ["aarch64-linux"];
-  nix.settings.substituters = [
+  nix.settings.trusted-substituters = [
     "ssh-ng://efrem@home"
   ];
   nix.settings.trusted-public-keys = [
