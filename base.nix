@@ -3,6 +3,8 @@
   config,
   lib,
   pkgs,
+  #
+  agenix,
   ...
 }: {
   boot = {
@@ -137,6 +139,8 @@
     speedtest-cli
     systemctl-tui
     jq
+
+    agenix.packages.${pkgs.system}.agenix
   ];
 
   # https://search.nixos.org/options?channel=unstable&query=programs

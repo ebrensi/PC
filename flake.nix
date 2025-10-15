@@ -21,7 +21,7 @@
   }: {
     nixosConfigurations = let
       system-base = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit (self.inputs) nixos-hardware;};
+        specialArgs = {inherit (self.inputs) nixos-hardware agenix;};
         modules = [
           self.inputs.disko.nixosModules.disko
           self.inputs.agenix.nixosModules.default
