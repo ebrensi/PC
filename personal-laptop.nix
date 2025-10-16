@@ -26,8 +26,12 @@
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
   nix.settings.extra-platforms = ["aarch64-linux"];
-  nix.settings.trusted-substituters = [
-    "ssh-ng://efrem@home"
+
+  # Configure home server as a substituter
+  # Priority is set high (100) so it's only used after public caches
+  # This prevents timeout issues while still allowing substitution from home
+  nix.settings.substituters = [
+    "ssh-ng://efrem@home?priority=100"
   ];
   nix.settings.trusted-public-keys = [
     "home-cache:J+HKp0Hm3fkc1jK8ovnt5bPbRuH7Coq3d+Ukxx/pW2w="
