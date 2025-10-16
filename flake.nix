@@ -49,8 +49,9 @@
           {networking.hostName = "thinkpad";}
         ];
       };
-
       # Apple Mac Mini M1 configured as aarch64 builder
+      # TODO: maybe have this set up as a nix-darwin system
+      #  so that we can still use it as a mac desktop
       m1 = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
