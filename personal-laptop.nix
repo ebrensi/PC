@@ -50,6 +50,7 @@
       # ["t2" "x86_64-linux" 2 1]
       # #
       # ["m1" "aarch64-linux" 8 4]
+      ["home" "aarch64-linux" 4 4]
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
