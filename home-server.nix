@@ -78,7 +78,7 @@
   fileSystems."/mnt/usb_sandisk_1T" = {
     device = "/dev/disk/by-uuid/EADF-760A";
     fsType = "exfat";
-    options = ["nofail" "x-systemd.automount" "x-systemd.device-timeout=5"];
+    options = ["nofail" "x-systemd.automount" "x-systemd.device-timeout=5" "noatime"];
   };
   # Enable exFAT filesystem support
   boot.supportedFilesystems = ["exfat"];
