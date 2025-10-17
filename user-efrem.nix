@@ -42,14 +42,6 @@ in {
   };
   nix.settings.trusted-users = [main-user];
 
-  services = {
-    # Auto Login
-    displayManager.autoLogin = {
-      enable = true;
-      user = main-user;
-    };
-  };
-
   # Some files/folders that should exist
   systemd.tmpfiles.rules = [
     "d /home/${main-user}/dev   775 ${main-user} users -"
