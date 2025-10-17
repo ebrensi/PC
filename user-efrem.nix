@@ -166,6 +166,7 @@ in {
       flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
       yay = "nixos-rebuild switch --flake ${flake-path} --sudo |& nom";
       N = "sudo -E nnn -dH";
+      del = "trash-put";
     };
 
     # Environment Variables (for this user)
