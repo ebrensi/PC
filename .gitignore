@@ -3,3 +3,5 @@ result
 
 .direnv
 .vscode
+
+secrets.backup-*
