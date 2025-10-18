@@ -90,7 +90,7 @@
 
   # This is a laptop machine acting as a server so we don't want it to sleep
   # When hooked to a dock or external power
-  logind.settings.Login = {
+  services.logind.settings.Login = {
     # Dont sleep when lid is closed on external power
     HandleLidSwitchExternalPower = "ignore";
     # Dont sleep when lid is closed we are connected to a docking station
