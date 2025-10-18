@@ -246,6 +246,7 @@ in {
   };
 
   nix = {
+    settings.download-buffer-size = 524288000;
     settings.substituters = let
       mkArgstr = args: builtins.concatStringsSep "&" (map (k: "${k}=${args.${k}}") (builtins.attrNames args));
       url-args = {
