@@ -57,4 +57,11 @@
   nix.extraOptions = ''
     builders-use-substitutes = true
   '';
+
+  logind.settings.Login = {
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchDocked = "ignore";
+    HandlePowerKey = "suspend";
+  };
 }
