@@ -18,6 +18,7 @@
       Hostname 100.108.117.58
 
     Host t1 t2 m1 jetson
+        Hostname %h.local
         ProxyJump home
 
     Host AP1
