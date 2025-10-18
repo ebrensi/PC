@@ -58,7 +58,7 @@
     builders-use-substitutes = true
   '';
 
-  logind.settings.Login = {
+  services.logind.settings.Login = {
     HandleLidSwitch = "ignore";
     HandleLidSwitchExternalPower = "ignore";
     HandleLidSwitchDocked = "ignore";
