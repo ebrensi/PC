@@ -143,6 +143,12 @@ in {
       mode = "600";
       owner = "efrem";
     };
+    guardian-envrc = {
+      file = ./secrets/guardian-envrc.age;
+      path = "/home/${main-user}/.guardian-envrc";
+      mode = "600";
+      owner = "efrem";
+    };
   };
 
   environment = {
