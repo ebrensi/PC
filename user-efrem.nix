@@ -149,6 +149,12 @@ in {
       mode = "600";
       owner = "efrem";
     };
+    wakatime-cfg = {
+      file = ./secrets/wakatime.age;
+      path = "/home/${main-user}/.wakatime.cfg";
+      mode = "600";
+      owner = "efrem";
+    };
   };
 
   environment = {
