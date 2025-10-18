@@ -94,20 +94,9 @@
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
     trusted-users = ["efrem"];
-    substituters = let
-      mkArgstr = args: builtins.concatStringsSep "&" (map (k: "${k}=${args.${k}}") (builtins.attrNames args));
-      url-args = {
-        # see https://nix.dev/manual/nix/2.25/store/types/http-binary-cache-store
-        parallel-compression = "true";
-        compression = "zstd";
-        compression-level = "3";
-        path-info-cache-size = "131072";
-        want-mass-query = "true";
-      };
-      args = mkArgstr url-args;
-    in [
-      "https://guardian-ops-nix.s3.us-west-2.amazonaws.com?${args}&priority=1"
-      "https://cache.nixos.org?${args}&priority=10"
+    substituters = [
+      "https://cache.nixos.org?priority=0"
+      "https://guardian-ops-nix.s3.us-west-2.amazonaws.com?priority=1"
     ];
     trusted-public-keys = [
       "guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="
@@ -120,9 +109,7 @@
     description = "Efrem Rensi";
     extraGroups = ["networkmanager" "wheel"];
     initialPassword = "p";
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII//cI1RPUk4caXbGHdMJpQB7VuydedUCP/Kt9mALxVY Efrem-Laptop"
-    ];
+    openssh.authorizedKeys.keys = with (import ./secrets/public.nix); [personal-ssh-key];
   };
   security.sudo.wheelNeedsPassword = false;
 

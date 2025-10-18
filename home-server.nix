@@ -53,7 +53,6 @@
   nix.buildMachines = let
     mkBuilder = hostName: system: maxJobs: speedFactor: {
       inherit hostName system maxJobs speedFactor;
-      sshKey = "/home/efrem/.ssh/angelProtection";
       sshUser = "efrem";
       protocol = "ssh-ng";
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];

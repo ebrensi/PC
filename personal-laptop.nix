@@ -33,13 +33,10 @@
   nix.settings.substituters = [
     "ssh-ng://efrem@home?priority=100"
   ];
-  nix.settings.trusted-public-keys = [
-    "home-cache:J+HKp0Hm3fkc1jK8ovnt5bPbRuH7Coq3d+Ukxx/pW2w="
-  ];
+  nix.settings.trusted-public-keys = with (import ./secrets/public.nix); [home-cache-key];
   nix.buildMachines = let
     mkBuilder = hostName: system: maxJobs: speedFactor: {
       inherit hostName system maxJobs speedFactor;
-      sshKey = "/home/efrem/.ssh/angelProtection";
       sshUser = "efrem";
       protocol = "ssh-ng";
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];

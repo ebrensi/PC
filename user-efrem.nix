@@ -35,9 +35,9 @@ in {
       # libreoffice-fresh
     ];
     initialPassword = "password";
-    openssh.authorizedKeys.keys = [
-      # So I can ssh access this machine from my laptop
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII//cI1RPUk4caXbGHdMJpQB7VuydedUCP/Kt9mALxVY Efrem-Laptop"
+    openssh.authorizedKeys.keys = with (import ./secrets/public.nix); [
+      personal-ssh-key
+      AP-ssh-key
     ];
   };
   nix.settings.trusted-users = [main-user];
@@ -127,22 +127,19 @@ in {
     ssh.extraConfig = ''
       # Global SSH config for user efrem
       Host *
-        IdentityFile ${config.age.secrets.angelProtection.path}
-
-      Host github.com
-        IdentitiesOnly yes
-        IdentityFile ${config.age.secrets.github-key.path}
+        IdentityFile ${config.age.secrets.personal-ssh-key.path}
+        IdentityFile ${config.age.secrets.AP-ssh-key.path}
     '';
   };
 
   age.secrets = {
-    github-key = {
-      file = ./secrets/github-key.age;
+    personal-ssh-key = {
+      file = ./secrets/efrem.age;
       mode = "600";
       owner = "efrem";
     };
-    angelProtection = {
-      file = ./secrets/angelProtection.age;
+    AP-ssh-key = {
+      file = ./secrets/AngelProtection-efrem.age;
       mode = "600";
       owner = "efrem";
     };
