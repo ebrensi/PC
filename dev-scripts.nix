@@ -61,8 +61,8 @@ in rec {
       exit 1
     }
     sshOpts="${sshOpts}"
-    ssh $sshOpts $targetHost "sudo nix-env -p /nix/var/nix/profiles/system --set $system"
-    ssh $sshOpts $targetHost "sudo $system/bin/switch-to-configuration switch"
+    ssh $sshOpts $targetHost sudo nix-env -p /nix/var/nix/profiles/system --set $system
+    ssh $sshOpts $targetHost sudo $system/bin/switch-to-configuration switch
   '';
   apply = pkgs.writeShellScriptBin "apply" ''
     # Apply a system configuration (toplelevel) path to the current system.
