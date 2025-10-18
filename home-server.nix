@@ -85,6 +85,15 @@
     fsType = "exfat";
     options = ["nofail" "x-systemd.automount" "x-systemd.device-timeout=5" "noatime"];
   };
-  # Enable exFAT filesystem support
+  # Enable exFAT filesystem support for this USB drive
   boot.supportedFilesystems = ["exfat"];
+
+  # This is a laptop machine acting as a server so we don't want it to sleep
+  # When hooked to a dock or external power
+  logind.settings.Login = {
+    # Dont sleep when lid is closed on external power
+    HandleLidSwitchExternalPower = "ignore";
+    # Dont sleep when lid is closed we are connected to a docking station
+    HandleLidSwitchDocked = "ignore";
+  };
 }
