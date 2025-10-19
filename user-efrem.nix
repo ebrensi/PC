@@ -18,18 +18,14 @@ in {
     extraGroups = ["networkmanager" "wheel" "audio" "video" "lp"];
     packages = with pkgs; [
       # https://search.nixos.org/packages?channel=unstable&
-
-      # Development
       micro
-
-      # Additional useful applications
       google-chrome
       claude-code
 
       # Media
       vlc
-      pinta # simple image editor
-      ffmpeg
+      imagemagick
+      # ffmpeg
       # gimp
       # shotcut
       # libreoffice-fresh
