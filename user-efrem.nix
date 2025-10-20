@@ -137,7 +137,7 @@ in {
     };
     AP-ssh-key = {
       file = ./secrets/AngelProtection-efrem.age;
-      path = "/home/${main-user}/.ssh/angelProtection";
+      path = "/home/${main-user}/.ssh/AngelProtection";
       mode = "600";
       owner = "efrem";
     };
