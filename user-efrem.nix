@@ -131,11 +131,13 @@ in {
   age.secrets = {
     personal-ssh-key = {
       file = ./secrets/efrem.age;
+      path = "/home/${main-user}/.ssh/id_ed25519";
       mode = "600";
       owner = "efrem";
     };
     AP-ssh-key = {
       file = ./secrets/AngelProtection-efrem.age;
+      path = "/home/${main-user}/.ssh/angelProtection";
       mode = "600";
       owner = "efrem";
     };
