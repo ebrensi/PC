@@ -251,27 +251,7 @@ in {
       }
       export -f tmx
 
-      ssh-add ~/.ssh/angelProtection &>/dev/null
+      # ssh-add ~/.ssh/angelProtection &>/dev/null
     '';
-  };
-
-  nix = {
-    settings.download-buffer-size = 524288000;
-    settings.substituters = let
-      mkArgstr = args: builtins.concatStringsSep "&" (map (k: "${k}=${args.${k}}") (builtins.attrNames args));
-      url-args = {
-        # see https://nix.dev/manual/nix/2.25/store/types/http-binary-cache-store
-        parallel-compression = "true";
-        compression = "zstd";
-        compression-level = "3";
-        path-info-cache-size = "131072";
-        want-mass-query = "true";
-      };
-      args = mkArgstr url-args;
-    in [
-      "https://cache.nixos.org?priority=0&${args}"
-      "https://guardian-ops-nix.s3.us-west-2.amazonaws.com?priority=10&${args}"
-    ];
-    settings.trusted-public-keys = ["guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="];
   };
 }

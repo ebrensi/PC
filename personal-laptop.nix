@@ -32,7 +32,7 @@
   # Priority is set high (100) so it's only used after public caches
   # This prevents timeout issues while still allowing substitution from home
   nix.settings.substituters = [
-    "ssh-ng://efrem@home?priority=100"
+    "ssh-ng://efrem@home?priority=1000"
   ];
   nix.settings.trusted-public-keys = with (import ./secrets/public.nix); [home-cache-key];
   nix.buildMachines = let

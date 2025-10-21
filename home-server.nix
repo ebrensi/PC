@@ -74,7 +74,7 @@
   '';
 
   # This is for using this machine as a nix cache server
-  #  any files served from here via ssh-ng are signed with this private key
+  #  any files built here are signed with this private key
   age.secrets.home-nix-cache.file = ./secrets/home-nix-cache.age;
   nix.settings.secret-key-files = [config.age.secrets.home-nix-cache.path];
 

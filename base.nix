@@ -201,7 +201,7 @@
         # Reuse local ssh connections
         ControlPath /tmp/ssh-%C
         ControlMaster auto
-        ControlPersist 1
+        ControlPersist 2m
     '';
   };
 
@@ -246,7 +246,6 @@
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
-    trusted-users = ["@wheel"];
   };
   nix.nixPath = ["nixpkgs=${pkgs.path}"];
   system.stateVersion = "25.05";
