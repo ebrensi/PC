@@ -250,8 +250,6 @@ in {
         tmux new-session -As $1
       }
       export -f tmx
-
-      # ssh-add ~/.ssh/angelProtection &>/dev/null
     '';
   };
 }
