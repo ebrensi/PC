@@ -6,6 +6,7 @@
   ...
 }: let
   main-user = "efrem";
+  public-keys = import ./secrets/public.nix;
 in {
   imports = [./dev-folders.nix];
 
@@ -31,7 +32,7 @@ in {
       # libreoffice-fresh
     ];
     initialPassword = "password";
-    openssh.authorizedKeys.keys = with (import ./secrets/public.nix); [
+    openssh.authorizedKeys.keys = with public-keys; [
       personal-ssh-key
       AP-ssh-key
     ];
@@ -39,9 +40,13 @@ in {
   nix.settings.trusted-users = [main-user];
 
   # Some files/folders that should exist
-  systemd.tmpfiles.rules = [
-    "d /home/${main-user}/dev   775 ${main-user} users -"
-    "L /home/${main-user}/.tigrc - - - - /etc/tig/config"
+  systemd.tmpfiles.rules = let
+    homeDir = "/home/${main-user}";
+    publicKeyFile = pkgs.writeText "id_ed25519.pub" public-keys.personal-ssh-key;
+  in [
+    "d ${homeDir}/dev   775 ${main-user} users -"
+    "L ${homeDir}/.tigrc - - - - /etc/tig/config"
+    "L ${homeDir}/.ssh/id_ed25519.pub - - - - ${publicKeyFile}"
   ];
 
   programs = {
