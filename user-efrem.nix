@@ -43,21 +43,12 @@ in {
   systemd.tmpfiles.rules = let
     homeDir = "/home/${main-user}";
     publicKeyFile = pkgs.writeText "id_ed25519.pub" public-keys.personal-ssh-key;
-    aws-credentials = pkgs.writeText "aws-credentials" ''
-      [default]
-      aws_access_key_id =
-      aws_secret_access_key =
-
-      [guardian]
-      aws_access_key_id =
-      aws_secret_access_key =
-    '';
   in [
-    "d ${homeDir}/dev                  775 ${main-user} users -"
+    "d  ${homeDir}/dev                 775 ${main-user} users -"
     "L+ ${homeDir}/.tigrc              664 ${main-user} users - /etc/tig/config"
     "L+ ${homeDir}/.ssh/id_ed25519.pub -    -           -     - ${publicKeyFile}"
-    "d ${homeDir}/.aws                 775 ${main-user} users -"
-    "C ${homeDir}/.aws/credentials     664 ${main-user} users - ${aws-credentials}"
+    # "d  ${homeDir}/.aws                775 ${main-user} users -"
+    # "C  ${homeDir}/.aws/credentials    664 ${main-user} users - ${aws-credentials}"
   ];
 
   programs = {
@@ -144,29 +135,37 @@ in {
     '';
   };
 
-  age.secrets = {
+  age.secrets = let
+    HOME = "/home/${main-user}";
+  in {
     personal-ssh-key = {
       file = ./secrets/efrem.age;
-      path = "/home/${main-user}/.ssh/id_ed25519";
+      path = "${HOME}/.ssh/id_ed25519";
       mode = "600";
       owner = "efrem";
     };
     AP-ssh-key = {
       file = ./secrets/AngelProtection-efrem.age;
-      path = "/home/${main-user}/.ssh/AngelProtection";
+      path = "${HOME}/.ssh/AngelProtection";
       mode = "600";
       owner = "efrem";
     };
     guardian-envrc = {
       file = ./secrets/guardian-envrc.age;
-      path = "/home/${main-user}/.guardian-envrc";
+      path = "${HOME}/.guardian-envrc";
       mode = "600";
       owner = "efrem";
     };
     wakatime-cfg = {
       file = ./secrets/wakatime.age;
-      path = "/home/${main-user}/.wakatime.cfg";
+      path = "${HOME}/.wakatime.cfg";
       mode = "600";
+      owner = "efrem";
+    };
+    aws-credentials = {
+      file = ./secrets/aws-credentials.age;
+      path = "${HOME}/.aws/credentials";
+      mode = "644";
       owner = "efrem";
     };
   };
