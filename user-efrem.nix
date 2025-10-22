@@ -45,8 +45,8 @@ in {
     publicKeyFile = pkgs.writeText "id_ed25519.pub" public-keys.personal-ssh-key;
   in [
     "d  ${homeDir}/dev                 775 ${main-user} users -"
-    "L+ ${homeDir}/.tigrc              664 ${main-user} users - /etc/tig/config"
-    "L+ ${homeDir}/.ssh/id_ed25519.pub -    -           -     - ${publicKeyFile}"
+    "L+ ${homeDir}/.tigrc              600 ${main-user} users - /etc/tig/config"
+    "L+ ${homeDir}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
   ];
 
   programs = {
@@ -145,12 +145,6 @@ in {
     AP-ssh-key = {
       file = ./secrets/AngelProtection-efrem.age;
       path = "${HOME}/.ssh/AngelProtection";
-      mode = "600";
-      owner = "efrem";
-    };
-    guardian-envrc = {
-      file = ./secrets/guardian-envrc.age;
-      path = "${HOME}/.guardian-envrc";
       mode = "600";
       owner = "efrem";
     };

@@ -11,7 +11,6 @@ in {
   "efrem.age".publicKeys = all-machines ++ [user-efrem];
   "AngelProtection-efrem.age".publicKeys = all-machines ++ [user-efrem];
   "home-nix-cache.age".publicKeys = [home-server] ++ all-users;
-  "guardian-envrc.age".publicKeys = all-machines ++ [user-efrem];
   "wakatime.age".publicKeys = all-machines ++ [user-efrem];
   "aws-credentials.age".publicKeys = all-machines ++ [user-efrem];
 }
