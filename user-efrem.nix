@@ -47,8 +47,6 @@ in {
     "d  ${homeDir}/dev                 775 ${main-user} users -"
     "L+ ${homeDir}/.tigrc              664 ${main-user} users - /etc/tig/config"
     "L+ ${homeDir}/.ssh/id_ed25519.pub -    -           -     - ${publicKeyFile}"
-    # "d  ${homeDir}/.aws                775 ${main-user} users -"
-    # "C  ${homeDir}/.aws/credentials    664 ${main-user} users - ${aws-credentials}"
   ];
 
   programs = {
