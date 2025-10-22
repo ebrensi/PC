@@ -43,10 +43,21 @@ in {
   systemd.tmpfiles.rules = let
     homeDir = "/home/${main-user}";
     publicKeyFile = pkgs.writeText "id_ed25519.pub" public-keys.personal-ssh-key;
+    aws-credentials = pkgs.writeText "aws-credentials" ''
+      [default]
+      aws_access_key_id =
+      aws_secret_access_key =
+
+      [guardian]
+      aws_access_key_id =
+      aws_secret_access_key =
+    '';
   in [
-    "d ${homeDir}/dev   775 ${main-user} users -"
-    "L ${homeDir}/.tigrc - - - - /etc/tig/config"
-    "L ${homeDir}/.ssh/id_ed25519.pub - - - - ${publicKeyFile}"
+    "d ${homeDir}/dev                  775 ${main-user} users -"
+    "L+ ${homeDir}/.tigrc              664 ${main-user} users - /etc/tig/config"
+    "L+ ${homeDir}/.ssh/id_ed25519.pub -    -           -     - ${publicKeyFile}"
+    "d ${homeDir}/.aws                 775 ${main-user} users -"
+    "f ${homeDir}/.aws/credentials     664 ${main-user} users - ${aws-credentials}"
   ];
 
   programs = {
