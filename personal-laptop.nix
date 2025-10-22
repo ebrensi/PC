@@ -43,12 +43,8 @@
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      ["home" "x86_64-linux" 4 4]
-      # ["t1" "x86_64-linux" 1 1]
-      # ["t2" "x86_64-linux" 1 1]
-      #
-      # ["m1" "aarch64-linux" 8 4]
-      ["home" "aarch64-linux" 2 4]
+      ["home" "x86_64-linux" 2 10]
+      ["home" "aarch64-linux" 2 10]
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
