@@ -44,10 +44,10 @@
     };
     machines = [
       ["home" "x86_64-linux" 4 4]
-      ["t1" "x86_64-linux" 1 1]
-      ["t2" "x86_64-linux" 1 1]
+      # ["t1" "x86_64-linux" 1 1]
+      # ["t2" "x86_64-linux" 1 1]
       #
-      ["m1" "aarch64-linux" 8 4]
+      # ["m1" "aarch64-linux" 8 4]
       ["home" "aarch64-linux" 2 4]
     ];
   in
