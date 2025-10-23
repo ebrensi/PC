@@ -29,10 +29,12 @@
   nix.settings.extra-platforms = ["aarch64-linux"];
 
   # Configure home server as a substituter
-  # Priority is set high (100) so it's only used after public caches
+  # Priority is set high (1000) so it's only used after public caches
   # This prevents timeout issues while still allowing substitution from home
-  nix.settings.substituters = [
-    "ssh-ng://efrem@home?priority=1000"
+  nix.settings.substituters = let
+    argstr = "trusted=true&compress=true";
+  in [
+    "ssh-ng://efrem@home?priority=1000&${argstr}"
   ];
   nix.settings.trusted-public-keys = with (import ./secrets/public.nix); [home-cache-key];
   nix.buildMachines = let
