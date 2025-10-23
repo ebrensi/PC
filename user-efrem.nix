@@ -41,12 +41,12 @@ in {
 
   # Some files/folders that should exist
   systemd.tmpfiles.rules = let
-    homeDir = "/home/${main-user}";
+    HOME = "/home/${main-user}";
     publicKeyFile = pkgs.writeText "id_ed25519.pub" public-keys.personal-ssh-key;
   in [
-    "d  ${homeDir}/dev                 775 ${main-user} users -"
-    "L+ ${homeDir}/.tigrc              600 ${main-user} users - /etc/tig/config"
-    "L+ ${homeDir}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
+    "d  ${HOME}/dev                 775 ${main-user} users -"
+    "L+ ${HOME}/.tigrc              600 ${main-user} users - /etc/tig/config"
+    "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
   ];
 
   programs = {
