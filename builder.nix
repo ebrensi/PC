@@ -65,7 +65,23 @@
     fastfetch
     micro
     speedtest-cli
+
+    zstd # Compression for docker image tarball
+    openssl # For SHA256 checksum generation
+    go # For VERSION calculation via svu tool
+    gnumake # Make build tool
+    bashInteractive
+    uv # Python dependency management tool
+    coreutils
+    python3 # needed by uv for pip compile
+    gcc
   ];
+
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = true;
+    package = pkgs.docker_28; # TODO: Remove this when nixpkgs updates to a newer docker
+  };
 
   programs = {
     bat.enable = true;
@@ -107,7 +123,7 @@
   users.users.efrem = {
     isNormalUser = true;
     description = "Efrem Rensi";
-    extraGroups = ["networkmanager" "wheel"];
+    extraGroups = ["networkmanager" "wheel" "docker"];
     initialPassword = "p";
     openssh.authorizedKeys.keys = with (import ./secrets/public.nix); [personal-ssh-key];
   };
