@@ -71,6 +71,8 @@ in {
       extensions = with pkgs.vscode-extensions; let
         custom = pkgs.callPackage ./vscode-custom-extensions.nix {};
       in [
+        ms-azuretools.vscode-containers
+
         # Color Themes
         teabyii.ayu
         nonylene.dark-molokai-theme
