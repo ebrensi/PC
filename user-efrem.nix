@@ -72,6 +72,7 @@ in {
         custom = pkgs.callPackage ./vscode-custom-extensions.nix {};
       in [
         ms-azuretools.vscode-containers
+        ms-vscode.makefile-tools
 
         # Color Themes
         teabyii.ayu
