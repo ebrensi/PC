@@ -257,6 +257,11 @@ in {
         tmux new-session -As $1
       }
       export -f tmx
+
+
+      eval $(ssh-agent -s) 2>/dev/null
+      ssh-add ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
+      ssh-add ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
     '';
   };
 }

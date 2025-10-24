@@ -61,16 +61,37 @@ in rec {
       exit 1
     }
     sshOpts="${sshOpts}"
-    ssh $sshOpts $targetHost sudo nix-env -p /nix/var/nix/profiles/system --set $system
-    ssh $sshOpts $targetHost sudo $system/bin/switch-to-configuration switch
+    ssh $sshOpts $dest "sudo nix-env -p /nix/var/nix/profiles/system --set $system"
+    ssh $sshOpts $dest "sudo $system/bin/switch-to-configuration switch"
   '';
   apply = pkgs.writeShellScriptBin "apply" ''
-    # Apply a system configuration (toplelevel) path to the current system.
-    # This is like `nixos-rebuild switch` but for an arbitrary path to a
-    #  nixosSystem toplevel.
-
     storePath=$(realpath $1)
     sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
     sudo $storePath/bin/switch-to-configuration switch
+  '';
+  remote-build = pkgs.writeShellScriptBin "remote-build" ''
+    # Build toplevel of an arbitrary flake path *on* a remote machine and return the store path.
+    flakeAttr="$1"
+    dest="$2"
+    echo "Building $flakeAttr on the machine at $dest" >&2
+    flakePath="''${flakeAttr}.config.system.build.toplevel"
+    storePath=$(${nom} build --eval-store auto --store ssh-ng://$dest $flakePath --print-out-paths) || {
+      echo "Failed to build system closure on remote machine" >&2
+      exit 1
+    }
+    echo "Built $storePath on nix store at $dest" >&2
+    echo $storePath
+  '';
+
+  remote-build-deploy = pkgs.writeShellScriptBin "remote-build-deploy" ''
+    # Build toplevel system closure of an arbitrary flake path on a remote machine, and switch to it.
+    flakeAttr="$1"
+    dest="$2"
+    flakePath="''${flakeAttr}.config.system.build.toplevel"
+    storePath=$(${remote-build}/bin/* $flakeAttr $dest)
+    echo "Switching to $storePath on nix store at $dest" >&2
+    sshOpts="${sshOpts}"
+    ssh $sshOpts $dest "sudo nix-env -p /nix/var/nix/profiles/system --set $storePath"
+    ssh $sshOpts $dest "sudo $storePath/bin/switch-to-configuration switch"
   '';
 }

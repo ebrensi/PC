@@ -200,8 +200,8 @@
 
         # Reuse local ssh connections
         ControlPath /tmp/ssh-%C
-        ControlMaster auto
-        ControlPersist 30s
+        ControlMaster no
+        ControlPersist 1m
     '';
   };
 
