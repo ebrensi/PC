@@ -192,6 +192,7 @@ in {
       NNN_OPEN = "micro";
       NNN_GUI = 0;
       NNN_OPTS = "EAoaux";
+      SSH_AUTH_SOCK = "/run/user/1000/ssh-agent";
     };
 
     # This runs when a new shell is started (for this user)
@@ -258,10 +259,9 @@ in {
       }
       export -f tmx
 
-
-      eval $(ssh-agent -s) 2>/dev/null
-      ssh-add ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
-      ssh-add ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
+      # Add SSH keys to the systemd ssh-agent
+      ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
+      ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
     '';
   };
 }
