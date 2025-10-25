@@ -125,7 +125,7 @@
     description = "Efrem Rensi";
     extraGroups = ["networkmanager" "wheel" "docker"];
     initialPassword = "p";
-    openssh.authorizedKeys.keys = with (import ./secrets/public.nix); [personal-ssh-key];
+    openssh.authorizedKeys.keys = with (import ./secrets/public-keys.nix); [personal-ssh-key];
   };
   security.sudo.wheelNeedsPassword = false;
 

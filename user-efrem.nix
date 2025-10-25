@@ -6,7 +6,7 @@
   ...
 }: let
   main-user = "efrem";
-  public-keys = import ./secrets/public.nix;
+  public-keys = import ./secrets/public-keys.nix;
 in {
   imports = [./dev-folders.nix];
 
@@ -35,6 +35,7 @@ in {
     openssh.authorizedKeys.keys = with public-keys; [
       personal-ssh-key
       AP-ssh-key
+      phone
     ];
   };
   nix.settings.trusted-users = [main-user];

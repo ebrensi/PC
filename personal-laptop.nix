@@ -36,7 +36,7 @@
   in [
     "ssh-ng://efrem@home?priority=1000&${argstr}"
   ];
-  nix.settings.trusted-public-keys = with (import ./secrets/public.nix); [home-cache-key];
+  nix.settings.trusted-public-keys = with (import ./secrets/public-keys.nix); [home-cache-key];
   nix.buildMachines = let
     mkBuilder = hostName: system: maxJobs: speedFactor: {
       inherit hostName system maxJobs speedFactor;
