@@ -102,6 +102,7 @@
 
     # Admin
     autossh
+    mosh
 
     # System essentials
     wget
