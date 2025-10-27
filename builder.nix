@@ -99,11 +99,6 @@
         UserKnownHostsFile /dev/null
         ForwardAgent yes
         AddKeysToAgent yes
-
-        # Reuse local ssh connections
-        ControlPath /tmp/ssh-%C
-        ControlMaster auto
-        ControlPersist 30s
     '';
   };
 
