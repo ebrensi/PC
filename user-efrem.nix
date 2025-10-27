@@ -240,7 +240,6 @@ in {
         echo "Writing $image to $device"
         sudo dd if=$image of=$device status=progress bs=4M conv=fsync oflag=direct && sudo eject $device && echo "Device $device ejected. You may now remove it."
       }
-      export -f write-image
 
       write-zst-image () {
         # Usage: write-zst-image image.img.zst /dev/sdX
@@ -248,24 +247,21 @@ in {
         device=$2
         ${pkgs.zstd}/bin/zstd -d $zippedImage -c | write-image - $device
       }
-      export -f write-zst-image
 
       title () {
         # Set terminal title
         echo -ne "\033]0;$1\007"
       }
-      export -f title
 
       tmx () {
         # Start a tmux named session if not already inside one and set the terminal title
         title "$1"
         tmux new-session -As $1
       }
-      export -f tmx
 
-      # Add SSH keys to the systemd ssh-agent
-      ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
-      ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
+      # # Add SSH keys to the systemd ssh-agent
+      # ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
+      # ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
     '';
   };
 }
