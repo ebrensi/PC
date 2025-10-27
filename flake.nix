@@ -56,8 +56,9 @@
         system = "aarch64-linux";
         modules = [
           self.inputs.nixos-apple-silicon.nixosModules.apple-silicon-support
+          self.inputs.agenix.nixosModules.default
           ./machines/mac-mini-m1.nix
-          ./builder.nix
+          ./aarch64-builder.nix
           {networking.hostName = "m1";}
         ];
       };

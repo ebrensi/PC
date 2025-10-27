@@ -66,6 +66,8 @@
     micro
     speedtest-cli
 
+    pv # progress viewer for long aws uploads
+    awscli2 # For building & publishing Vision Docker image
     zstd # Compression for docker image tarball
     openssl # For SHA256 checksum generation
     go # For VERSION calculation via svu tool
@@ -84,12 +86,22 @@
   };
 
   programs = {
+    starship.enable = true;
     bat.enable = true;
     git.enable = true;
     htop.enable = true;
     tmux = {
-      enable = true;
+      clock24 = true;
       terminal = "screen-256color";
+      plugins = [
+        pkgs.tmuxPlugins.cpu
+        pkgs.tmuxPlugins.continuum
+      ];
+      extraConfig = ''
+        set -g mouse on
+        set -g status-right "#[fg=black,bg=color15] #{cpu_percentage} %H:%M"
+        run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
+      '';
     };
     # This would go in /etc/ssh/ssh_config in a traditional linux distro
     ssh.extraConfig = ''
@@ -100,6 +112,13 @@
         ForwardAgent yes
         AddKeysToAgent yes
     '';
+  };
+
+  age.secrets.aws-credentials = {
+    file = ./secrets/aws-credentials.age;
+    path = "/home/efrem/.aws/credentials";
+    mode = "644";
+    owner = "efrem";
   };
 
   nix.settings = {
