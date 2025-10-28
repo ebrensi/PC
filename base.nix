@@ -102,7 +102,6 @@
 
     # Admin
     autossh
-    mosh
 
     # System essentials
     wget
@@ -146,6 +145,7 @@
 
   # https://search.nixos.org/options?channel=unstable&query=programs
   programs = {
+    mosh.enable = true;
     yazi.enable = true;
     starship.enable = true;
     bat.enable = true;
