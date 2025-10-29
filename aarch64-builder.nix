@@ -6,6 +6,10 @@
   pkgs,
   ...
 }: {
+  services.speechd.enable = false;
+  hardware.graphics.enable = false;
+  services.pipewire.enable = lib.mkForce false;
+
   networking = {
     # networkmanager.enable = true;
     firewall = {
@@ -59,6 +63,7 @@
   environment.systemPackages = with pkgs; [
     # see https://search.nixos.org/packages?channel=unstable
     autossh
+    mosh
     btop
     nnn
     nix-output-monitor
@@ -91,6 +96,7 @@
     git.enable = true;
     htop.enable = true;
     tmux = {
+      enable = true;
       clock24 = true;
       terminal = "screen-256color";
       plugins = [
