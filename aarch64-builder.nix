@@ -4,8 +4,12 @@
   config,
   lib,
   pkgs,
+  modulesPath,
   ...
 }: {
+  imports = [
+    "${modulesPath}/profiles/headless.nix"
+  ];
   services.speechd.enable = false;
   hardware.graphics.enable = false;
   services.pipewire.enable = lib.mkForce false;
