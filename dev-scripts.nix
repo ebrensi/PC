@@ -94,4 +94,23 @@ in rec {
     ssh $sshOpts $dest "sudo nix-env -p /nix/var/nix/profiles/system --set $storePath"
     ssh $sshOpts $dest "sudo $storePath/bin/switch-to-configuration switch"
   '';
+
+  tmx = let
+    socket-folder = "/tmp/tmux-shared";
+    defaultSessionName = "shared";
+  in
+    pkgs.writeShellScriptBin "tmx" ''
+      # Create/attach to a shared named tmux session accessible by all users
+      # usage: tmx [session-name]
+      SESSION_NAME=''${1:-${defaultSessionName}}
+      SOCKDIR=${socket-folder}
+      SOCKET=$SOCKDIR/$SESSION_NAME
+      mkdir -p $SOCKDIR
+      chmod 777 $SOCKDIR
+      tmux -S $SOCKET new-session -As $SESSION_NAME
+      chmod 666 $SOCKET
+      # Set terminal title
+      host=$(hostname -s)
+      echo -ne "\033]0;$host:$SESSION_NAME\007"
+    '';
 }
