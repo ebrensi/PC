@@ -17,7 +17,9 @@ in {
     isNormalUser = true;
     description = "Efrem Rensi";
     extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp"];
-    packages = with pkgs; [
+    packages = with pkgs; let
+      dev-scripts = import ./dev-scripts.nix {inherit pkgs;};
+    in [
       # https://search.nixos.org/packages?channel=unstable&
       micro
       google-chrome
@@ -30,6 +32,8 @@ in {
       # gimp
       # shotcut
       # libreoffice-fresh
+
+      dev-scripts.tmx
     ];
     initialPassword = "password";
     openssh.authorizedKeys.keys = with public-keys; [
@@ -251,12 +255,6 @@ in {
       title () {
         # Set terminal title
         echo -ne "\033]0;$1\007"
-      }
-
-      tmx () {
-        # Start a tmux named session if not already inside one and set the terminal title
-        title "$1"
-        tmux new-session -As $1
       }
 
       # # Add SSH keys to the systemd ssh-agent
