@@ -25,4 +25,9 @@
   # We have to disable this ssh agent because it conflicts with the one that Cosmic starts
   programs.ssh.startAgent = lib.mkForce true;
   services.gnome.gcr-ssh-agent.enable = lib.mkForce false;
+
+  # We will use this until Cosmic's firmware update works
+  environment.systemPackages = with pkgs; [
+    firmware-updater
+  ];
 }
