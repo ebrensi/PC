@@ -49,6 +49,9 @@
 
     Host jetson
       Hostname 192.168.1.156
+
+    Host thinkpad
+      Hostname 100.106.204.20
   '';
 
   nix.buildMachines = let
