@@ -46,10 +46,18 @@
         modules = [
           self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
           ./personal-laptop.nix
-          {
+          ({
+            pkgs,
+            lib,
+            ...
+          }: {
             networking.hostName = "thinkpad";
             services.fprintd.enable = true;
-          }
+            security.pam.services.cosmic-greeter.text = lib.mkForce ''
+              auth sufficient ${pkgs.fprintd}/lib/security/pam_fprintd.so max-tries=3 timeout=30
+              auth sufficient ${pkgs.linux-pam}/lib/security/pam_unix.so likeauth try_first_pass
+            '';
+          })
         ];
       };
       # Apple Mac Mini M1 configured as aarch64 builder
