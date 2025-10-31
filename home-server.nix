@@ -69,6 +69,8 @@
     ++ [
       {
         hostName = "jetson"; # Your Jetson or remote builder
+        sshUser = "efrem";
+        protocol = "ssh-ng";
         system = "aarch64-linux";
         maxJobs = 2;
         speedFactor = 1;
