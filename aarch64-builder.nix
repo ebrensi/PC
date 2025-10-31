@@ -86,12 +86,47 @@
     coreutils
     python3 # needed by uv for pip compile
     gcc
+
+    # Docker cleanup script - removes old guardian/vision images, keeps build cache
+    (pkgs.writeShellScriptBin "docker-cleanup-vision" ''
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      echo "=== Docker Cleanup: Removing old guardian/vision images ==="
+      echo "Note: Build cache will be preserved for faster rebuilds"
+      echo ""
+
+      # Remove dangling (untagged) images
+      echo "Step 1: Removing dangling images..."
+      docker image prune -f
+      echo ""
+
+      # Remove old guardian/vision images, keeping only latest 2 versions
+      echo "Step 2: Cleaning old guardian/vision images (keeping latest 2)..."
+      # List all guardian/vision images sorted by creation date (oldest first)
+      # Skip the first line (header) and the last 2 lines (newest images)
+      docker images guardian/vision --format "{{.ID}} {{.Repository}}:{{.Tag}} {{.CreatedAt}}" | \
+        sort -k3 | \
+        head -n -2 | \
+        awk '{print $1}' | \
+        while read -r image_id; do
+          if [ -n "$image_id" ]; then
+            echo "  Removing image: $image_id"
+            docker rmi "$image_id" 2>/dev/null || echo "  (already removed or in use)"
+          fi
+        done
+      echo ""
+
+      echo "Step 3: Current status:"
+      docker system df
+      echo ""
+      echo "✓ Cleanup complete! Build cache preserved."
+    '')
   ];
 
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
-    package = pkgs.docker_28; # TODO: Remove this when nixpkgs updates to a newer docker
   };
 
   programs = {
