@@ -64,7 +64,17 @@
       ["m1" "aarch64-linux" 8 1000]
     ];
   in
-    map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
+    (map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines)
+    ++ [
+      {
+        hostName = "jetson"; # Your Jetson or remote builder
+        system = "aarch64-linux";
+        maxJobs = 2;
+        speedFactor = 1;
+        supportedFeatures = ["big-parallel"];
+        mandatoryFeatures = [];
+      }
+    ];
 
   nix.distributedBuilds = true;
   nix.extraOptions = ''
