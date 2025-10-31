@@ -15,6 +15,7 @@
 
   nix.settings.extra-platforms = ["aarch64-linux"];
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  nixpkgs.config.allowUnsupportedSystem = true;
 
   networking.networkmanager.settings = {
     # Prefer wifi over wired ethernet when both are available
