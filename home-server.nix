@@ -66,21 +66,9 @@
       ["t2" "x86_64-linux" 1 100]
       #
       ["m1" "aarch64-linux" 8 1000]
+      ["jetson" "aarch64-linux" 2 100]
     ];
-  in
-    (map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines)
-    ++ [
-      {
-        hostName = "jetson"; # Your Jetson or remote builder
-        sshUser = "efrem";
-        protocol = "ssh-ng";
-        system = "aarch64-linux";
-        maxJobs = 2;
-        speedFactor = 1;
-        supportedFeatures = ["big-parallel"];
-        mandatoryFeatures = [];
-      }
-    ];
+  in (map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines);
 
   nix.distributedBuilds = true;
   nix.extraOptions = ''

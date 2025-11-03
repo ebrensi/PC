@@ -96,16 +96,10 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   nixpkgs.buildPlatform = lib.mkDefault "x86_64-linux";
 
-  # System packages
+  # Universally available system packages
+  #  Don't put project-specific packages here; use per-project devShells instead.
   environment.systemPackages = with pkgs; [
     # see https://search.nixos.org/packages?channel=unstable
-
-    # Admin
-    autossh
-
-    # System essentials
-    wget
-    curl
 
     # Archive tools
     unzip
@@ -118,6 +112,9 @@
     dmidecode
 
     # Development
+    autossh
+    wget
+    curl
     gcc
     gnumake
     btop
@@ -132,6 +129,7 @@
     nvtopPackages.full
 
     # Utilities
+    glow
     wl-clipboard-x11
     wl-clipboard-rs
     trash-cli
@@ -198,11 +196,6 @@
         UserKnownHostsFile /dev/null
         ForwardAgent yes
         AddKeysToAgent yes
-
-        # Reuse local ssh connections
-        ControlPath /tmp/ssh-%C
-        ControlMaster no
-        ControlPersist 1m
     '';
   };
 
