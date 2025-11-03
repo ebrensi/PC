@@ -35,6 +35,7 @@
       # System76 Adder WS (Laptop WorkStation)
       adder-ws = system-base.extendModules {
         modules = [
+          ./modules/gpu-passthrough.nix
           ./machines/system76-adderws.nix
           ./home-server.nix
           {networking.hostName = "adder-ws";}

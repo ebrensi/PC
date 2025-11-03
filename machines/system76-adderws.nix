@@ -22,9 +22,19 @@
 
   boot = {
     initrd.availableKernelModules = ["xhci_pci" "nvme" "thunderbolt" "uas" "sd_mod" "sdhci_pci"];
-    initrd.kernelModules = [];
     kernelModules = ["kvm-intel"];
     extraModulePackages = [];
+  };
+
+  # GPU Passthrough Configuration
+  # IOMMU Group 11: 01:00.0 (NVIDIA RTX 4050) and 01:00.1 (NVIDIA Audio)
+  # Set enable = false to use GPU on host instead of VMs
+  virtualisation.gpuPassthrough = {
+    enable = true;
+    pciIds = [
+      "10de:28a1" # GeForce RTX 4050 Max-Q
+      "10de:22be" # NVIDIA Audio Controller
+    ];
   };
   networking.useDHCP = lib.mkDefault true;
 
