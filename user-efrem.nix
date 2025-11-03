@@ -16,7 +16,7 @@ in {
   users.users.${main-user} = {
     isNormalUser = true;
     description = "Efrem Rensi";
-    extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp" "libvirtd" "kvm"];
+    extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp"];
     packages = with pkgs; let
       dev-scripts = import ./dev-scripts.nix {inherit pkgs;};
     in [

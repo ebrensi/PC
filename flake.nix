@@ -35,7 +35,7 @@
       # System76 Adder WS (Laptop WorkStation)
       adder-ws = system-base.extendModules {
         modules = [
-          ./modules/gpu-passthrough.nix
+          # ./modules/gpu-passthrough.nix
           ./machines/system76-adderws.nix
           ./home-server.nix
           {networking.hostName = "adder-ws";}
@@ -72,33 +72,6 @@
           ./machines/mac-mini-m1.nix
           ./aarch64-builder.nix
           {networking.hostName = "m1";}
-        ];
-      };
-
-      vm = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          "${nixpkgs}/nixos/modules/virtualisation/qemu-vm.nix"
-          ({pkgs, ...}: {
-            system.stateVersion = "25.11";
-            networking.hostName = "test-vm";
-            virtualisation = {
-              # Enable UEFI boot (required for GPU passthrough)
-              useEFIBoot = true;
-
-              qemu = {
-                # Add GPU passthrough devices
-                options = [
-                  "-device vfio-pci,host=01:00.0,multifunction=on"
-                  "-device vfio-pci,host=01:00.1"
-                  "-M q35"
-                  "-cpu host,kvm=off"
-                ];
-              };
-              memorySize = 8192;
-              cores = 4;
-            };
-          })
         ];
       };
     };
