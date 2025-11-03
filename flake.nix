@@ -74,6 +74,33 @@
           {networking.hostName = "m1";}
         ];
       };
+
+      vm = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          "${nixpkgs}/nixos/modules/virtualisation/qemu-vm.nix"
+          ({pkgs, ...}: {
+            system.stateVersion = "25.11";
+            networking.hostName = "test-vm";
+            virtualisation = {
+              # Enable UEFI boot (required for GPU passthrough)
+              useEFIBoot = true;
+
+              qemu = {
+                # Add GPU passthrough devices
+                options = [
+                  "-device vfio-pci,host=01:00.0,multifunction=on"
+                  "-device vfio-pci,host=01:00.1"
+                  "-M q35"
+                  "-cpu host,kvm=off"
+                ];
+              };
+              memorySize = 8192;
+              cores = 4;
+            };
+          })
+        ];
+      };
     };
 
     packages.x86_64-linux = let

@@ -119,7 +119,8 @@ You can also define VMs declaratively in NixOS. Create a new file:
             -m 8G \
             -smp 4 \
             -cpu host,kvm=off,hv_vendor_id=1234567890ab \
-            -bios ${pkgs.OVMF.fd}/FV/OVMF_CODE.fd \
+            -drive if=pflash,format=raw,readonly=on,file=${pkgs.OVMF.fd}/FV/OVMF_CODE.fd \
+            -drive if=pflash,format=raw,file=/var/lib/qemu/gaming-vm-efivars.fd \
             \
             -device vfio-pci,host=01:00.0,multifunction=on \
             -device vfio-pci,host=01:00.1 \
@@ -141,12 +142,16 @@ You can also define VMs declaratively in NixOS. Create a new file:
     };
   };
 
-  # Create the disk image on first activation
+  # Create the disk image and EFI vars on first activation
   system.activationScripts.create-gaming-vm-disk = {
     text = ''
       if [ ! -f /var/lib/qemu/gaming-vm.qcow2 ]; then
         mkdir -p /var/lib/qemu
         ${pkgs.qemu}/bin/qemu-img create -f qcow2 /var/lib/qemu/gaming-vm.qcow2 60G
+      fi
+      if [ ! -f /var/lib/qemu/gaming-vm-efivars.fd ]; then
+        cp ${pkgs.OVMF.fd}/FV/OVMF_VARS.fd /var/lib/qemu/gaming-vm-efivars.fd
+        chmod 600 /var/lib/qemu/gaming-vm-efivars.fd
       fi
     '';
   };
@@ -189,6 +194,9 @@ You can also use the NixOS `.build.vm` approach, but you need to add QEMU flags.
 
   # VM-specific settings
   virtualisation = {
+    # Enable UEFI boot (required for GPU passthrough)
+    useEFIBoot = true;
+
     qemu = {
       # Add GPU passthrough devices
       options = [
@@ -196,7 +204,6 @@ You can also use the NixOS `.build.vm` approach, but you need to add QEMU flags.
         "-device vfio-pci,host=01:00.1"
         "-M q35"
         "-cpu host,kvm=off"
-        "-bios ${pkgs.OVMF.fd}/FV/OVMF_CODE.fd"
       ];
     };
     memorySize = 8192;
