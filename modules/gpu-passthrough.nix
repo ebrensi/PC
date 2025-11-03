@@ -36,8 +36,18 @@ in {
 
   config = lib.mkIf cfg.enable {
     boot = {
-      kernelModules = ["kvm-${platform}" "vfio_virqfd" "vfio_pci" "vfio_iommu_type1" "vfio"];
-      kernelParams = ["${platform}_iommu=on" "${platform}_iommu=pt" "kvm.ignore_msrs=1"];
+      initrd.kernelModules = lib.mkBefore [
+        "vfio_pci"
+        "vfio"
+        "vfio_iommu_type1"
+        "vfio_virqfd"
+
+        "nvidia"
+        "nvidia_modeset"
+        "nvidia_uvm"
+        "nvidia_drm"
+      ];
+      kernelParams = ["${platform}_iommu=on" "${platform}_iommu=pt"];
       extraModprobeConfig = "options vfio-pci ids=${builtins.concatStringsSep "," vfioIds}";
     };
 
