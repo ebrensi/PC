@@ -6,6 +6,7 @@
   pkgs,
   ...
 }: let
+  user = "efrem";
   cfg = config.virtualisation.gpuPassthrough;
 
   # Auto-detect CPU vendor based on microcode settings
@@ -16,7 +17,7 @@
     then "intel"
     else if isAmdCpu
     then "amd"
-    else "";
+    else throw "Unable to detect CPU vendor for IOMMU configuration. Please ensure microcode settings are correct.";
 in {
   options.virtualisation.gpuPassthrough = {
     enable = lib.mkEnableOption "GPU passthrough for QEMU/KVM VMs";
@@ -26,41 +27,32 @@ in {
       description = "PCI vendor:device IDs to bind to VFIO (e.g., ['10de:28a1', '10de:22be'])";
       example = ["10de:28a1" "10de:22be"];
     };
-
-    blacklistDrivers = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = ["nvidia" "nvidia_drm" "nvidia_modeset" "nouveau"];
-      description = "Kernel modules to blacklist to prevent them from claiming the GPU";
-    };
   };
 
   config = lib.mkIf cfg.enable {
-    boot = {
-      initrd.kernelModules = lib.mkBefore [
-        "vfio_pci"
-        "vfio"
-        "vfio_iommu_type1"
-        "vfio_virqfd"
+    virtualisation.libvirtd.enable = true;
+    users.users.${user}.extraGroups = ["libvirtd" "kvm"];
 
-        "nvidia"
-        "nvidia_modeset"
-        "nvidia_uvm"
-        "nvidia_drm"
-      ];
-      kernelParams = ["${platform}_iommu=on" "${platform}_iommu=pt"];
-      extraModprobeConfig = "options vfio-pci ids=${builtins.concatStringsSep "," vfioIds}";
-    };
+    boot.kernelParams = [
+      "${platform}_iommu=on"
+      "iommu=pt"
+      "vfio-pci.ids=${builtins.concatStringsSep "," cfg.pciIds}"
+    ];
+    boot.initrd.kernelModules = lib.mkBefore [
+      "vfio_pci"
+      "vfio"
+      "vfio_iommu_type1"
+      "vfio_virqfd"
+    ];
 
     # Blacklist GPU drivers to prevent host from claiming the GPU
-    boot.blacklistedKernelModules = cfg.blacklistDrivers;
+    boot.blacklistedKernelModules = ["nvidia" "nvidia_drm" "nvidia_modeset" "nouveau" "i2c_nvidia_gpu"];
 
-    # Ensure libvirtd is enabled for VM management
-    virtualisation.libvirtd.enable = lib.mkDefault true;
+    # Allow users in kvm group to access VFIO devices
+    services.udev.extraRules = ''
+      SUBSYSTEM=="vfio", OWNER="root", GROUP="kvm", MODE="0660"
+    '';
 
-    # Add helpful packages for GPU passthrough
-    environment.systemPackages = with pkgs; [
-      virt-manager # GUI for managing VMs
-      OVMF # UEFI firmware for VMs (required for GPU passthrough)
-    ];
+    virtualisation.spiceUSBRedirection.enable = true;
   };
 }
