@@ -46,13 +46,7 @@
         modules = [
           self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
           ./personal-laptop.nix
-          ({
-            pkgs,
-            lib,
-            ...
-          }: {
-            networking.hostName = "thinkpad";
-          })
+          {networking.hostName = "thinkpad";}
         ];
       };
       # Apple Mac Mini M1 configured as aarch64 builder
