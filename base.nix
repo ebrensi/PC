@@ -129,7 +129,8 @@
     nixos-anywhere
     tig
     nodePackages_latest.prettier
-    nvtopPackages.full
+
+    # nvtopPackages.full  # Disabled while cuda builds fail
 
     # Utilities
     wl-clipboard-x11
@@ -198,11 +199,6 @@
         UserKnownHostsFile /dev/null
         ForwardAgent yes
         AddKeysToAgent yes
-
-        # Reuse local ssh connections
-        ControlPath /tmp/ssh-%C
-        ControlMaster no
-        ControlPersist 1m
     '';
   };
 
