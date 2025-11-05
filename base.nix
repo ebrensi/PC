@@ -140,7 +140,7 @@
     systemctl-tui
     jq
 
-    agenix.packages.${pkgs.system}.agenix
+    agenix.packages.${pkgs.stdenv.hostPlatform.system}.agenix
   ];
 
   # https://search.nixos.org/options?channel=unstable&query=programs
