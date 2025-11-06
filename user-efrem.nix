@@ -257,9 +257,9 @@ in {
         echo -ne "\033]0;$1\007"
       }
 
-      # # Add SSH keys to the systemd ssh-agent
-      # ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
-      # ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
+      # Add SSH keys to the systemd ssh-agent
+      ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
+      ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
     '';
   };
 }
