@@ -107,7 +107,9 @@ in rec {
         for socket in ${socket-folder}/*; do
           [ -S "$socket" ] && tmux -S "$socket" list-sessions
         done
-        echo "Private (user) tmux sessions:"
+
+        echo
+        echo "Private (${builtins.getEnv "USER"}) tmux sessions:"
         tmux list-sessions
         exit 0
       fi
