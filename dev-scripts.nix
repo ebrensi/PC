@@ -102,6 +102,16 @@ in rec {
     pkgs.writeShellScriptBin "tmx" ''
       # Create/attach to a shared named tmux session accessible by all users
       # usage: tmx [session-name]
+      if [ $# -eq 0 ]; then
+        echo "tmx (shared tmux) sessions:"
+        for socket in ${socket-folder}/*; do
+          [ -S "$socket" ] && tmux -S "$socket" list-sessions
+        done
+        echo "Private (user) tmux sessions:"
+        tmux list-sessions
+        exit 0
+      fi
+
       SESSION_NAME=''${1:-${defaultSessionName}}
       SOCKDIR=${socket-folder}
       SOCKET=$SOCKDIR/$SESSION_NAME
