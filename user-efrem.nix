@@ -258,6 +258,7 @@ in {
       }
 
       # Add SSH keys to the systemd ssh-agent
+      eval $(ssh-agent -s) 2>/dev/null
       ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
       ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
     '';
