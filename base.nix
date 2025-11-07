@@ -189,6 +189,8 @@
 
       # Go
       golang.go
+
+      tamasfe.even-better-toml
     ];
 
     # This would go in /etc/ssh/ssh_config in a traditional linux distro
