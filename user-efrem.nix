@@ -138,6 +138,13 @@ in {
       Host *
         IdentityFile ${config.age.secrets.personal-ssh-key.path}
         IdentityFile ${config.age.secrets.AP-ssh-key.path}
+        # SSH multiplexing for faster connections
+        ControlMaster auto
+        ControlPath /tmp/ssh-%C
+        ControlPersist 3m
+        ServerAliveInterval 30
+        ServerAliveCountMax 2
+        TCPKeepAlive yes
     '';
   };
 
