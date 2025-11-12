@@ -52,6 +52,7 @@ in {
     "d  ${HOME}/dev                 775 ${main-user} users -"
     "L+ ${HOME}/.tigrc              600 ${main-user} users - /etc/tig/config"
     "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
+    "d  /run/ssh                    1777 root        root  -"
   ];
 
   programs = {
@@ -140,8 +141,8 @@ in {
         IdentityFile ${config.age.secrets.AP-ssh-key.path}
         # SSH multiplexing for faster connections
         ControlMaster auto
-        ControlPath /tmp/ssh-%C
-        ControlPersist 3m
+        ControlPath /run/ssh/%C
+        ControlPersist 30s
         ServerAliveInterval 30
         ServerAliveCountMax 2
         TCPKeepAlive yes
