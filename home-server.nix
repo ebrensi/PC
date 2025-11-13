@@ -62,8 +62,8 @@
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      ["t1" "x86_64-linux" 1 100]
-      ["t2" "x86_64-linux" 1 100]
+      # ["t1" "x86_64-linux" 1 100]
+      # ["t2" "x86_64-linux" 1 100]
       #
       ["m1" "aarch64-linux" 8 1000]
     ];
