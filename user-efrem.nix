@@ -139,13 +139,16 @@ in {
       Host *
         IdentityFile ${config.age.secrets.personal-ssh-key.path}
         IdentityFile ${config.age.secrets.AP-ssh-key.path}
-        # SSH multiplexing for faster connections
-        ControlMaster auto
-        ControlPath /run/ssh/%C
-        ControlPersist 30s
-        ServerAliveInterval 30
-        ServerAliveCountMax 2
+        # SSH keepalive settings
+        ServerAliveInterval 15
+        ServerAliveCountMax 3
         TCPKeepAlive yes
+
+        # Temporaly disable until we figure out PTY issues with multiplexing
+        # Multiplexing disabled due to PTY allocation issues
+        # ControlMaster auto
+        # ControlPath /tmp/ssh-%C
+        # ControlPersist 10s
     '';
   };
 
