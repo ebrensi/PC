@@ -4,9 +4,6 @@
   modulesPath,
   ...
 }: {
-  imports = [
-    "${modulesPath}/installer/scan/not-detected.nix"
-  ];
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
     # SSH config for personal laptop

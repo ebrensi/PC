@@ -44,7 +44,7 @@
       # Lenovo ThinkPad X1 Carbon 11th Gen
       thinkpad = system-base.extendModules {
         modules = [
-          self.inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
+          ./machines/thinkpad.nix
           ./personal-laptop.nix
           {networking.hostName = "thinkpad";}
         ];
