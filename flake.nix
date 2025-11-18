@@ -109,7 +109,6 @@
       default = pkgs.mkShell {
         buildInputs = [self.inputs.agenix.packages.x86_64-linux.agenix] ++ dev-scripts-list;
         NIX_CONFIG = ''
-          export SHELL=${pkgs.lib.getExe pkgs.bash}
           warn-dirty = false  # We don't need to see this warning on every build
         '';
       };
