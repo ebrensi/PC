@@ -22,6 +22,7 @@ in {
     in [
       # https://search.nixos.org/packages?channel=unstable&
       micro
+      termscp
       google-chrome
       claude-code
 
