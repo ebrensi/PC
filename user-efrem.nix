@@ -29,6 +29,7 @@ in {
       # Media
       vlc
       imagemagick
+      alacritty
       # ffmpeg
       # gimp
       # shotcut
@@ -57,6 +58,7 @@ in {
   ];
 
   programs = {
+    foot.enable = true;
     tmux = {
       clock24 = true;
       terminal = "screen-256color";
