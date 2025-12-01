@@ -44,7 +44,7 @@
     machines = [
       ["home" "x86_64-linux" 4 100]
       ["m1" "aarch64-linux" 4 10]
-      ["jetson" "aarch64-linux" 2 10]
+      # ["jetson" "aarch64-linux" 2 10]
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
