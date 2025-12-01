@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -20,8 +20,12 @@
     ...
   }: {
     nixosConfigurations = let
+      pkgs-stable = import self.inputs.nixpkgs-stable {system = "x86_64-linux";};
       system-base = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit (self.inputs) nixos-hardware agenix;};
+        specialArgs = {
+          inherit (self.inputs) nixos-hardware agenix;
+          inherit pkgs-stable;
+        };
         modules = [
           self.inputs.disko.nixosModules.disko
           self.inputs.agenix.nixosModules.default
