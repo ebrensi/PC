@@ -22,8 +22,8 @@
       Hostname 100.85.51.6
   '';
 
-  boot.binfmt.emulatedSystems = ["aarch64-linux"];
-  nix.settings.extra-platforms = ["aarch64-linux"];
+  # boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  # nix.settings.extra-platforms = ["aarch64-linux"];
 
   # Configure home server as a substituter
   # Priority is set high (1000) so it's only used after public caches
@@ -42,8 +42,8 @@
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      ["home" "x86_64-linux" 2 10]
-      ["home" "aarch64-linux" 2 10]
+      ["m1" "aarch64-linux" 4 10]
+      ["jetson" "aarch64-linux" 2 10]
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
