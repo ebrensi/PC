@@ -54,7 +54,6 @@ in {
     "d  ${HOME}/dev                 775 ${main-user} users -"
     "L+ ${HOME}/.tigrc              600 ${main-user} users - /etc/tig/config"
     "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
-    "d  /run/ssh                    1777 root        root  -"
   ];
 
   programs = {
