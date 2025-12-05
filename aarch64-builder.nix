@@ -10,9 +10,7 @@
   imports = [
     "${modulesPath}/profiles/headless.nix"
   ];
-  services.speechd.enable = false;
   hardware.graphics.enable = false;
-  services.pipewire.enable = lib.mkForce false;
 
   networking = {
     # networkmanager.enable = true;
@@ -23,6 +21,8 @@
   };
 
   services = {
+    speechd.enable = false;
+    pipewire.enable = lib.mkForce false;
     openssh = {
       enable = true;
       settings = {
@@ -67,7 +67,6 @@
   environment.systemPackages = with pkgs; [
     # see https://search.nixos.org/packages?channel=unstable
     autossh
-    mosh
     btop
     nnn
     nix-output-monitor
@@ -75,7 +74,6 @@
     micro
     speedtest-cli
 
-    pv # progress viewer for long aws uploads
     awscli2 # For building & publishing Vision Docker image
     zstd # Compression for docker image tarball
     openssl # For SHA256 checksum generation
@@ -130,6 +128,7 @@
   };
 
   programs = {
+    mosh.enable = true;
     starship.enable = true;
     bat.enable = true;
     git.enable = true;

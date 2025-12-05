@@ -9,7 +9,7 @@
   ...
 }: {
   imports = ["${modulesPath}/installer/scan/not-detected.nix"];
-  networking.wireless.enable = true;
+  networking.wireless.enable = false;
 
   boot.initrd.availableKernelModules = ["xhci_pci" "usbhid" "usb_storage"];
   boot.initrd.kernelModules = [];
