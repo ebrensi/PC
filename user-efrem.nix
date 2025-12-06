@@ -25,6 +25,7 @@ in {
       termscp
       google-chrome
       claude-code
+      visidata
 
       # Media
       vlc
