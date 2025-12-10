@@ -147,11 +147,10 @@ in {
         ServerAliveCountMax 3
         TCPKeepAlive yes
 
-        # Temporaly disable until we figure out PTY issues with multiplexing
-        # Multiplexing disabled due to PTY allocation issues
-        # ControlMaster auto
-        # ControlPath /tmp/ssh-%C
-        # ControlPersist 10s
+        # SSH Multiplexing (re-enabled after fixing ssh-agent conflicts)
+        ControlMaster auto
+        ControlPath /tmp/ssh-%C
+        ControlPersist 10s
     '';
   };
 
@@ -272,7 +271,8 @@ in {
       }
 
       # Add SSH keys to the systemd ssh-agent
-      eval $(ssh-agent -s) 2>/dev/null
+      # Note: Don't start a new agent with eval $(ssh-agent -s) as it conflicts
+      # with the systemd ssh-agent. Just add keys to the existing agent.
       ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
       ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
     '';
