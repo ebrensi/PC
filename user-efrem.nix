@@ -151,6 +151,7 @@ in {
         ControlMaster auto
         ControlPath /tmp/ssh-%C
         ControlPersist 10s
+        ForwardAgent yes
     '';
   };
 
@@ -213,7 +214,7 @@ in {
       NNN_OPEN = "micro";
       NNN_GUI = 0;
       NNN_OPTS = "EAoaux";
-      SSH_AUTH_SOCK = "/run/user/1000/ssh-agent";
+      # SSH_AUTH_SOCK is set by GNOME Keyring
     };
 
     # This runs when a new shell is started (for this user)
@@ -270,9 +271,8 @@ in {
         echo -ne "\033]0;$1\007"
       }
 
-      # Add SSH keys to the systemd ssh-agent
-      # Note: Don't start a new agent with eval $(ssh-agent -s) as it conflicts
-      # with the systemd ssh-agent. Just add keys to the existing agent.
+      # Add SSH keys to GNOME Keyring SSH agent
+      # The agent should be started by GNOME Keyring via Cosmic
       ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
       ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
     '';

@@ -22,9 +22,9 @@
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
-  # We have to disable this ssh agent because it conflicts with the one that Cosmic starts
-  programs.ssh.startAgent = lib.mkForce true;
-  services.gnome.gcr-ssh-agent.enable = lib.mkForce false;
+  # Use GNOME Keyring SSH agent (started by Cosmic) instead of systemd ssh-agent
+  programs.ssh.startAgent = lib.mkForce false;
+  services.gnome.gnome-keyring.enable = true;
 
   # We will use this until Cosmic's firmware update works
   environment.systemPackages = with pkgs; [
