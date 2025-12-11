@@ -151,7 +151,10 @@ in {
         ControlMaster auto
         ControlPath /tmp/ssh-%C
         ControlPersist 10s
+
+        # Agent forwarding configuration
         ForwardAgent yes
+        IdentityAgent $SSH_AUTH_SOCK
     '';
   };
 
@@ -214,7 +217,7 @@ in {
       NNN_OPEN = "micro";
       NNN_GUI = 0;
       NNN_OPTS = "EAoaux";
-      # SSH_AUTH_SOCK is set by GNOME Keyring
+      # SSH_AUTH_SOCK is set by NixOS ssh module when programs.ssh.startAgent = true
     };
 
     # This runs when a new shell is started (for this user)
@@ -271,8 +274,7 @@ in {
         echo -ne "\033]0;$1\007"
       }
 
-      # Add SSH keys to GNOME Keyring SSH agent
-      # The agent should be started by GNOME Keyring via Cosmic
+      # Add SSH keys to the systemd ssh-agent
       ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
       ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
     '';
