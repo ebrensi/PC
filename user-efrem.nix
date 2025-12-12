@@ -77,10 +77,10 @@ in {
         set -s copy-command 'xsel -i'
 
         set -g mouse on
-        set -g status-right "#[fg=black,bg=color15] #{cpu_percentage} %H:%M"
+        set -g status-right "C: #{continuum_status} #[fg=black,bg=color15] #{cpu_percentage} %H:%M"
         run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
+        run-shell ${pkgs.tmuxPlugins.continuum}/share/tmux-plugins/continuum/continuum.tmux
         set -g @continuum-restore 'on'
-        set -g @continuum-boot 'on'
         # set -g @continuum-save-interval '60'
       '';
     };
