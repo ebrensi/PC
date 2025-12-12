@@ -26,6 +26,7 @@ in {
       google-chrome
       claude-code
       visidata
+      glow
 
       # Media
       vlc
