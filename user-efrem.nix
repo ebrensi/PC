@@ -81,7 +81,7 @@ in {
         run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
         run-shell ${pkgs.tmuxPlugins.continuum}/share/tmux-plugins/continuum/continuum.tmux
         set -g @continuum-restore 'on'
-        # set -g @continuum-save-interval '60'
+        set -g @continuum-save-interval '60'
       '';
     };
     vscode = {
