@@ -68,6 +68,8 @@ in {
         resurrect
       ];
       extraConfig = ''
+        set -g mouse on
+
         # Allow system clipboard access for nested tmux sessions
         # https://github.com/tmux/tmux/wiki/Clipboard#terminal-support---tmux-inside-tmux
         set -g set-clipboard on
@@ -76,12 +78,13 @@ in {
         set -as terminal-features ',xterm*:clipboard'
         set -s copy-command 'xsel -i'
 
-        set -g mouse on
-        set -g status-right "C: #{continuum_status} #[fg=black,bg=color15] #{cpu_percentage} %H:%M"
         run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
+
+        https://github.com/tmux-plugins/tmux-continuum/blob/master/docs/faq.md
         run-shell ${pkgs.tmuxPlugins.continuum}/share/tmux-plugins/continuum/continuum.tmux
         set -g @continuum-restore 'on'
         set -g @continuum-save-interval '60'
+        set -g status-right "C: #{continuum_status} #[fg=black,bg=color15] #{cpu_percentage} %H:%M"
       '';
     };
     vscode = {
