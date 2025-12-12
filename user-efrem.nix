@@ -28,6 +28,7 @@ in {
       visidata
       glow
       nix-btm
+      multitail
 
       # Media
       vlc
