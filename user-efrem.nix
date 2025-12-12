@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  main-user = "efrem";
+  user = "efrem";
   public-keys = import ./secrets/public-keys.nix;
 in {
   imports = [./dev-folders.nix];
@@ -13,7 +13,7 @@ in {
   security.sudo.wheelNeedsPassword = false;
   users.mutableUsers = true;
 
-  users.users.${main-user} = {
+  users.users.${user} = {
     isNormalUser = true;
     description = "Efrem Rensi";
     extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp"];
@@ -45,15 +45,15 @@ in {
       phone
     ];
   };
-  nix.settings.trusted-users = [main-user];
+  nix.settings.trusted-users = [user];
 
   # Some files/folders that should exist
   systemd.tmpfiles.rules = let
-    HOME = "/home/${main-user}";
+    HOME = "/home/${user}";
     publicKeyFile = pkgs.writeText "id_ed25519.pub" public-keys.personal-ssh-key;
   in [
-    "d  ${HOME}/dev                 775 ${main-user} users -"
-    "L+ ${HOME}/.tigrc              600 ${main-user} users - /etc/tig/config"
+    "d  ${HOME}/dev                 775 ${user} users -"
+    "L+ ${HOME}/.tigrc              600 ${user} users - /etc/tig/config"
     "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
   ];
 
@@ -170,7 +170,7 @@ in {
   };
 
   age.secrets = let
-    HOME = "/home/${main-user}";
+    HOME = "/home/${user}";
   in {
     personal-ssh-key = {
       file = ./secrets/efrem.age;
@@ -209,7 +209,7 @@ in {
     '';
     # Convenient keyboard aliases
     shellAliases = let
-      flake-path = "/home/${main-user}/dev/PC";
+      flake-path = "/home/${user}/dev/PC";
     in {
       pc = "cd ${flake-path}";
       ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";

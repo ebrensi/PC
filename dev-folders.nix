@@ -6,7 +6,7 @@
   pkgs,
   ...
 }: let
-  main-user = "efrem";
+  user = "efrem";
   dev-folders = {
     AngelProtection = {
       Guardian = "git@github.com:AngelProtection/Guardian.git";
@@ -42,7 +42,7 @@
   cloneScript = pkgs.writeShellScript "setup-dev-folders" ''
     # set -euo pipefail
 
-    MAIN_USER="${main-user}"
+    MAIN_USER="${user}"
     MAIN_USER_HOME=/home/$MAIN_USER
     DEV_DIR="$MAIN_USER_HOME/dev"
 
@@ -72,7 +72,7 @@ in {
 
     serviceConfig = {
       Type = "oneshot";
-      User = main-user;
+      User = user;
       Group = "users";
       ExecStart = "${cloneScript}";
       RemainAfterExit = true;
