@@ -102,20 +102,18 @@
               ];
             }).config.system.build.isoImage;
 
-        build-all = pkgs.linkFarm "all-systems" (
-          map (name: {
-            name = name;
-            path = self.nixosConfigurations.${name}.config.system.build.toplevel;
-          })
-          ["thinkpad" "adder-ws" "m1"]
-        );
-        test = pkgs.writeShellScriptBin "test" ''
-          export NIX_CONFIG='
-            accept-flake-config = true
-            warn-dirty = false
-          '
-          exec ${pkgs.lib.getExe pkgs.nix-fast-build} --flake .#packages.x86_64-linux.build-all
-        '';
+        test = let
+          pkglist =
+            pkgs.lib.concatStringsSep " " (map (name: ".#nixosConfigurations.${name}.config.system.build.toplevel")
+              ["thinkpad" "adder-ws" "m1"]);
+        in
+          pkgs.writeShellScriptBin "test" ''
+            export NIX_CONFIG='
+              accept-flake-config = true
+              warn-dirty = false
+            '
+            ${pkgs.lib.getExe pkgs.nix-output-monitor} build ${pkglist} --no-link --keep-going --show-trace
+          '';
       }
       // dev-scripts-attrs;
 
