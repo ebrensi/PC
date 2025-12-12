@@ -80,7 +80,7 @@ in {
 
         run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
 
-        https://github.com/tmux-plugins/tmux-continuum/blob/master/docs/faq.md
+        # https://github.com/tmux-plugins/tmux-continuum/blob/master/docs/faq.md
         run-shell ${pkgs.tmuxPlugins.continuum}/share/tmux-plugins/continuum/continuum.tmux
         set -g @continuum-restore 'on'
         set -g @continuum-save-interval '60'
