@@ -27,6 +27,7 @@ in {
       claude-code
       visidata
       glow
+      nix-btm
 
       # Media
       vlc
