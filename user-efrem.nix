@@ -68,6 +68,14 @@ in {
         resurrect
       ];
       extraConfig = ''
+        # Allow system clipboard access for nested tmux sessions
+        # https://github.com/tmux/tmux/wiki/Clipboard#terminal-support---tmux-inside-tmux
+        set -g set-clipboard on
+        set -as terminal-features ',tmux*:clipboard'
+        set -as terminal-features ',screen*:clipboard'
+        set -as terminal-features ',xterm*:clipboard'
+        set -s copy-command 'xsel -i'
+
         set -g mouse on
         set -g status-right "#[fg=black,bg=color15] #{cpu_percentage} %H:%M"
         run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
