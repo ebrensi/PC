@@ -61,6 +61,22 @@ in {
   ];
 
   services.eternal-terminal.enable = true;
+  # # Join headscale with admin tag
+  # systemd.services.headscale-join = let
+  #   authKey-path = "/home/efrem/dev/AngelProtection/Guardian/provision/nix/secrets/headscale-preauth-key";
+  # in {
+  #   description = "Join Headscale as admin";
+  #   wantedBy = ["multi-user.target"];
+  #   after = ["tailscale.service"];
+
+  #   script = ''
+  #     ${pkgs.tailscale}/bin/tailscale up \
+  #         --login-server=http://104.186.115.83:8080 \
+  #         --authkey=file:${authKey-path} \
+  #         --advertise-tags=tag:admin \
+  #         --hostname=$(hostname)
+  #   '';
+  # };
 
   programs = {
     foot.enable = true;
