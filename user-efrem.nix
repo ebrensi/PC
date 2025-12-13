@@ -29,7 +29,6 @@ in {
       glow
       nix-btm
       multitail
-      eternal-terminal
 
       # Media
       vlc
@@ -60,6 +59,8 @@ in {
     "L+ ${HOME}/.tigrc              600 ${user} users - /etc/tig/config"
     "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
   ];
+
+  services.eternal-terminal.enable = true;
 
   programs = {
     foot.enable = true;
