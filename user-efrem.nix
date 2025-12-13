@@ -29,6 +29,7 @@ in {
       glow
       nix-btm
       multitail
+      eternal-terminal
 
       # Media
       vlc
