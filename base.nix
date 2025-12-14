@@ -64,6 +64,7 @@
         userServices = true;
         addresses = true;
       };
+      denyInterfaces = ["virbr0" "docker0" "lo"];
     };
   };
 
