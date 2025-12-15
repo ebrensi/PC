@@ -61,6 +61,7 @@
     HandlePowerKey = "suspend";
   };
 
+  # Fingerprint reader (disabled for now)
   services.fprintd.enable = false;
   # security.pam.services.cosmic-greeter.text = lib.mkForce ''
   #   auth sufficient ${pkgs.fprintd}/lib/security/pam_fprintd.so max-tries=3 timeout=30
