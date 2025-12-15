@@ -179,6 +179,13 @@
     maxretry = 5;
     bantime = "1h";
 
+    # Ignore Tailscale/Headscale IP range to prevent banning trusted devices
+    ignoreIP = [
+      "127.0.0.0/8"      # localhost
+      "192.168.0.0/16"   # local network
+      "100.64.0.0/10"    # Tailscale/Headscale range
+    ];
+
     jails = {
       headscale = ''
         enabled = true
