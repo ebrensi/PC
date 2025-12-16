@@ -6,6 +6,7 @@
 }: {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
+    ./headscale-server.nix
   ];
 
   services.displayManager.autoLogin = {
@@ -112,100 +113,5 @@
     HandleLidSwitchDocked = "ignore";
   };
 
-  # Headscale - self-hosted Tailscale control server
-  services.headscale = {
-    enable = true;
-    address = "0.0.0.0";
-    port = 8080;
-    settings = {
-      # see https://github.com/juanfont/headscale/blob/main/config-example.yaml
-
-      server_url = "http://73.15.57.26:8080"; # Your public IP
-      listen_addr = "0.0.0.0:8080";
-
-      # Networking settings
-      prefixes.v4 = "100.64.0.0/10"; # Tailscale IPv4 range
-
-      # DNS settings
-      dns = {
-        base_domain = "home.arpa";
-        nameservers.global = ["1.1.1.1" "8.8.8.8"];
-        magic_dns = true;
-      };
-    };
-  };
-
-  # Security for headscale service
-  #  Monitoring options:
-
-  # 1. Monitor Headscale Logs (Real-time)
-  # journalctl -u headscale -f                    # Follow logs
-  # journalctl -u headscale --since "1 hour ago"  # Last hour
-  # journalctl -u headscale | grep -i error       # Errors only
-
-  # 2. Monitor Active Connections (Live)
-  # # Watch connections to port 8080
-  # watch -n 1 'ss -tn state established "( dport = :8080 or sport = :8080 )"'
-
-  # # Show all connections with IP addresses
-  # ss -tnp | grep :8080
-
-  # Then monitor with:
-  # journalctl -k -f | grep HEADSCALE  # Kernel logs for port 8080
-
-  # 4. Packet Capture (Deep Inspection)
-  # # Capture all traffic on port 8080
-  # sudo tcpdump -i any port 8080 -n
-
-  # # Save to file for later analysis
-  # sudo tcpdump -i any port 8080 -w /tmp/port8080.pcap
-
-  # Open firewall for headscale
-  networking.firewall = {
-    allowedTCPPorts = [8080];
-    # Log dropped packets (potential attacks)
-    # logRefusedPackets = true;
-
-    # Custom rules to log accepted connections on 8080
-    extraCommands = ''
-          iptables -A INPUT -p tcp --dport 8080 -j LOG --log-prefix "HEADSCALE: "
-      --log-level 4
-    '';
-  };
-
-  # Rate limiting with fail2ban
-  services.fail2ban = {
-    enable = true;
-    maxretry = 5;
-    bantime = "1h";
-
-    # Ignore Tailscale/Headscale IP range to prevent banning trusted devices
-    ignoreIP = [
-      "127.0.0.0/8"      # localhost
-      "192.168.0.0/16"   # local network
-      "100.64.0.0/10"    # Tailscale/Headscale range
-    ];
-
-    jails = {
-      headscale = ''
-        enabled = true
-        filter = headscale
-        port = 8080
-        logpath = /var/log/headscale/headscale.log
-        maxretry = 10
-        findtime = 600
-        bantime = 3600
-      '';
-    };
-  };
-
-  # Fail2ban filter for headscale
-  environment.etc."fail2ban/filter.d/headscale.conf" = {
-    text = ''
-      [Definition]
-      failregex = ^.*Failed authentication.*from <HOST>.*$
-                  ^.*Invalid key.*from <HOST>.*$
-      ignoreregex =
-    '';
-  };
+  # Headscale configuration is in ./headscale-server.nix
 }
