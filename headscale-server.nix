@@ -267,9 +267,9 @@
         show_top_ips
         show_recent
 
-        echo -e "''${BOLD}''${CYAN}Press Ctrl+C to exit | Auto-refresh in 5 seconds...''${NC}"
+        echo -e "''${BOLD}''${CYAN}Press Ctrl+C to exit | Auto-refresh in 10 minutes...''${NC}"
 
-        sleep 5
+        sleep 600
       done
     '')
   ];
