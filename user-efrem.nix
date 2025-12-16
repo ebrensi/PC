@@ -81,52 +81,52 @@ in {
   # Headscale VPN Client - Join Guardian mesh network
   services.tailscale.enable = true;
 
-#   systemd.services.headscale-join = let server-ip = "100.85.51.6"; in {
-#     description = "Join Headscale VPN as admin";
-#     wantedBy = [ "multi-user.target" ];
-#     after = [ "network-online.target" "tailscaled.service" ];
-#     wants = [ "network-online.target" ];
-# 
-#     serviceConfig = {
-#       Type = "oneshot";
-#       RemainAfterExit = true;
-#     };
-# 
-#     script = let
-#       tailscale = "${pkgs.tailscale}/bin/tailscale";
-#       # Read the auth key from Guardian repo
-#       authKeyFile = "/home/${user}/dev/AngelProtection/Guardian/provision/nix/secrets/headscale-preauth-key";
-#       authKey = builtins.readFile authKeyFile;
-#     in ''
-#       # Wait for tailscaled to be ready
-#       for i in {1..30}; do
-#         if ${tailscale} status 2>&1 | grep -q "Logged out\|Running"; then
-#           break
-#         fi
-#         echo "Waiting for tailscaled... ($i/30)"
-#         sleep 2
-#       done
-# 
-#       # Check if already connected to headscale
-#       status=$(${tailscale} status --json 2>/dev/null | ${pkgs.jq}/bin/jq -r .BackendState || echo "Stopped")
-# 
-#       if [ "$status" = "Running" ]; then
-#         echo "Already connected to headscale VPN"
-#         exit 0
-#       fi
-# 
-#       # Join headscale network as admin
-#       ${tailscale} up \
-#         --login-server=http://${server-ip}:8080 \
-#         --authkey="${authKey}" \
-#         --advertise-tags=tag:admin \
-#         --accept-routes \
-#         --accept-dns \
-#         --hostname="$(hostname)"
-# 
-#       echo "Joined headscale VPN as admin"
-#     '';
-#   };
+  #   systemd.services.headscale-join = let server-ip = "100.85.51.6"; in {
+  #     description = "Join Headscale VPN as admin";
+  #     wantedBy = [ "multi-user.target" ];
+  #     after = [ "network-online.target" "tailscaled.service" ];
+  #     wants = [ "network-online.target" ];
+  #
+  #     serviceConfig = {
+  #       Type = "oneshot";
+  #       RemainAfterExit = true;
+  #     };
+  #
+  #     script = let
+  #       tailscale = "${pkgs.tailscale}/bin/tailscale";
+  #       # Read the auth key from Guardian repo
+  #       authKeyFile = "/home/${user}/dev/AngelProtection/Guardian/provision/nix/secrets/headscale-preauth-key";
+  #       authKey = builtins.readFile authKeyFile;
+  #     in ''
+  #       # Wait for tailscaled to be ready
+  #       for i in {1..30}; do
+  #         if ${tailscale} status 2>&1 | grep -q "Logged out\|Running"; then
+  #           break
+  #         fi
+  #         echo "Waiting for tailscaled... ($i/30)"
+  #         sleep 2
+  #       done
+  #
+  #       # Check if already connected to headscale
+  #       status=$(${tailscale} status --json 2>/dev/null | ${pkgs.jq}/bin/jq -r .BackendState || echo "Stopped")
+  #
+  #       if [ "$status" = "Running" ]; then
+  #         echo "Already connected to headscale VPN"
+  #         exit 0
+  #       fi
+  #
+  #       # Join headscale network as admin
+  #       ${tailscale} up \
+  #         --login-server=http://${server-ip}:8080 \
+  #         --authkey="${authKey}" \
+  #         --advertise-tags=tag:admin \
+  #         --accept-routes \
+  #         --accept-dns \
+  #         --hostname="$(hostname)"
+  #
+  #       echo "Joined headscale VPN as admin"
+  #     '';
+  #   };
 
   programs = {
     foot.enable = true;
@@ -238,6 +238,7 @@ in {
         ForwardAgent yes
         IdentityAgent $SSH_AUTH_SOCK
     '';
+    iftop.enable = true;
   };
 
   age.secrets = let
