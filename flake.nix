@@ -111,7 +111,6 @@
         );
         test = pkgs.writeShellScriptBin "test" ''
           export NIX_CONFIG='
-            accept-flake-config = true
             warn-dirty = false
           '
           ${pkgs.lib.getExe pkgs.nix-output-monitor} build ${all-systems} --no-link --keep-going --show-trace
