@@ -50,6 +50,9 @@ in {
   };
   nix.settings.trusted-users = [user];
 
+  # https://github.com/DieracDelta/nix-btm?tab=readme-ov-file#how-to-get-eagle-eye-viewjobs-view-to-work
+  nix.extraOptions = "json-log-path = /tmp/nixbtm.sock";
+
   # Some files/folders that should exist
   systemd.tmpfiles.rules = let
     HOME = "/home/${user}";
