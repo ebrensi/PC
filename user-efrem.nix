@@ -51,7 +51,7 @@ in {
   nix.settings.trusted-users = [user];
 
   # https://github.com/DieracDelta/nix-btm?tab=readme-ov-file#how-to-get-eagle-eye-viewjobs-view-to-work
-  nix.extraOptions = "json-log-path = /tmp/nixbtm.sock";
+  nix.extraOptions = "json-log-path = /tmp/nixbtm/nixbtm.sock";
 
   # Some files/folders that should exist
   systemd.tmpfiles.rules = let
@@ -61,6 +61,7 @@ in {
     "d  ${HOME}/dev                 775 ${user} users -"
     "L+ ${HOME}/.tigrc              600 ${user} users - /etc/tig/config"
     "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
+	"d /tmp/nixbtm 0777 root root -"
   ];
 
   services.eternal-terminal.enable = true;
