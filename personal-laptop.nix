@@ -43,6 +43,7 @@
     };
     machines = [
       ["home" "x86_64-linux" 4 100]
+      ["home" "aarch64-linux" 4 100]
       ["m1" "aarch64-linux" 4 10]
       ["jetson" "aarch64-linux" 2 10]
     ];
