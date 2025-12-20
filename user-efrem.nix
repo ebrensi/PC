@@ -144,10 +144,10 @@ in {
       terminal = "screen-256color";
       plugins = with pkgs.tmuxPlugins; [
         cpu
-        continuum
         resurrect
+        continuum
       ];
-      extraConfig = ''
+      extraConfigBeforePlugins = ''
         set -g mouse on
 
         # Allow system clipboard access for nested tmux sessions
@@ -158,13 +158,16 @@ in {
         set -as terminal-features ',xterm*:clipboard'
         set -s copy-command 'xsel -i'
 
-        run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
+        # Resurrect settings
+        set -g @resurrect-capture-pane-contents 'on'
 
+        # Continuum settings
         # https://github.com/tmux-plugins/tmux-continuum/blob/master/docs/faq.md
-        run-shell ${pkgs.tmuxPlugins.continuum}/share/tmux-plugins/continuum/continuum.tmux
         set -g @continuum-restore 'on'
-        set -g @continuum-save-interval '60'
-        set -g status-right "C: #{continuum_status} #[fg=black,bg=color15] #{cpu_percentage} %H:%M"
+        set -g @continuum-save-interval '15'
+
+        # Set status-right BEFORE plugins load so they can interpolate the variables
+        set -g status-right "Continuum: #{continuum_status} | CPU: #{cpu_percentage} | %H:%M"
       '';
     };
     vscode = {
