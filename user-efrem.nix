@@ -61,8 +61,13 @@ in {
     "d  ${HOME}/dev                 775 ${user} users -"
     "L+ ${HOME}/.tigrc              600 ${user} users - /etc/tig/config"
     "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
-	"d /tmp/nixbtm 0777 root root -"
+    "d /tmp/nixbtm 0777 root root -"
   ];
+
+  boot.initrd.preDeviceCommands = ''
+    echo -e "If found, please contact:\nEfrem Rensi\n+1510-282-9225...\nBarefootEfrem@gmail.com" \
+      | ${pkgs.neo-cowsay}/bin/cowsay --bold --aurora -f dragon || true
+  '';
 
   services.eternal-terminal.enable = true;
   # # Join headscale with admin tag
