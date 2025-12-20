@@ -147,7 +147,7 @@ in {
         resurrect
         continuum
       ];
-      extraConfig = ''
+      extraConfigBeforePlugins = ''
         set -g mouse on
 
         # Allow system clipboard access for nested tmux sessions
@@ -166,6 +166,7 @@ in {
         set -g @continuum-restore 'on'
         set -g @continuum-save-interval '15'
 
+        # Set status-right BEFORE plugins load so they can interpolate the variables
         set -g status-right "Continuum: #{continuum_status} | CPU: #{cpu_percentage} | %H:%M"
       '';
     };
