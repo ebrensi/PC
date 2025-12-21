@@ -14,8 +14,8 @@
     user = "efrem";
   };
 
-  # nix.settings.extra-platforms = ["aarch64-linux"];
-  # boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  nix.settings.extra-platforms = ["aarch64-linux"];
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
   nixpkgs.config.allowUnsupportedSystem = true;
 
   networking.networkmanager.settings = {

@@ -22,8 +22,8 @@
       Hostname 100.85.51.6
   '';
 
-  # boot.binfmt.emulatedSystems = ["aarch64-linux"];
-  # nix.settings.extra-platforms = ["aarch64-linux"];
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  nix.settings.extra-platforms = ["aarch64-linux"];
 
   # Configure home server as a substituter
   # Priority is set high (1000) so it's only used after public caches
