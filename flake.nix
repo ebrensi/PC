@@ -112,6 +112,7 @@
         test = pkgs.writeShellScriptBin "test" ''
           export NIX_CONFIG='
             warn-dirty = false
+            max-jobs = 3
           '
           ${pkgs.lib.getExe pkgs.nix-output-monitor} build ${all-systems} --no-link --keep-going --show-trace
         '';
