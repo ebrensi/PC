@@ -31,7 +31,7 @@
   nix.settings.substituters = let
     argstr = "trusted=true&compress=true";
   in [
-    "ssh-ng://efrem@home?priority=1000&${argstr}"
+    # "ssh-ng://efrem@home?priority=1000&${argstr}"
   ];
   nix.settings.trusted-public-keys = with (import ./secrets/public-keys.nix); [home-cache-key];
   nix.buildMachines = let
@@ -42,8 +42,8 @@
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      ["home" "x86_64-linux" 4 100]
-      ["home" "aarch64-linux" 4 100]
+      # ["home" "x86_64-linux" 4 100]
+      # ["home" "aarch64-linux" 4 100]
       ["m1" "aarch64-linux" 4 10]
       ["jetson" "aarch64-linux" 2 10]
     ];
