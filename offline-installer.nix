@@ -8,10 +8,10 @@
   hostName = systemToInstall.config.networking.hostName;
   systemPkg = systemToInstall.config.system.build.toplevel;
   diskoScript = systemToInstall.config.system.build.diskoScript;
+  mountScript = systemToInstall.config.system.build.mountScript;
   install-script =
     pkgs.writeShellApplication
     {
-      # TODO: allow user to select target disk interactively
       name = "install-${hostName}";
       runtimeInputs = [pkgs.nixos-install-tools pkgs.gum];
       text = ''
@@ -22,12 +22,10 @@
         main() {
           echo "Installer script for NixOS system ${hostName}"
           echo "Format drive? If it's already formatted, say no!"
-          # We don't want swap as can break your running system in weird ways if you eject the disk
-          # Hopefully disko-install has enough RAM to run without swap, otherwise we can make this configurable in future.
-          gum confirm && eval "DISKO_SKIP_SWAP=1 ${diskoScript}" || echo "Writing to existing partitions"
+          gum confirm && DISKO_SKIP_SWAP=1 ${diskoScript} || ${mountScript}
 
           echo "Installing NixOS system to disk..."
-          eval "nixos-install --no-channel-copy --no-root-password --system ${systemPkg}"
+          sudo nixos-install --no-channel-copy --no-root-password --system ${systemPkg}
         }
 
         if main; then
