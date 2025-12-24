@@ -70,6 +70,27 @@ in {
   '';
 
   services.eternal-terminal.enable = true;
+
+  # Auto-create shared tmux session on boot (matches tmx behavior)
+  systemd.services.tmux-shared = let
+    socketFolder = "/tmp/tmux-shared";
+    sessionName = "shared";
+  in {
+    description = "Shared tmux session for SSH users";
+    wantedBy = ["multi-user.target"];
+    after = ["network.target"];
+
+    serviceConfig = {
+      Type = "forking";
+      User = user;
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${socketFolder}";
+      ExecStart = ''${pkgs.tmux}/bin/tmux -S ${socketFolder}/${sessionName} new-session -d -s ${sessionName}'';
+      ExecStartPost = "${pkgs.coreutils}/bin/chmod 666 ${socketFolder}/${sessionName}";
+      Restart = "on-failure";
+      RestartSec = "10s";
+    };
+  };
+
   # # Join headscale with admin tag
   # systemd.services.headscale-join = let
   #   authKey-path = "/home/efrem/dev/AngelProtection/Guardian/provision/nix/secrets/headscale-preauth-key";
