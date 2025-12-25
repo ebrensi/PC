@@ -29,11 +29,12 @@ in {
       glow
       nix-btm
       multitail
+      alacritty
 
       # Media
       vlc
       imagemagick
-      alacritty
+      zoom
       # ffmpeg
       # gimp
       # shotcut
