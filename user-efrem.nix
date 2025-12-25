@@ -256,14 +256,12 @@ in {
     ssh.extraConfig = ''
       # Global SSH config for user efrem
       Host *
-        # IdentityFile ${config.age.secrets.personal-ssh-key.path}
-        # IdentityFile ${config.age.secrets.AP-ssh-key.path}
+        IdentityFile ~/.ssh/AngelProtection
         # SSH keepalive settings
         ServerAliveInterval 15
         ServerAliveCountMax 3
         TCPKeepAlive yes
 
-        # SSH Multiplexing (re-enabled after fixing ssh-agent conflicts)
         ControlMaster auto
         ControlPath /tmp/ssh-%C
         ControlPersist 10s
@@ -392,8 +390,8 @@ in {
       }
 
       # Add SSH keys to the systemd ssh-agent
-      # ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
-      # ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
+      ssh-add -q ~/.ssh/id_ed25519 2>/dev/null
+      ssh-add -q ~/.ssh/AngelProtection 2>/dev/null
     '';
   };
 }
