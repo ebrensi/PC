@@ -48,5 +48,10 @@ in {
   environment.interactiveShellInit = "${install-script}/bin/*";
   services.getty.helpLine = pkgs.lib.mkForce "Run `install-${hostName}` from the command line to install aarch64-builder to a disk";
   isoImage.edition = hostName;
-  # isoImage.includeSystemBuildDependencies = true;
+
+  # Include the system to install in the ISO's nix store
+  isoImage.storeContents = [systemPkg];
+
+  # Increase tmpfs size to handle installation
+  boot.tmpOnTmpfsSize = "75%";
 }
