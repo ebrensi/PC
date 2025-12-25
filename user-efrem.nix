@@ -255,8 +255,8 @@ in {
     ssh.extraConfig = ''
       # Global SSH config for user efrem
       Host *
-        IdentityFile ${config.age.secrets.personal-ssh-key.path}
-        IdentityFile ${config.age.secrets.AP-ssh-key.path}
+        # IdentityFile ${config.age.secrets.personal-ssh-key.path}
+        # IdentityFile ${config.age.secrets.AP-ssh-key.path}
         # SSH keepalive settings
         ServerAliveInterval 15
         ServerAliveCountMax 3
@@ -274,34 +274,34 @@ in {
     iftop.enable = true;
   };
 
-  age.secrets = let
-    HOME = "/home/${user}";
-  in {
-    personal-ssh-key = {
-      file = ./secrets/efrem.age;
-      path = "${HOME}/.ssh/id_ed25519";
-      mode = "600";
-      owner = "efrem";
-    };
-    AP-ssh-key = {
-      file = ./secrets/AngelProtection-efrem.age;
-      path = "${HOME}/.ssh/AngelProtection";
-      mode = "600";
-      owner = "efrem";
-    };
-    wakatime-cfg = {
-      file = ./secrets/wakatime.age;
-      path = "${HOME}/.wakatime.cfg";
-      mode = "600";
-      owner = "efrem";
-    };
-    aws-credentials = {
-      file = ./secrets/aws-credentials.age;
-      path = "${HOME}/.aws/credentials";
-      mode = "644";
-      owner = "efrem";
-    };
-  };
+  # age.secrets = let
+  #   HOME = "/home/${user}";
+  # in {
+  #   personal-ssh-key = {
+  #     file = ./secrets/efrem.age;
+  #     path = "${HOME}/.ssh/id_ed25519";
+  #     mode = "600";
+  #     owner = "efrem";
+  #   };
+  #   AP-ssh-key = {
+  #     file = ./secrets/AngelProtection-efrem.age;
+  #     path = "${HOME}/.ssh/AngelProtection";
+  #     mode = "600";
+  #     owner = "efrem";
+  #   };
+  #   wakatime-cfg = {
+  #     file = ./secrets/wakatime.age;
+  #     path = "${HOME}/.wakatime.cfg";
+  #     mode = "600";
+  #     owner = "efrem";
+  #   };
+  #   aws-credentials = {
+  #     file = ./secrets/aws-credentials.age;
+  #     path = "${HOME}/.aws/credentials";
+  #     mode = "644";
+  #     owner = "efrem";
+  #   };
+  # };
 
   environment = {
     etc."tig/config".text = ''
@@ -391,8 +391,8 @@ in {
       }
 
       # Add SSH keys to the systemd ssh-agent
-      ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
-      ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
+      # ssh-add -q ${config.age.secrets.personal-ssh-key.path} 2>/dev/null
+      # ssh-add -q ${config.age.secrets.AP-ssh-key.path} 2>/dev/null
     '';
   };
 }

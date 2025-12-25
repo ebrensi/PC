@@ -91,8 +91,8 @@
 
   # This is for using this machine as a nix cache server
   #  any files built here are signed with this private key
-  age.secrets.home-nix-cache.file = ./secrets/home-nix-cache.age;
-  nix.settings.secret-key-files = [config.age.secrets.home-nix-cache.path];
+  # age.secrets.home-nix-cache.file = ./secrets/home-nix-cache.age;
+  # nix.settings.secret-key-files = [config.age.secrets.home-nix-cache.path];
 
   # Set a consistent mount point for my external USB drive
   #  connected via USB to thundebolt dock
