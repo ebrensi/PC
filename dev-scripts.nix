@@ -137,6 +137,6 @@ in rec {
       tmux -S $SOCKET new-session -As $SESSION_NAME
       chmod 666 $SOCKET
       # Set terminal title
-      echo -ne "\033]0;$$(hostname -s):$SESSION_NAME\007"
+      echo -ne "\033]0;$(hostname -s):$SESSION_NAME\007"
     '';
 }
