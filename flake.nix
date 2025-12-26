@@ -70,6 +70,7 @@
 
     packages.x86_64-linux = let
       pkgs = import nixpkgs {system = "x86_64-linux";};
+      platform = pkgs.stdenv.hostPlatform.system;
       dev-scripts-attrs = import ./dev-scripts.nix {inherit pkgs;};
       installer-base = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -112,11 +113,8 @@
           ["thinkpad" "adder-ws" "m1"]
         );
         test = pkgs.writeShellScriptBin "test" ''
-          export NIX_CONFIG='
-            warn-dirty = false
-            max-jobs = 3
-          '
-          ${pkgs.lib.getExe pkgs.nix-output-monitor} build ${all-systems} --no-link --keep-going --show-trace
+          source ${dev-scripts-attrs.nix-config}
+          exec ${pkgs.lib.getExe pkgs.nix-fast-build} --flake .#packages.${platform}.all-systems
         '';
       }
       // dev-scripts-attrs;

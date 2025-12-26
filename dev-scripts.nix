@@ -2,6 +2,14 @@
   sshOpts = "-A -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ConnectionAttempts=5 -o ConnectTimeout=3";
   nom = "${pkgs.nix-output-monitor}/bin/nom";
 in rec {
+  nix-config = pkgs.writeText "nix-config" ''
+    export NIX_CONFIG="
+      max-jobs = 2
+      warn-dirty = false
+      always-allow-substitutes = true
+      builders-use-substitutes = true
+    "
+  '';
   install-direct = pkgs.writeShellScriptBin "install-direct" ''
     # Usage: install-direct <flakePath> <host:port>
 
@@ -9,6 +17,8 @@ in rec {
     hostAndPort=$2
     IFS=':' read -r host port <<< "$hostAndPort"
     [ -n "$port" ] && PORT_OPT="-p $port"
+
+    source ${nix-config}
 
     systemPath=$(${nom} build $flakePath.config.system.build.toplevel --no-link --print-out-paths) || {
       echo "Failed to build system closure"
@@ -39,6 +49,8 @@ in rec {
     echo "Copying $storePath closure to $host..." >&2
     sshOpts="${sshOpts}"
 
+    source ${nix-config}
+
     NIX_SSHOPTS="$sshOpts" nix copy  \
       --no-check-sigs \
       --no-update-lock-file \
@@ -53,6 +65,8 @@ in rec {
     #  and activate it there. Use this script to update the NixOS system already running on a remote machine,
     #  without using the remote cache.
     # Usage: deploy-direct <flakePath> <host:port>
+
+    source ${nix-config}
 
     flakePath=$1
     targetHost=$2
