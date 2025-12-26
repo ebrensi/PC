@@ -37,11 +37,14 @@
 
   # Script to clone repositories
   cloneScript = pkgs.writeShellScript "setup-dev-folders" ''
-    # set -euo pipefail
+    set -euo pipefail
 
     MAIN_USER="${user}"
     MAIN_USER_HOME=/home/$MAIN_USER
     DEV_DIR="$MAIN_USER_HOME/dev"
+
+    # Set up SSH to use the correct key
+    export GIT_SSH_COMMAND="ssh -i $MAIN_USER_HOME/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new -o IdentitiesOnly=yes"
 
     echo "Setting up dev folders for user $MAIN_USER at $DEV_DIR"
 
@@ -59,16 +62,18 @@
         fi
       '')
       reposToClone)}
+
+    # Wait for all background clone jobs to complete
+    wait
   '';
 in {
-  shellAliases = {
+  environment.shellAliases = {
     pc = "cd /home/${user}/dev/PC";
     ap = "cd /home/${user}/dev/Guardian/provision/nix";
   };
 
   systemd.services.setup-dev-folders = {
     description = "Setup development folders";
-    wantedBy = ["multi-user.target"];
     after = ["network-online.target"];
     wants = ["network-online.target"];
 
@@ -77,8 +82,16 @@ in {
       User = user;
       Group = "users";
       ExecStart = "${cloneScript}";
-      RemainAfterExit = false;
+      RemainAfterExit = true;
     };
     path = with pkgs; [git coreutils openssh];
+  };
+
+  # Trigger the service asynchronously on every activation (rebuild)
+  system.activationScripts.setup-dev-folders = {
+    text = ''
+      ${pkgs.systemd}/bin/systemctl start setup-dev-folders.service --no-block || true
+    '';
+    deps = [];
   };
 }
