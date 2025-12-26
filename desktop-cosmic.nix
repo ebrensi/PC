@@ -6,6 +6,8 @@
   # Cosmic desktop
   services.desktopManager.cosmic.enable = true;
   services.displayManager.cosmic-greeter.enable = true;
+  services.system76-scheduler.enable = true;
+
   # cosmic doesn't have good bluetooth support yet, so use blueman for now
   services.blueman.enable = true;
 
@@ -29,6 +31,7 @@
 
   # We will use this until Cosmic's firmware update works
   environment.systemPackages = with pkgs; [
+    cosmic-wallpapers
     firmware-updater
   ];
 }

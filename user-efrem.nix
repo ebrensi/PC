@@ -246,7 +246,9 @@ in {
     ssh.extraConfig = ''
       # Global SSH config for user efrem
       Host *
-        IdentityFile ~/.ssh/AngelProtection
+        IdentityFile /home/efrem/.ssh/AngelProtection
+        IdentityFile /home/efrem/.ssh/id_ed25519
+
         # SSH keepalive settings
         ServerAliveInterval 15
         ServerAliveCountMax 3

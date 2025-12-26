@@ -47,7 +47,7 @@
     Host m1
       Hostname 192.168.1.162
 
-    Host jetson
+    Host j1
       Hostname 192.168.1.156
 
     Host thinkpad
@@ -58,6 +58,7 @@
     mkBuilder = hostName: system: maxJobs: speedFactor: {
       inherit hostName system maxJobs speedFactor;
       sshUser = "efrem";
+      sshKey = "/home/efrem/.ssh/id_ed25519";
       protocol = "ssh-ng";
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
@@ -65,15 +66,15 @@
       # ["t1" "x86_64-linux" 1 100]
       # ["t2" "x86_64-linux" 1 100]
       # ["AP1" "x86_64-linux" 4 100]
-      #
-      ["m1" "aarch64-linux" 8 1000]
+      ["m1" "aarch64-linux" 4 1000]
     ];
   in
     (map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines)
     ++ [
       {
-        hostName = "jetson"; # Your Jetson or remote builder
+        hostName = "j1"; # Your Jetson or remote builder
         sshUser = "efrem";
+        sshKey = "/home/efrem/.ssh/id_ed25519";
         protocol = "ssh-ng";
         system = "aarch64-linux";
         maxJobs = 2;
