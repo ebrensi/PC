@@ -166,8 +166,6 @@ in {
       terminal = "screen-256color";
       plugins = with pkgs.tmuxPlugins; [
         cpu
-        resurrect
-        continuum
       ];
       extraConfigBeforePlugins = ''
         set -g mouse on
@@ -180,16 +178,8 @@ in {
         set -as terminal-features ',xterm*:clipboard'
         set -s copy-command 'xsel -i'
 
-        # Resurrect settings
-        set -g @resurrect-capture-pane-contents 'on'
-
-        # Continuum settings
-        # https://github.com/tmux-plugins/tmux-continuum/blob/master/docs/faq.md
-        set -g @continuum-restore 'on'
-        set -g @continuum-save-interval '15'
-
         # Set status-right BEFORE plugins load so they can interpolate the variables
-        set -g status-right "Continuum: #{continuum_status} | CPU: #{cpu_percentage} | %H:%M"
+        set -g status-right "CPU: #{cpu_percentage} | %H:%M"
       '';
     };
     vscode = {
@@ -273,34 +263,36 @@ in {
     iftop.enable = true;
   };
 
-  # age.secrets = let
-  #   HOME = "/home/${user}";
-  # in {
-  #   personal-ssh-key = {
-  #     file = ./secrets/efrem.age;
-  #     path = "${HOME}/.ssh/id_ed25519";
-  #     mode = "600";
-  #     owner = "efrem";
-  #   };
-  #   AP-ssh-key = {
-  #     file = ./secrets/AngelProtection-efrem.age;
-  #     path = "${HOME}/.ssh/AngelProtection";
-  #     mode = "600";
-  #     owner = "efrem";
-  #   };
-  #   wakatime-cfg = {
-  #     file = ./secrets/wakatime.age;
-  #     path = "${HOME}/.wakatime.cfg";
-  #     mode = "600";
-  #     owner = "efrem";
-  #   };
-  #   aws-credentials = {
-  #     file = ./secrets/aws-credentials.age;
-  #     path = "${HOME}/.aws/credentials";
-  #     mode = "644";
-  #     owner = "efrem";
-  #   };
-  # };
+  age.identityPaths = ["/var/lib/persistent/age-decrypt-key"];
+
+  age.secrets = let
+    HOME = "/home/${user}";
+  in {
+    # personal-ssh-key = {
+    #   file = ./secrets/.age/efrem.age;
+    #   path = "${HOME}/.ssh/id_ed25519";
+    #   mode = "600";
+    #   owner = "efrem";
+    # };
+    # AP-ssh-key = {
+    #   file = ./secrets/.age/AngelProtection-efrem.age;
+    #   path = "${HOME}/.ssh/AngelProtection";
+    #   mode = "600";
+    #   owner = "efrem";
+    # };
+    wakatime-cfg = {
+      file = ./secrets/wakatime.age;
+      path = "${HOME}/.wakatime.cfg";
+      mode = "600";
+      owner = "efrem";
+    };
+    aws-credentials = {
+      file = ./secrets/aws-credentials.age;
+      path = "${HOME}/.aws/credentials";
+      mode = "644";
+      owner = "efrem";
+    };
+  };
 
   environment = {
     etc."tig/config".text = ''
