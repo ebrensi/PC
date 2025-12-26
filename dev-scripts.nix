@@ -14,10 +14,14 @@ in rec {
       echo "Failed to build system closure"
       exit 1
     }
-    diskoScript=$(nix build $flakePath.config.system.build.diskoScript --no-link --print-out-paths) || {
+
+    ${pkgs.gum}/bin/gum confirm "Format Drive" && diskoScript=diskoScript || diskoScript=mountScript
+
+    diskoScript=$(nix build $flakePath.config.system.build."$diskoScript" --no-link --print-out-paths) || {
       echo "Failed to build disko script"
       exit 1
     }
+
     echo "Installing $flakePath on $hostAndPort"
     ${pkgs.nixos-anywhere}/bin/nixos-anywhere  \
         --no-substitute-on-destination \
