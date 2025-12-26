@@ -8,10 +8,7 @@
 }: let
   user = "efrem";
   dev-folders = {
-    AngelProtection = {
-      Guardian = "git@github.com:AngelProtection/Guardian.git";
-      Media = "git@github.com:AngelProtection/Media.git";
-    };
+    Guardian = "git@github.com:AngelProtection/Guardian.git";
     Geminae = "git@github.com:Project-Geminae/Geminae.git";
     heatflask = "git@github.com:ebrensi/heatflask.git";
     PC = "git@github.com:ebrensi/PC.git";
@@ -64,6 +61,11 @@
       reposToClone)}
   '';
 in {
+  shellAliases = {
+    pc = "cd /home/${user}/dev/PC";
+    ap = "cd /home/${user}/dev/Guardian/provision/nix";
+  };
+
   systemd.services.setup-dev-folders = {
     description = "Setup development folders";
     wantedBy = ["multi-user.target"];
@@ -75,7 +77,7 @@ in {
       User = user;
       Group = "users";
       ExecStart = "${cloneScript}";
-      RemainAfterExit = true;
+      RemainAfterExit = false;
     };
     path = with pkgs; [git coreutils openssh];
   };

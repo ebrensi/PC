@@ -59,8 +59,7 @@
 
     # Custom rules to log accepted connections on 8080
     extraCommands = ''
-          iptables -A INPUT -p tcp --dport 8080 -j LOG --log-prefix "HEADSCALE: "
-      --log-level 4
+      iptables -A INPUT -p tcp --dport 8080 -j LOG --log-prefix "HEADSCALE: " --log-level 4
     '';
   };
 

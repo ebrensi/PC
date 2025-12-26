@@ -6,7 +6,6 @@
 }: {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
-    ./headscale-server.nix
   ];
 
   services.displayManager.autoLogin = {

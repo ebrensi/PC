@@ -263,7 +263,7 @@ in {
     iftop.enable = true;
   };
 
-  age.identityPaths = ["/var/lib/persistent/age-decrypt-key"];
+  # age.identityPaths = ["/var/lib/persistent/age-decrypt-key"];
 
   age.secrets = let
     HOME = "/home/${user}";
@@ -307,8 +307,6 @@ in {
     shellAliases = let
       flake-path = "/home/${user}/dev/PC";
     in {
-      pc = "cd ${flake-path}";
-      ap = "cd ~/dev/AngelProtection/Guardian/provision/nix";
       flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
       yay = "nixos-rebuild switch --flake ${flake-path} --sudo |& nom";
       N = "sudo -E nnn -dH";
