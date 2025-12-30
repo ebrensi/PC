@@ -114,7 +114,7 @@
         );
         test = pkgs.writeShellScriptBin "test" ''
           source ${dev-scripts-attrs.nix-config}
-          exec ${pkgs.lib.getExe pkgs.nix-fast-build} --flake .#packages.${platform}.all-systems
+          exec ${pkgs.lib.getExe pkgs.nix-fast-build} --flake .#packages.${platform}.all-systems --skip-cached
         '';
       }
       // dev-scripts-attrs;
