@@ -15,4 +15,5 @@ in {
   "home-nix-cache.age".publicKeys = [home-server] ++ all-users;
   "wakatime.age".publicKeys = all-machines ++ [user-efrem];
   "aws-credentials.age".publicKeys = all-machines ++ [user-efrem];
+  "ws-adder-wg-key.age".publicKeys = [home-server] ++ [user-efrem];
 }
