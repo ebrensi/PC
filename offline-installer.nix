@@ -53,5 +53,5 @@ in {
   isoImage.storeContents = [systemPkg];
 
   # Increase tmpfs size to handle installation
-  boot.tmpOnTmpfsSize = "75%";
+  boot.tmp.tmpfsSize = "75%";
 }
