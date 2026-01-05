@@ -27,6 +27,9 @@
           ${mountScript}
         fi
 
+        # Ensure /mnt has correct permissions for nixos-install
+        chmod 755 /mnt
+
         echo "Installing NixOS system to disk..."
         nixos-install --no-channel-copy --no-root-password --system ${systemPkg}
       }
