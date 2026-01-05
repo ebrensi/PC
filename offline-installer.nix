@@ -28,7 +28,7 @@
         fi
 
         echo "Installing NixOS system to disk..."
-        sudo nixos-install --no-channel-copy --no-root-password --system ${systemPkg}
+        nixos-install --no-channel-copy --no-root-password --system ${systemPkg}
       }
 
       if main; then
@@ -39,12 +39,12 @@
       fi
 
       echo "Done! ${hostName} will reboot now."
-      nohup sh -c 'sleep 3 && sudo reboot' >/dev/null &
+      nohup sh -c 'sleep 3 && reboot' >/dev/null &
     '';
   };
 in {
   environment.systemPackages = [install-script];
-  services.getty.autologinUser = pkgs.lib.mkForce "nixos";
+  services.getty.autologinUser = pkgs.lib.mkForce "root";
   environment.interactiveShellInit = "${pkgs.lib.getExe install-script}";
   services.getty.helpLine = pkgs.lib.mkForce "Run `install-${hostName}` from the command line to install aarch64-builder to a disk";
   isoImage.edition = hostName;
