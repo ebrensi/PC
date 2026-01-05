@@ -73,6 +73,7 @@
       platform = pkgs.stdenv.hostPlatform.system;
       keys = import ./secrets/public-keys.nix;
       dev-scripts-attrs = import ./dev-scripts.nix {inherit pkgs;};
+
       installer-base = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
