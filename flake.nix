@@ -71,10 +71,19 @@
     packages.x86_64-linux = let
       pkgs = import nixpkgs {system = "x86_64-linux";};
       platform = pkgs.stdenv.hostPlatform.system;
+      keys = import ./secrets/public-keys.nix;
       dev-scripts-attrs = import ./dev-scripts.nix {inherit pkgs;};
       installer-base = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = ["${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"];
+        modules = [
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"
+          self.inputs.agenix.nixosModules.default
+          ./network-installer.nix
+          {
+            networking.wireless.networks.CiscoKid.pskRaw = "8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55";
+            users.users.root.openssh.authorizedKeys.keys = [keys.personal-ssh-key];
+          }
+        ];
       };
       mkInstaller = hostname:
         (installer-base.extendModules {
@@ -90,20 +99,7 @@
         adder-ws = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
         m1 = self.nixosConfigurations.m1.config.system.build.toplevel;
 
-        network-installer-iso = let
-          keys = import ./secrets/public-keys.nix;
-        in
-          (installer-base.extendModules
-            {
-              modules = [
-                self.inputs.agenix.nixosModules.default
-                ./network-installer.nix
-                {
-                  networking.wireless.networks.CiscoKid.pskRaw = "8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55";
-                  users.users.root.openssh.authorizedKeys.keys = [keys.personal-ssh-key];
-                }
-              ];
-            }).config.system.build.isoImage;
+        network-installer-iso = installer-base.config.system.build.isoImage;
 
         all-systems = pkgs.linkFarm "all-systems" (
           map (name: {

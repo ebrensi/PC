@@ -39,7 +39,6 @@ in {
       # gimp
       # shotcut
       # libreoffice-fresh
-
       dev-scripts.tmx
     ];
     initialPassword = "password";
