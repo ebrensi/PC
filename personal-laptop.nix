@@ -70,7 +70,7 @@
   # '';
 
   networking.firewall.allowedUDPPorts = [51822];
-  age.secrets.wg-key-laptop.file = "./secrets/thinkpad-wg-key.age";
+  age.secrets.wg-thinkpad.file = ./secrets/wg-thinkpad.age;
   # public key: wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=
   networking.wireguard = {
     enable = true;
@@ -83,7 +83,7 @@
         # WireGuard Port
         # Must be accessible by peers
         listenPort = 51822;
-        privateKeyFile = config.age.secrets.wg-key-home.path;
+        privateKeyFile = config.age.secrets.wg-thinkpad.path;
 
         peers = [
           {
