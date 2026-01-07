@@ -55,7 +55,7 @@
             name = "thinkpad";
             publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
             allowedIPs = ["12.167.1.3/32"]; # thinkpad can be sent packets meant for itself
-            endpoint = "thinkpad.local:51820";
+            # endpoint = "thinkpad.local:51820";
           }
         ];
       };
