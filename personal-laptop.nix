@@ -92,7 +92,7 @@
             allowedIPs = [
               "12.167.1.1/32"
             ];
-            endpoint = "192.168.1.154:51820";
+            endpoint = "73.15.57.26:51820";
             #  ToDo: route to endpoint not automatically configured
             # https://wiki.archlinux.org/index.php/WireGuard#Loop_routing
             # https://discourse.nixos.org/t/solved-minimal-firewall-setup-for-wireguard-client/7577
