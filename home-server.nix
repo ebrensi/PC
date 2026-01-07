@@ -66,7 +66,7 @@
     enable = true;
     logLevel = "info";
     enableGossipEncryption = true;
-    gossipSecretFile = ../secrets/wg-automesh.pem; # Shared secret across all nodes
+    gossipSecretFile = ./secrets/wg-automesh.pem; # Shared secret across all nodes
     enablePersistence = true;
     openFirewall = true;
 
