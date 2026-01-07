@@ -42,7 +42,6 @@
         AllowAgentForwarding = true;
       };
     };
-    tailscale.enable = true;
 
     printing = {
       # see https://wiki.nixos.org/wiki/Printing
