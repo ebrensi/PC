@@ -47,7 +47,7 @@
           {
             name = "relay";
             publicKey = "JTXE6l7I7FeaBM0GIP2e7YK6h6yhVmBDJs9WdYdd8Vk=";
-            allowedIPs = ["12.167.1.1/24"]; # relay can be sent packets meant for any peer
+            allowedIPs = ["12.167.1.0/24"]; # relay can be sent packets meant for any peer
             endpoint = "73.15.57.26:51820";
             persistentKeepalive = 25;
           }
