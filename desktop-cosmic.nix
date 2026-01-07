@@ -19,8 +19,8 @@
   boot.kernelParams = ["nvidia_drm.fbdev=1"];
 
   # prevent system from auto-sleeping
-  # systemd.targets.sleep.enable = false;
-  # systemd.targets.suspend.enable = false;
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
