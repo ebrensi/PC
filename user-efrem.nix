@@ -30,6 +30,7 @@ in {
       nix-btm
       multitail
       alacritty
+      wireguard-tools
 
       # Media
       vlc

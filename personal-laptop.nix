@@ -68,4 +68,39 @@
   #   auth sufficient ${pkgs.fprintd}/lib/security/pam_fprintd.so max-tries=3 timeout=30
   #   auth sufficient ${pkgs.linux-pam}/lib/security/pam_unix.so likeauth try_first_pass
   # '';
+
+  networking.firewall.allowedUDPPorts = [51822];
+  age.secrets.wg-key-laptop.file = "./secrets/thinkpad-wg-key.age";
+  # public key: wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=
+  networking.wireguard = {
+    enable = true;
+    interfaces = {
+      # network interface name.
+      wghome = {
+        # the IP address and subnet of this peer
+        ips = ["192.167.1.2/32"];
+
+        # WireGuard Port
+        # Must be accessible by peers
+        listenPort = 51822;
+        privateKeyFile = config.age.secrets.wg-key-home.path;
+
+        peers = [
+          {
+            name = "ws-adder";
+            publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
+            allowedIPs = [
+              "192.167.1.1/32"
+            ];
+            endpoint = "73.15.57.26:51822";
+            #  ToDo: route to endpoint not automatically configured
+            # https://wiki.archlinux.org/index.php/WireGuard#Loop_routing
+            # https://discourse.nixos.org/t/solved-minimal-firewall-setup-for-wireguard-client/7577
+            # Send keepalives every 25 seconds. Important to keep NAT tables alive.
+            # persistentKeepalive = 25;
+          }
+        ];
+      };
+    };
+  };
 }
