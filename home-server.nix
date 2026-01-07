@@ -36,26 +36,21 @@
       # network interface name.
       wghome = {
         # the IP address and subnet of this peer
-        ips = ["12.167.1.1/32"];
-
-        # WireGuard Port
-        # Must be accessible by peers
-        listenPort = 51820;
+        ips = ["12.167.1.2/32"];
         privateKeyFile = config.age.secrets.wg-key-home.path;
-
         peers = [
+          {
+            name = "relay";
+            publicKey = "JTXE6l7I7FeaBM0GIP2e7YK6h6yhVmBDJs9WdYdd8Vk=";
+            allowedIPs = ["12.167.1.1/32"];
+            endpoint = "73.15.57.26:51820";
+            persistentKeepalive = 25;
+          }
           {
             name = "thinkpad";
             publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
-            allowedIPs = [
-              "12.167.1.2/32"
-            ];
-            #   endpoint = "192.168.1.56:51820";
-            #  ToDo: route to endpoint not automatically configured
-            # https://wiki.archlinux.org/index.php/WireGuard#Loop_routing
-            # https://discourse.nixos.org/t/solved-minimal-firewall-setup-for-wireguard-client/7577
-            # Send keepalives every 25 seconds. Important to keep NAT tables alive.
-            # persistentKeepalive = 25;
+            allowedIPs = ["12.167.1.3/32"];
+            endpoint = "thinkpad.local:51820";
           }
         ];
       };
