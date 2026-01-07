@@ -101,6 +101,31 @@
           }
         ];
       };
+      # wgwork = {
+      #   # the IP address and subnet of this peer
+      #   ips = ["12.168.1.2/32"];
+
+      #   # WireGuard Port
+      #   # Must be accessible by peers
+      #   listenPort = 51821;
+      #   privateKeyFile = config.age.secrets.wg-thinkpad.path;
+
+      #   peers = [
+      #     {
+      #       name = "work-relay";
+      #       publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
+      #       allowedIPs = [
+      #         "12.168.1.1/32"
+      #       ];
+      #       endpoint = "73.15.57.26:51821";
+      #       #  ToDo: route to endpoint not automatically configured
+      #       # https://wiki.archlinux.org/index.php/WireGuard#Loop_routing
+      #       # https://discourse.nixos.org/t/solved-minimal-firewall-setup-for-wireguard-client/7577
+      #       # Send keepalives every 25 seconds. Important to keep NAT tables alive.
+      #       persistentKeepalive = 25;
+      #     }
+      #   ];
+      # };
     };
   };
 }
