@@ -27,7 +27,11 @@
     };
   };
 
-  networking.firewall.allowedUDPPorts = [51820];
+  networking.firewall = {
+    allowedUDPPorts = [51820];
+    trustedInterfaces = ["wghome"];
+  };
+
   age.secrets.wg-key-home.file = ./secrets/wg-ws-adder.age;
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
   networking.wireguard = {

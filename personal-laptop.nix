@@ -69,7 +69,10 @@
   #   auth sufficient ${pkgs.linux-pam}/lib/security/pam_unix.so likeauth try_first_pass
   # '';
 
-  networking.firewall.allowedUDPPorts = [51820];
+  networking.firewall = {
+    allowedUDPPorts = [51820];
+    trustedInterfaces = ["wghome"];
+  };
   age.secrets.wg-thinkpad.file = ./secrets/wg-thinkpad.age;
   # public key: wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=
   networking.wireguard = {
