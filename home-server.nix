@@ -86,7 +86,7 @@
       Hostname 192.168.1.156
 
     Host thinkpad
-      Hostname 100.106.204.20
+      Hostname 12.167.1.2
   '';
 
   nix.buildMachines = let
