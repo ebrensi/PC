@@ -69,7 +69,7 @@
   #   auth sufficient ${pkgs.linux-pam}/lib/security/pam_unix.so likeauth try_first_pass
   # '';
 
-  networking.firewall.allowedUDPPorts = [51822];
+  networking.firewall.allowedUDPPorts = [51820];
   age.secrets.wg-thinkpad.file = ./secrets/wg-thinkpad.age;
   # public key: wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=
   networking.wireguard = {
@@ -78,11 +78,11 @@
       # network interface name.
       wghome = {
         # the IP address and subnet of this peer
-        ips = ["192.167.1.2/32"];
+        ips = ["12.167.1.2/32"];
 
         # WireGuard Port
         # Must be accessible by peers
-        listenPort = 51822;
+        listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-thinkpad.path;
 
         peers = [
@@ -90,7 +90,7 @@
             name = "ws-adder";
             publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
             allowedIPs = [
-              "192.167.1.1/32"
+              "12.167.1.1/32"
             ];
             endpoint = "73.15.57.26:51822";
             #  ToDo: route to endpoint not automatically configured

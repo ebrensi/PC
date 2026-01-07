@@ -27,7 +27,7 @@
     };
   };
 
-  networking.firewall.allowedUDPPorts = [51822];
+  networking.firewall.allowedUDPPorts = [51820];
   age.secrets.wg-key-home.file = ./secrets/wg-ws-adder.age;
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
   networking.wireguard = {
@@ -36,11 +36,11 @@
       # network interface name.
       wghome = {
         # the IP address and subnet of this peer
-        ips = ["192.167.1.1/32"];
+        ips = ["12.167.1.1/32"];
 
         # WireGuard Port
         # Must be accessible by peers
-        listenPort = 51822;
+        listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-key-home.path;
 
         peers = [
@@ -48,7 +48,7 @@
             name = "thinkpad";
             publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
             allowedIPs = [
-              "192.167.1.2/32"
+              "12.167.1.2/32"
             ];
             #   endpoint = "192.168.1.56:51820";
             #  ToDo: route to endpoint not automatically configured
