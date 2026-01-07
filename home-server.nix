@@ -41,6 +41,7 @@
       wghome = {
         # the IP address and subnet of this peer
         ips = ["12.167.1.2/32"];
+        listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-key-home.path;
         peers = [
           {
