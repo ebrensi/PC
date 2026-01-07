@@ -97,7 +97,7 @@
             # https://wiki.archlinux.org/index.php/WireGuard#Loop_routing
             # https://discourse.nixos.org/t/solved-minimal-firewall-setup-for-wireguard-client/7577
             # Send keepalives every 25 seconds. Important to keep NAT tables alive.
-            # persistentKeepalive = 25;
+            persistentKeepalive = 25;
           }
         ];
       };
