@@ -8,7 +8,7 @@
   user = "efrem";
   public-keys = import ./secrets/public-keys.nix;
 in {
-  imports = [./dev-folders.nix ./wg-endpoint-find.nix];
+  imports = [./dev-folders.nix];
 
   # Systemd service to ensure WireGuard starts after network
   systemd.services.wireguard-wghome = {
