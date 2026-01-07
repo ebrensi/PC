@@ -93,7 +93,7 @@
             persistentKeepalive = 25;
           }
           {
-            name = "adder-ws";
+            name = "adderws";
             publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
             allowedIPs = ["12.167.1.2/32"];
             endpoint = "adder-ws.local:51820";
