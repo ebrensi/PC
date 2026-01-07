@@ -61,6 +61,11 @@
       };
     };
   };
+  # Systemd service to ensure WireGuard starts after network
+  systemd.services.wireguard-wghome = {
+    after = ["network-online.target"];
+    wants = ["network-online.target"];
+  };
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
