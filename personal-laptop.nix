@@ -12,7 +12,7 @@
       Port 2222
 
     Host home
-      Hostname 12.167.1.1
+      Hostname 12.167.1.2
 
     Host t1 t2 m1 jetson
         Hostname %h.local
