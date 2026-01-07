@@ -92,7 +92,6 @@ in {
   };
 
   programs = {
-    wireshark.enable = true;
     foot.enable = true;
     tmux = {
       clock24 = true;

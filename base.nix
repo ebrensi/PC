@@ -18,12 +18,21 @@
   networking = {
     networkmanager = {
       enable = true;
+      dns = "systemd-resolved";
     };
     firewall = {
       enable = true;
       allowedTCPPorts = [22];
     };
     timeServers = options.networking.timeServers.default ++ ["time.aws.com"];
+  };
+
+  # Allows fallback to other DNS servers if this LAN's DNS is slow or failing
+  # Fixes problem with nix S3 cache uploads going into timeout loop
+  services.resolved = {
+    enable = true;
+    dnssec = "allow-downgrade";
+    fallbackDns = ["1.1.1.1" "8.8.8.8"];
   };
 
   services = {
@@ -54,8 +63,8 @@
 
     avahi = {
       enable = true;
-      nssmdns4 = true;
-      nssmdns6 = true;
+      nssmdns4 = false;
+      nssmdns6 = false;
       ipv6 = false;
       openFirewall = true;
       publish = {
