@@ -11,15 +11,9 @@
       Hostname 127.0.0.1
       Port 2222
 
-    Host home
-      Hostname 12.167.1.2
-
     Host t1 t2 m1 jetson
         Hostname %h.local
         ProxyJump home
-
-    Host AP1
-      Hostname 100.85.51.6
   '';
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
@@ -92,8 +86,14 @@
             endpoint = "73.15.57.26:51820";
             persistentKeepalive = 25;
           }
+          {
+            name = "adderws";
+            publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
+            allowedIPs = ["12.167.1.2/32"];
+          }
         ];
       };
     };
   };
+  networking.extraHosts = "12.167.1.2 home";
 }

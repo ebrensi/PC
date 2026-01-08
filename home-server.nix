@@ -51,10 +51,16 @@
             endpoint = "73.15.57.26:51820";
             persistentKeepalive = 25;
           }
+          {
+            name = "thinkpad";
+            publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
+            allowedIPs = ["12.167.1.3/32"];
+          }
         ];
       };
     };
   };
+  networking.extraHosts = "12.167.1.3 thinkpad";
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
@@ -78,9 +84,6 @@
 
     Host j1
       Hostname 192.168.1.156
-
-    Host thinkpad
-      Hostname 12.167.1.3
   '';
 
   nix.buildMachines = let
