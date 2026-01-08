@@ -74,7 +74,7 @@
       # network interface name.
       wghome = {
         # the IP address and subnet of this peer
-        ips = ["12.167.1.3/32"];
+        address = ["12.167.1.3/32"];
         listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-thinkpad.path;
         peers = [
