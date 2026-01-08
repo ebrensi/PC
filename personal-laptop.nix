@@ -94,5 +94,10 @@
       };
     };
   };
+  # Systemd service to ensure WireGuard starts after network
+  # systemd.services.wireguard-wghome = {
+  #   after = ["network-online.target"];
+  #   wants = ["network-online.target"];
+  # };
   networking.extraHosts = "12.167.1.2 home";
 }

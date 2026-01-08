@@ -10,12 +10,6 @@
 in {
   imports = [./dev-folders.nix];
 
-  # Systemd service to ensure WireGuard starts after network
-  systemd.services.wireguard-wghome = {
-    after = ["network-online.target"];
-    wants = ["network-online.target"];
-  };
-
   security.sudo.wheelNeedsPassword = false;
   users.mutableUsers = true;
 
