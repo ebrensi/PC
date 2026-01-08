@@ -26,6 +26,7 @@ in {
       ping = "${pkgs.iputils}/bin/ping";
       avahi = "${pkgs.avahi}/bin";
       netcat = "${pkgs.netcat}/bin/nc";
+      awk = "${pkgs.gawk}/bin/awk";
     in ''
       echo "Starting WireGuard endpoint discovery..."
 
@@ -85,14 +86,17 @@ in {
             echo "Peer ''${pubkey:0:8}... on same LAN, attempting Avahi discovery..."
 
             # Try to resolve VPN IP to hostname via mDNS
-            HOSTNAME=$(${avahi}/avahi-resolve-address "$PEER_VPN_IP" 2>/dev/null | awk '{print $2}')
+            HOSTNAME=$(${avahi}/avahi-resolve-address "$PEER_VPN_IP" 2>/dev/null | ${awk} '{print $2}')
 
             if [ -n "$HOSTNAME" ]; then
               # Ensure hostname has .local suffix for mDNS
-              [[ "$HOSTNAME" != *.local ]] && HOSTNAME="$HOSTNAME.local"
+              case "$HOSTNAME" in
+                *.local) ;;
+                *) HOSTNAME="$HOSTNAME.local" ;;
+              esac
 
               # Resolve hostname to LAN IP
-              LAN_IP=$(${avahi}/avahi-resolve-host-name -4 "$HOSTNAME" 2>/dev/null | awk '{print $2}')
+              LAN_IP=$(${avahi}/avahi-resolve-host-name -4 "$HOSTNAME" 2>/dev/null | ${awk} '{print $2}')
 
               if [ -n "$LAN_IP" ] && test_endpoint "$LAN_IP"; then
                 echo "Found LAN endpoint: $LAN_IP:${wg-port}"
