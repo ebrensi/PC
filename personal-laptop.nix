@@ -4,6 +4,10 @@
   modulesPath,
   ...
 }: {
+  imports = [
+    ./wg-endpoint-discovery.nix
+  ];
+
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
     # SSH config for personal laptop
@@ -94,30 +98,6 @@
           }
         ];
       };
-    };
-  };
-  # In home-server.nix / personal-laptop.nix
-  systemd.services.wireguard-endpoint-probe = {
-    description = "Probe WireGuard peers for endpoint freshness";
-    after = ["wg-quick-wghome.service"];
-
-    serviceConfig = {
-      Type = "oneshot";
-    };
-
-    script = ''
-      ${pkgs.iputils}/bin/ping -c 2 -W 1 12.167.1.1 &  # relay
-      ${pkgs.iputils}/bin/ping -c 2 -W 1 12.167.1.2 &  # adder-ws
-      ${pkgs.iputils}/bin/ping -c 2 -W 1 12.167.1.3 &  # thinkpad
-      wait
-    '';
-  };
-
-  systemd.timers.wireguard-endpoint-probe = {
-    wantedBy = ["timers.target"];
-    timerConfig = {
-      OnBootSec = "30s";
-      OnUnitActiveSec = "5min";
     };
   };
   networking.extraHosts = "12.167.1.2 home";

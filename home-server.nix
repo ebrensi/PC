@@ -6,6 +6,7 @@
 }: {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
+    ./wg-endpoint-discovery.nix
   ];
 
   services.displayManager.autoLogin = {
