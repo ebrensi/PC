@@ -88,6 +88,9 @@ in {
             HOSTNAME=$(${avahi}/avahi-resolve-address "$PEER_VPN_IP" 2>/dev/null | awk '{print $2}')
 
             if [ -n "$HOSTNAME" ]; then
+              # Ensure hostname has .local suffix for mDNS
+              [[ "$HOSTNAME" != *.local ]] && HOSTNAME="$HOSTNAME.local"
+
               # Resolve hostname to LAN IP
               LAN_IP=$(${avahi}/avahi-resolve-host-name -4 "$HOSTNAME" 2>/dev/null | awk '{print $2}')
 
