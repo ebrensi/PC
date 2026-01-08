@@ -30,6 +30,7 @@
   networking.firewall = {
     allowedUDPPorts = [51820];
     trustedInterfaces = ["wghome"];
+    checkReversePath = false; # see https://discourse.nixos.org/t/solved-wireguard-and-firewall-weirdness/58126
   };
 
   age.secrets.wg-key-home.file = ./secrets/wg-ws-adder.age;
@@ -59,11 +60,6 @@
       };
     };
   };
-  # Systemd service to ensure WireGuard starts after network
-  # systemd.services.wireguard-wghome = {
-  #   after = ["network-online.target"];
-  #   wants = ["network-online.target"];
-  # };
   networking.extraHosts = "12.167.1.3 thinkpad";
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro

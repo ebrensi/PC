@@ -66,6 +66,7 @@
   networking.firewall = {
     allowedUDPPorts = [51820];
     trustedInterfaces = ["wghome"];
+    checkReversePath = false;
   };
   age.secrets.wg-thinkpad.file = ./secrets/wg-thinkpad.age;
   # public key: wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=
