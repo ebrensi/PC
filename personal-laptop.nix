@@ -69,8 +69,7 @@
   };
   age.secrets.wg-thinkpad.file = ./secrets/wg-thinkpad.age;
   # public key: wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=
-  networking.wireguard = {
-    enable = true;
+  networking.wg-quick = {
     interfaces = {
       # network interface name.
       wghome = {
@@ -80,14 +79,14 @@
         privateKeyFile = config.age.secrets.wg-thinkpad.path;
         peers = [
           {
-            name = "relay";
+            # name = "relay";
             publicKey = "JTXE6l7I7FeaBM0GIP2e7YK6h6yhVmBDJs9WdYdd8Vk=";
             allowedIPs = ["12.167.1.0/24"];
             endpoint = "73.15.57.26:51820";
             persistentKeepalive = 25;
           }
           {
-            name = "adderws";
+            # name = "adderws";
             publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
             allowedIPs = ["12.167.1.2/32"];
           }
