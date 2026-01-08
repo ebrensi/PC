@@ -92,44 +92,8 @@
             endpoint = "73.15.57.26:51820";
             persistentKeepalive = 25;
           }
-          {
-            name = "adderws";
-            publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
-            allowedIPs = ["12.167.1.2/32"];
-            # endpoint = "adder-ws.local:51820";
-          }
         ];
       };
-    };
-  };
-  services.wgautomesh = {
-    enable = true;
-    logLevel = "info";
-    enableGossipEncryption = true;
-    gossipSecretFile = ./secrets/wg-automesh.pem; # Shared secret across all nodes
-    enablePersistence = true;
-    openFirewall = true;
-
-    settings = {
-      interface = "wghome";
-      gossip_port = 1666;
-      lan_discovery = true; # Important for LAN optimization
-
-      peers = [
-        {
-          pubkey = "JTXE6l7I7FeaBM0GIP2e7YK6h6yhVmBDJs9WdYdd8Vk="; # relay
-          address = "12.167.1.1";
-          endpoint = "73.15.57.26:51820"; # Bootstrap endpoint
-        }
-        {
-          pubkey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA="; # adder-ws
-          address = "12.167.1.2";
-        }
-        {
-          pubkey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg="; # thinkpad
-          address = "12.167.1.3";
-        }
-      ];
     };
   };
 }
