@@ -94,6 +94,7 @@ in {
 
   programs = {
     foot.enable = true;
+    foot.server.enable = true;
     tmux = {
       clock24 = true;
       terminal = "screen-256color";
