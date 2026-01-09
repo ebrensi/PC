@@ -92,9 +92,19 @@ in {
     };
   };
 
+  # Enable foot-server to start with user session
+  systemd.user.services.foot-server = {
+    Unit = {
+      Description = "Foot terminal server mode";
+      Documentation = "man:foot(1)";
+    };
+    Install = {
+      WantedBy = ["default.target"]; # Starts with user session
+    };
+  };
+
   programs = {
     foot.enable = true;
-    foot.server.enable = true;
     tmux = {
       clock24 = true;
       terminal = "screen-256color";
