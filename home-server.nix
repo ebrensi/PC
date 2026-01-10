@@ -170,4 +170,9 @@
     # Dont sleep when lid is closed we are connected to a docking station
     HandleLidSwitchDocked = "ignore";
   };
+  # prevent system from auto-sleeping
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
 }
