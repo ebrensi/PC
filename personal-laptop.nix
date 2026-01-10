@@ -101,7 +101,7 @@
     };
   };
   networking.extraHosts = ''
-    12.167.1.2 home
-    12.167.1.1 t2v
+    12.167.1.2 adder-ws
+    12.167.1.1 t2
   '';
 }
