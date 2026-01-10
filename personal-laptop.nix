@@ -16,8 +16,8 @@
       Port 2222
 
     Host t1 t2 m1 jetson
-        Hostname %h.local
-        ProxyJump home
+      Hostname %h.local
+      ProxyJump home
   '';
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];

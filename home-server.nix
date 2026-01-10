@@ -68,24 +68,12 @@
   programs.ssh.extraConfig = ''
     # SSH config for remote home-server
 
-    Host AP1
-      Hostname 100.85.51.6
-
     Host vm
       Hostname 127.0.0.1
       Port 2222
 
-    Host t1
-      Hostname 192.168.1.95
-
-    Host t2
-      Hostname 192.168.1.217
-
-    Host m1
-      Hostname 192.168.1.162
-
-    Host j1
-      Hostname 192.168.1.156
+    Host t1 t2 m1 jetson
+      Hostname %h.local
   '';
 
   nix.buildMachines = let
