@@ -17,7 +17,7 @@
 
     Host t1 t2 m1 jetson
       Hostname %h.local
-      ProxyJump home
+      ProxyJump adder-ws.local
   '';
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
