@@ -85,7 +85,7 @@
         peers = [
           {
             # name = "relay";
-            publicKey = "JTXE6l7I7FeaBM0GIP2e7YK6h6yhVmBDJs9WdYdd8Vk=";
+            publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
             allowedIPs = ["12.167.1.0/24"];
             endpoint = "73.15.57.26:51820";
             persistentKeepalive = 25;
