@@ -49,8 +49,8 @@
             # name = "relay";
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
             allowedIPs = ["12.167.1.0/24"]; # relay can be sent packets meant for any peer
-            endpoint = "t2.local:51820";
-            # persistentKeepalive = 25;
+            endpoint = "73.15.57.26:51820";
+            persistentKeepalive = 25;
           }
           {
             # name = "thinkpad";
