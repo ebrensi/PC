@@ -62,7 +62,10 @@
       };
     };
   };
-  networking.extraHosts = "12.167.1.3 thinkpad";
+  networking.extraHosts = ''
+    12.167.1.3 thinkpad
+    12.167.1.1 t2v
+  '';
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
