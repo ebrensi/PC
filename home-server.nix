@@ -52,13 +52,13 @@
             endpoint = "73.15.57.26:51820"; # public IP - works from any network
             persistentKeepalive = 25;
           }
-          {
-            # name = "thinkpad";
-            publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
-            allowedIPs = ["12.167.1.3/32"];
-            # endpoint = "thinkpad.local:51820";
-            persistentKeepalive = 25;
-          }
+          # {
+          #   # name = "thinkpad";
+          #   publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
+          #   allowedIPs = ["12.167.1.3/32"];
+          #   # endpoint = "thinkpad.local:51820";
+          #   persistentKeepalive = 25;
+          # }
         ];
       };
     };
