@@ -334,7 +334,7 @@ in {
 
   # Ad blocking and caching DNS server
   services.blocky = {
-    enable = true;
+    enable = false;
     settings = {
       ports.dns = "53";
       connectIPVersion = "v4"; # Limiting current implementation to IPv4
@@ -344,14 +344,19 @@ in {
         "1.0.0.1"
         "8.8.8.8"
       ];
+      # For initially solving DoH/DoT Requests when no system Resolver is available.
+      bootstrapDns = {
+        upstream = "https://one.one.one.one/dns-query";
+        ips = ["1.1.1.1" "1.0.0.1"];
+      };
 
       blocking = {
-        denylists = {
-          # Block lists taken from https://github.com/hagezi/dns-blocklists
-          "pro" = ["https://codeberg.org/hagezi/mirror2/raw/branch/main/dns-blocklists/wildcard/pro.txt"];
-          "tif" = ["https://codeberg.org/hagezi/mirror2/raw/branch/main/dns-blocklists/wildcard/tif.txt"];
-        };
-        clientGroupsBlock.default = ["pro" "tif"];
+        # denylists = {
+        #   # Block lists taken from https://github.com/hagezi/dns-blocklists
+        #   "pro" = ["https://codeberg.org/hagezi/mirror2/raw/branch/main/dns-blocklists/wildcard/pro.txt"];
+        #   "tif" = ["https://codeberg.org/hagezi/mirror2/raw/branch/main/dns-blocklists/wildcard/tif.txt"];
+        # };
+        # clientGroupsBlock.default = ["pro" "tif"];
       };
 
       caching = {
