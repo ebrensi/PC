@@ -185,7 +185,6 @@ in {
         name = "Efrem";
         email = "rensi.efrem@gmail.com";
       };
-      color.ui = "auto";
       push.autosetupremote = true;
     };
     # This would go in /etc/ssh/ssh_config in a traditional linux distro
@@ -331,5 +330,42 @@ in {
       ssh-add -q ~/.ssh/id_ed25519 2>/dev/null
       ssh-add -q ~/.ssh/AngelProtection 2>/dev/null
     '';
+  };
+
+  # Ad blocking and caching DNS server
+  services.blocky = {
+    enable = true;
+    settings = {
+      ports.dns = "53";
+      connectIPVersion = "v4"; # Limiting current implementation to IPv4
+
+      upstreams.groups.default = [
+        "https://one.one.one.one/dns-query"
+        "1.1.1.1"
+        "1.0.0.1"
+        "8.8.8.8"
+      ];
+
+      # For initially solving DoH/DoT Requests when no system Resolver is available.
+      bootstrapDns = {
+        upstream = "https://one.one.one.one/dns-query";
+        ips = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
+      };
+
+      blocking = {
+        denylists = {
+          # Block lists taken from https://github.com/hagezi/dns-blocklists
+          "pro" = ["https://codeberg.org/hagezi/mirror2/raw/branch/main/dns-blocklists/wildcard/pro.txt"];
+          "tif" = ["https://codeberg.org/hagezi/mirror2/raw/branch/main/dns-blocklists/wildcard/tif.txt"];
+        };
+        clientGroupsBlock.default = ["pro" "tif"];
+      };
+
+      caching = {
+        prefetching = true;
+        minTime = "5m";
+        maxTime = "30m";
+      };
+    };
   };
 }
