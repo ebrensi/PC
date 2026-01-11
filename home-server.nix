@@ -50,7 +50,7 @@
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
             allowedIPs = ["12.167.1.0/24"]; # relay can be sent packets meant for any peer
             endpoint = "192.168.1.217:51820"; # local ip
-            # persistentKeepalive = 25;  # We don't need this because we're always on the same LAN
+            persistentKeepalive = 25;  # We don't need this because we're always on the same LAN
           }
           {
             # name = "thinkpad";
