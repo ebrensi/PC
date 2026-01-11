@@ -49,14 +49,15 @@
             # name = "relay";
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
             allowedIPs = ["12.167.1.0/24"]; # relay can be sent packets meant for any peer
-            endpoint = "192.168.1.217:51820"; # local ip
-            persistentKeepalive = 25;  # We don't need this because we're always on the same LAN
+            endpoint = "73.15.57.26:51820"; # public IP - works from any network
+            persistentKeepalive = 25;
           }
           {
             # name = "thinkpad";
             publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
             allowedIPs = ["12.167.1.3/32"];
             # endpoint = "thinkpad.local:51820";
+            persistentKeepalive = 25;
           }
         ];
       };
