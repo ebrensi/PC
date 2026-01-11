@@ -36,8 +36,8 @@
 
     avahi = {
       enable = true;
-      nssmdns4 = true;
-      nssmdns6 = true;
+      nssmdns4 = false;
+      nssmdns6 = false;
       ipv6 = false;
       openFirewall = true;
       publish = {

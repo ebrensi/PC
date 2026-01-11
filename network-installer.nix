@@ -18,7 +18,8 @@
   networking.wireless.enable = lib.mkForce true;
   services.avahi = {
     enable = true;
-    nssmdns4 = true;
+    nssmdns4 = false;
+    nssmdns6 = false;
     openFirewall = true;
     publish = {
       # see https://linux.die.net/man/5/avahi-daemon.conf
