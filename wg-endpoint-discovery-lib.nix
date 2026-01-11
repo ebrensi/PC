@@ -38,13 +38,13 @@
           echo "$endpoint"
           break
         fi
-      done)
+      done || true)
 
       # Extract our public IP (without port)
       OUR_PUBLIC_IP=$(echo "$OUR_ENDPOINT" | cut -d: -f1)
 
       # Parse dump output and update endpoints
-      echo "$REGISTRY_DATA" | tail -n +2 | while IFS=$'\t' read -r pubkey psk endpoint allowed_ips handshake rx tx keepalive; do
+      echo "$REGISTRY_DATA" | tail -n +2 | while IFS=$'\t' read -r pubkey psk endpoint allowed_ips handshake rx tx keepalive || [ -n "$pubkey" ]; do
         # Skip ourselves
         if [ "$pubkey" = "$OUR_PUBKEY" ]; then
           continue
