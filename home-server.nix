@@ -75,9 +75,6 @@
     Host vm
       Hostname 127.0.0.1
       Port 2222
-
-    Host t1 t2 m1 jetson
-      Hostname %h.local
   '';
 
   nix.buildMachines = let
