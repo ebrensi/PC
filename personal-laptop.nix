@@ -74,17 +74,15 @@
   };
   age.secrets.wg-thinkpad.file = ./secrets/wg-thinkpad.age;
   # public key: wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=
-  networking.wg-quick = {
+  networking.wireguard = {
     interfaces = {
-      # network interface name.
       wghome = {
-        # the IP address and subnet of this peer
-        address = ["12.167.1.3/32"];
+        ips = ["12.167.1.3/32"];
         listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-thinkpad.path;
         peers = [
           {
-            # name = "relay";
+            name = "relay";
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
             allowedIPs = ["12.167.1.0/24"];
             endpoint = "73.15.57.26:51820";

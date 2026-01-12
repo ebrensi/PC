@@ -36,17 +36,15 @@
 
   age.secrets.wg-key-home.file = ./secrets/wg-ws-adder.age;
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
-  networking.wg-quick = {
+  networking.wireguard = {
     interfaces = {
-      # network interface name.
       wghome = {
-        # the IP address and subnet of this peer
-        address = ["12.167.1.2/32"];
+        ips = ["12.167.1.2/32"];
         listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-key-home.path;
         peers = [
           {
-            # name = "relay";
+            name = "relay";
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
             allowedIPs = ["12.167.1.0/24"]; # relay can be sent packets meant for any peer
             endpoint = "192.168.1.217:51820"; # public IP - works from any network
