@@ -6,6 +6,7 @@
     interface,
     registryUrl ? "http://12.167.1.1:8888",
     wgPort ? "51820",
+    relayPublicKey ? "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=",
   }: let
     wg = "${pkgs.wireguard-tools}/bin/wg";
     curl = "${pkgs.curl}/bin/curl";
@@ -63,6 +64,17 @@
         # Extract peer's public IP and VPN IP
         PEER_PUBLIC_IP=$(echo "$endpoint" | cut -d: -f1)
         PEER_VPN_IP=$(echo "$allowed_ips" | cut -d, -f1 | cut -d/ -f1)
+
+        # Get relay's public IP from our own endpoint (we connect to relay)
+        RELAY_PUBLIC_IP=$(echo "$OUR_ENDPOINT" | cut -d: -f1)
+
+        # Check for relay IP conflict:
+        # If peer shares relay's public IP but we're on different network,
+        # P2P requires port forwarding (skip unless configured)
+        if [ "$PEER_PUBLIC_IP" = "$RELAY_PUBLIC_IP" ] && [ "$OUR_PUBLIC_IP" != "$RELAY_PUBLIC_IP" ]; then
+          echo "Peer ''${pubkey:0:8}... shares relay's public IP, but we're remote - skipping P2P (would need port forwarding)"
+          continue
+        fi
 
         # Determine target endpoint
         TARGET_ENDPOINT="$endpoint"
