@@ -77,10 +77,7 @@
   networking.wireguard = {
     interfaces = {
       wghome = {
-        # TODO: Get thinkpad's global IPv6 address from `ip a` when on that machine
-        # Should be an address starting with 2601:643:867f:b080:: (not fd39::)
-        # Example format: ips = ["12.167.1.3/32" "2601:643:867f:b080:XXXX:XXXX:XXXX:XXXX/128"];
-        ips = ["12.167.1.3/32"];
+        ips = ["12.167.1.3/32" "2601:643:867f:b080::1000/128"];
         listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-thinkpad.path;
         peers = [
@@ -94,7 +91,7 @@
           # {
           #   # name = "adderws";
           #   publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
-          #   allowedIPs = ["12.167.1.2/32"];
+          #   allowedIPs = ["12.167.1.2/32" "2601:643:867f:b080:8693:1960:e347:ff06/128"];
           #   # endpoint = "adder-ws.local:51820";
           #   persistentKeepalive = 25;
           # }
