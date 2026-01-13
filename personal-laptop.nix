@@ -15,7 +15,7 @@
       Hostname 127.0.0.1
       Port 2222
 
-    Host t1 t2 m1 jetson
+    Host t1 m1 j1
       Hostname %h.local
       ProxyJump adder-ws
   '';
@@ -42,8 +42,8 @@
     machines = [
       # ["home" "x86_64-linux" 4 100]
       # ["home" "aarch64-linux" 4 100]
-      ["m1" "aarch64-linux" 4 10]
-      ["jetson" "aarch64-linux" 2 10]
+      # ["m1" "aarch64-linux" 4 10]
+      # ["j1" "aarch64-linux" 2 10]
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
