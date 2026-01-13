@@ -47,7 +47,7 @@
             name = "relay";
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
             allowedIPs = ["12.167.1.0/24" "2601:643:867f:b080::/64"]; # relay can be sent packets meant for any peer
-            endpoint = "192.168.1.217:51820"; # public IP - works from any network
+            endpoint = "t2.local:51820"; # this machine is always on the same LAN
           }
           # {
           #   # name = "thinkpad";
