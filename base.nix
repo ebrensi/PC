@@ -117,6 +117,7 @@
     # System essentials
     wget
     curl
+    net-tools
 
     # Archive tools
     unzip
