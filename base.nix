@@ -16,6 +16,8 @@
   };
 
   networking = {
+    networking.useDHCP = lib.mkDefault true;
+    networking.enableIPv6 = true;
     networkmanager = {
       enable = true;
       dns = "systemd-resolved";
