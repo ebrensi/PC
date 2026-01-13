@@ -42,17 +42,6 @@
         ips = ["12.167.1.2/32" "2601:643:867f:b080:8693:1960:e347:ff06/128"];
         listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-key-home.path;
-
-        # Fix IPv6 route metrics to prioritize WireGuard over RA routes
-        postSetup = ''
-          sleep 1
-          ${pkgs.iproute2}/bin/ip -6 route show dev wghome | while read route; do
-            dest=$(echo "$route" | ${pkgs.gawk}/bin/awk '{print $1}')
-            ${pkgs.iproute2}/bin/ip -6 route del "$dest" dev wghome 2>/dev/null || true
-            ${pkgs.iproute2}/bin/ip -6 route add "$dest" dev wghome metric 50
-          done
-        '';
-
         peers = [
           {
             name = "relay";
@@ -75,6 +64,31 @@
     12.167.1.3 thinkpad
     12.167.1.1 t2
   '';
+
+  # Fix IPv6 route metrics to prioritize WireGuard over RA routes
+  systemd.services.wireguard-wghome-fix-routes = {
+    description = "Fix WireGuard IPv6 route metrics";
+    after = ["wireguard-wghome.service"];
+    wants = ["wireguard-wghome.service"];
+    wantedBy = ["multi-user.target"];
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+
+    script = ''
+      # Wait for WireGuard to create its routes
+      sleep 2
+
+      # Fix route metrics for all IPv6 routes on wghome interface
+      ${pkgs.iproute2}/bin/ip -6 route show dev wghome | while read route; do
+        dest=$(echo "$route" | ${pkgs.gawk}/bin/awk '{print $1}')
+        ${pkgs.iproute2}/bin/ip -6 route del "$dest" dev wghome 2>/dev/null || true
+        ${pkgs.iproute2}/bin/ip -6 route add "$dest" dev wghome metric 50
+      done
+    '';
+  };
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''

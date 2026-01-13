@@ -80,21 +80,12 @@
         ips = ["12.167.1.3/32" "2601:643:867f:b080::1000/128"];
         listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-thinkpad.path;
-        # Fix IPv6 route metrics to prioritize WireGuard over RA routes
-        postSetup = ''
-          sleep 1
-          ${pkgs.iproute2}/bin/ip -6 route show dev wghome | while read route; do
-            dest=$(echo "$route" | ${pkgs.gawk}/bin/awk '{print $1}')
-            ${pkgs.iproute2}/bin/ip -6 route del "$dest" dev wghome 2>/dev/null || true
-            ${pkgs.iproute2}/bin/ip -6 route add "$dest" dev wghome metric 50
-          done
-        '';
         peers = [
           {
             name = "relay";
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
             allowedIPs = ["12.167.1.0/24" "2601:643:867f:b080::/64"];
-            endpoint = "73.15.57.26:51820";
+            endpoint = "73.15.57.26:51820"; # Public IP for roaming
             persistentKeepalive = 25;
           }
           # {
@@ -112,4 +103,29 @@
     12.167.1.2 adder-ws
     12.167.1.1 t2
   '';
+
+  # Fix IPv6 route metrics to prioritize WireGuard over RA routes
+  systemd.services.wireguard-wghome-fix-routes = {
+    description = "Fix WireGuard IPv6 route metrics";
+    after = ["wireguard-wghome.service"];
+    wants = ["wireguard-wghome.service"];
+    wantedBy = ["multi-user.target"];
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+
+    script = ''
+      # Wait for WireGuard to create its routes
+      sleep 2
+
+      # Fix route metrics for all IPv6 routes on wghome interface
+      ${pkgs.iproute2}/bin/ip -6 route show dev wghome | while read route; do
+        dest=$(echo "$route" | ${pkgs.gawk}/bin/awk '{print $1}')
+        ${pkgs.iproute2}/bin/ip -6 route del "$dest" dev wghome 2>/dev/null || true
+        ${pkgs.iproute2}/bin/ip -6 route add "$dest" dev wghome metric 50
+      done
+    '';
+  };
 }
