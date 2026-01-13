@@ -25,6 +25,7 @@ in {
       termscp
       google-chrome
       claude-code
+      opencode
       visidata
       glow
       nix-btm
