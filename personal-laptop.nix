@@ -85,7 +85,8 @@
             name = "relay";
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
             allowedIPs = ["12.167.1.0/24" "2601:643:867f:b080::/64"];
-            endpoint = "73.15.57.26:51820"; # Public IP for roaming
+            # endpoint = "73.15.57.26:51820"; # Public IP for roaming
+            endpoint = "t2.local:51820";
             persistentKeepalive = 25;
           }
           # {
