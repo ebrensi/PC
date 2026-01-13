@@ -77,14 +77,17 @@
   networking.wireguard = {
     interfaces = {
       wghome = {
-        ips = ["12.167.1.3/32" "fd39:8ed9:8f8a:1ef2:2141:1b98:a5ed:652d/64"];
+        # TODO: Get thinkpad's global IPv6 address from `ip a` when on that machine
+        # Should be an address starting with 2601:643:867f:b080:: (not fd39::)
+        # Example format: ips = ["12.167.1.3/32" "2601:643:867f:b080:XXXX:XXXX:XXXX:XXXX/128"];
+        ips = ["12.167.1.3/32"];
         listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-thinkpad.path;
         peers = [
           {
             name = "relay";
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
-            allowedIPs = ["12.167.1.0/24" "fd39:8ed9:8f8a:1ef2::/64"];
+            allowedIPs = ["12.167.1.0/24" "2601:643:867f:b080::/64"];
             endpoint = "73.15.57.26:51820";
             persistentKeepalive = 25;
           }
