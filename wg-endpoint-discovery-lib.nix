@@ -17,11 +17,28 @@
   in ''
     echo "Starting WireGuard endpoint discovery..."
 
+    # Function to detect if address is IPv6
+    is_ipv6() {
+      echo "$1" | grep -q ":"
+    }
+
+    # Function to extract IP from endpoint (handles both IPv4 and IPv6 with brackets)
+    extract_ip() {
+      local endpoint=$1
+      # IPv6: [2001:db8::1]:51820 -> 2001:db8::1
+      # IPv4: 1.2.3.4:51820 -> 1.2.3.4
+      echo "$endpoint" | sed -E 's/\[(.+)\]:[0-9]+/\1/; s/([^:]+):[0-9]+$/\1/'
+    }
+
     # Function to test if an endpoint is reachable
     test_endpoint() {
       local ip=$1
       local port=${wgPort}
-      timeout 2 ${netcat} -zu "$ip" "$port" 2>/dev/null
+      if is_ipv6 "$ip"; then
+        timeout 2 ${netcat} -6 -zu "$ip" "$port" 2>/dev/null
+      else
+        timeout 2 ${netcat} -4 -zu "$ip" "$port" 2>/dev/null
+      fi
     }
 
     while true; do
@@ -41,8 +58,8 @@
         fi
       done || true)
 
-      # Extract our public IP (without port)
-      OUR_PUBLIC_IP=$(echo "$OUR_ENDPOINT" | cut -d: -f1)
+      # Extract our public IP (without port) - handles both IPv4 and IPv6
+      OUR_PUBLIC_IP=$(extract_ip "$OUR_ENDPOINT")
 
       # Parse dump output and update endpoints
       echo "$REGISTRY_DATA" | tail -n +2 | while IFS=$'\t' read -r pubkey psk endpoint allowed_ips handshake rx tx keepalive || [ -n "$pubkey" ]; do
@@ -61,12 +78,12 @@
           continue
         fi
 
-        # Extract peer's public IP and VPN IP
-        PEER_PUBLIC_IP=$(echo "$endpoint" | cut -d: -f1)
+        # Extract peer's public IP and VPN IP - handles both IPv4 and IPv6
+        PEER_PUBLIC_IP=$(extract_ip "$endpoint")
         PEER_VPN_IP=$(echo "$allowed_ips" | cut -d, -f1 | cut -d/ -f1)
 
         # Get relay's public IP from our own endpoint (we connect to relay)
-        RELAY_PUBLIC_IP=$(echo "$OUR_ENDPOINT" | cut -d: -f1)
+        RELAY_PUBLIC_IP=$(extract_ip "$OUR_ENDPOINT")
 
         # Check for relay IP conflict:
         # If peer shares relay's public IP but we're on different network,
@@ -93,8 +110,11 @@
               *) HOSTNAME="$HOSTNAME.local" ;;
             esac
 
-            # Get peer's LAN IP (any interface will do - just for routing query)
-            PEER_LAN_IP=$(${avahi}/avahi-resolve-host-name -4 "$HOSTNAME" 2>/dev/null | ${awk} '{print $2}')
+            # Get peer's LAN IP - prefer IPv6, fallback to IPv4
+            PEER_LAN_IP=$(${avahi}/avahi-resolve-host-name -6 "$HOSTNAME" 2>/dev/null | ${awk} '{print $2}')
+            if [ -z "$PEER_LAN_IP" ]; then
+              PEER_LAN_IP=$(${avahi}/avahi-resolve-host-name -4 "$HOSTNAME" 2>/dev/null | ${awk} '{print $2}')
+            fi
 
             if [ -n "$PEER_LAN_IP" ]; then
               # Ask kernel: which source IP would we use to reach this peer?
@@ -124,11 +144,24 @@
         # Update if changed
         if [ "$CURRENT" != "$TARGET_ENDPOINT" ]; then
           echo "Updating peer ''${pubkey:0:8}...: $CURRENT -> $TARGET_ENDPOINT"
-          ${wg} set ${interface} peer "$pubkey" endpoint "$TARGET_ENDPOINT"
+
+          # Set endpoint with appropriate keepalive based on protocol
+          TARGET_IP=$(extract_ip "$TARGET_ENDPOINT")
+          if is_ipv6 "$TARGET_IP"; then
+            echo "  Using IPv6 - no persistent keepalive needed"
+            ${wg} set ${interface} peer "$pubkey" endpoint "$TARGET_ENDPOINT" persistent-keepalive 0
+          else
+            echo "  Using IPv4 - setting persistent keepalive"
+            ${wg} set ${interface} peer "$pubkey" endpoint "$TARGET_ENDPOINT" persistent-keepalive 25
+          fi
 
           # Trigger connection with ping
           if [ -n "$PEER_VPN_IP" ]; then
-            ${ping} -c 2 -W 1 "$PEER_VPN_IP" &>/dev/null &
+            if is_ipv6 "$PEER_VPN_IP"; then
+              ${pkgs.iputils}/bin/ping6 -c 2 -W 1 "$PEER_VPN_IP" &>/dev/null &
+            else
+              ${ping} -c 2 -W 1 "$PEER_VPN_IP" &>/dev/null &
+            fi
           fi
         fi
       done

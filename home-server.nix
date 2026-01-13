@@ -39,14 +39,14 @@
   networking.wireguard = {
     interfaces = {
       wghome = {
-        ips = ["12.167.1.2/32"];
+        ips = ["12.167.1.2/32" "fd39:8ed9:8f8a:1ef2:b00:2c19:3bad:bad8/64"];
         listenPort = 51820;
         privateKeyFile = config.age.secrets.wg-key-home.path;
         peers = [
           {
             name = "relay";
             publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
-            allowedIPs = ["12.167.1.0/24"]; # relay can be sent packets meant for any peer
+            allowedIPs = ["12.167.1.0/24" "fd39:8ed9:8f8a:1ef2::/64"]; # relay can be sent packets meant for any peer
             endpoint = "192.168.1.217:51820"; # public IP - works from any network
           }
           # {
