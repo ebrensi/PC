@@ -85,7 +85,7 @@ in {
       Type = "forking";
       User = user;
       ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${socketFolder}";
-      ExecStart = ''${pkgs.tmux}/bin/tmux -S ${socketFolder}/${sessionName} new-session -d -s ${sessionName}'';
+      ExecStart = ''${pkgs.tmux}/bin/tmux -2 -S ${socketFolder}/${sessionName} new-session -d -s ${sessionName}'';
       ExecStartPost = "${pkgs.coreutils}/bin/chmod 666 ${socketFolder}/${sessionName}";
       Restart = "on-failure";
       RestartSec = "10s";
@@ -109,7 +109,7 @@ in {
     };
     tmux = {
       clock24 = true;
-      terminal = "screen-256color";
+      terminal = "tmux-direct";
       plugins = with pkgs.tmuxPlugins; [
         cpu
       ];
@@ -120,8 +120,6 @@ in {
         # https://github.com/tmux/tmux/wiki/Clipboard#terminal-support---tmux-inside-tmux
         set -g set-clipboard on
         set -as terminal-features ',tmux*:clipboard'
-        set -as terminal-features ',screen*:clipboard'
-        set -as terminal-features ',xterm*:clipboard'
         set -s copy-command 'xsel -i'
 
         # Set status-right BEFORE plugins load so they can interpolate the variables
