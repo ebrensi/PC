@@ -111,13 +111,13 @@
       # ["t1" "x86_64-linux" 1 100]
       # ["t2" "x86_64-linux" 1 100]
       # ["AP1" "x86_64-linux" 4 100]
-      ["m1" "aarch64-linux" 4 1000]
+      ["m1.local" "aarch64-linux" 4 1000]
     ];
   in
     (map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines)
     ++ [
       {
-        hostName = "j1"; # Your Jetson or remote builder
+        hostName = "j1.local"; # Your Jetson or remote builder
         sshUser = "efrem";
         sshKey = "/home/efrem/.ssh/id_ed25519";
         protocol = "ssh-ng";

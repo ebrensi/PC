@@ -14,10 +14,6 @@
     Host vm
       Hostname 127.0.0.1
       Port 2222
-
-    Host t1 m1 j1
-      Hostname %h.local
-      ProxyJump adder-ws
   '';
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
@@ -29,7 +25,7 @@
   nix.settings.substituters = let
     argstr = "trusted=true&compress=true";
   in [
-    # "ssh-ng://efrem@home?priority=1000&${argstr}"
+    # "ssh-ng://efrem@adder-ws?priority=1000&${argstr}"
   ];
   nix.settings.trusted-public-keys = with (import ./secrets/public-keys.nix); [home-cache-key];
   nix.buildMachines = let
