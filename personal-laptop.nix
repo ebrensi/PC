@@ -66,13 +66,14 @@
   wireguard-peer = {
     listenPort = 51820;
     interface = "wghome";
-    ips = ["12.167.1.3/32" "2601:643:867f:b080::1000/128"];
+    ips = ["12.167.1.3/32" "fd39:8ed9:8f8a:1ef2:48bc:4627:74f7:c15c/128"];
     privateKeyFile = config.age.secrets.wg-thinkpad.path;
     peers = [
       {
         name = "relay";
         publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
-        allowedIPs = ["12.167.1.0/24" "2601:643:867f:b080::/64"];
+        # Route all VPN traffic (IPv4 and ULA IPv6) through relay
+        allowedIPs = ["12.167.1.0/24" "fd39:8ed9:8f8a:1ef2::/64"];
         # endpoint = "73.15.57.26:51820"; # Public IP for roaming
         endpoint = "t2.local:51820";
         persistentKeepalive = 25;
@@ -80,7 +81,7 @@
       # {
       #   # name = "adderws";
       #   publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
-      #   allowedIPs = ["12.167.1.2/32" "2601:643:867f:b080:8693:1960:e347:ff06/128"];
+      #   allowedIPs = ["12.167.1.2/32" "fd39:8ed9:8f8a:1ef2:dd0a:f2af:7af1:ea6d/128"];
       #   # endpoint = "adder-ws.local:51820";
       #   persistentKeepalive = 25;
       # }
@@ -89,5 +90,7 @@
   networking.extraHosts = ''
     12.167.1.2 adder-ws
     12.167.1.1 t2
+    fd39:8ed9:8f8a:1ef2:dd0a:f2af:7af1:ea6d adder-ws
+    fd39:8ed9:8f8a:1ef2:2630:18fc:b9d8:13be t2
   '';
 }

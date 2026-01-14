@@ -32,20 +32,21 @@
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
   wireguard-peer = {
     interface = "wghome";
-    ips = ["12.167.1.2/32" "2601:643:867f:b080:8693:1960:e347:ff06/128"];
+    ips = ["12.167.1.2/32" "fd39:8ed9:8f8a:1ef2:dd0a:f2af:7af1:ea6d/128"];
     listenPort = 51820;
     privateKeyFile = config.age.secrets.wg-key-home.path;
     peers = [
       {
         name = "relay";
         publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
-        allowedIPs = ["12.167.1.0/24" "2601:643:867f:b080::/64"]; # relay can be sent packets meant for any peer
+        # Route all VPN traffic (IPv4 and ULA IPv6) through relay
+        allowedIPs = ["12.167.1.0/24" "fd39:8ed9:8f8a:1ef2::/64"];
         endpoint = "t2.local:51820"; # this machine is always on the same LAN
       }
       # {
       #   # name = "thinkpad";
       #   publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
-      #   allowedIPs = ["12.167.1.3/32" "2601:643:867f:b080::1000/128"];
+      #   allowedIPs = ["12.167.1.3/32" "fd39:8ed9:8f8a:1ef2:48bc:4627:74f7:c15c/128"];
       #   # endpoint = "thinkpad.local:51820";
       #   persistentKeepalive = 25;
       # }
@@ -54,6 +55,8 @@
   networking.extraHosts = ''
     12.167.1.3 thinkpad
     12.167.1.1 t2
+    fd39:8ed9:8f8a:1ef2:48bc:4627:74f7:c15c thinkpad
+    fd39:8ed9:8f8a:1ef2:2630:18fc:b9d8:13be t2
   '';
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
