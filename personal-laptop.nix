@@ -66,14 +66,14 @@
   wireguard-peer = {
     listenPort = 51820;
     interface = "wghome";
-    ips = ["fd39:8ed9:8f8a:1ef2:48bc:4627:74f7:c15c/128"];
+    ips = ["12.167.1.3/32" "fd42:af9e:1c7d:8b3a:1291:d1ff:fe9e:32c0/128"];
     privateKeyFile = config.age.secrets.wg-thinkpad.path;
     peers = [
       {
         name = "relay";
         publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
-        # Route all VPN traffic (IPv4 and ULA IPv6) through relay
-        allowedIPs = ["12.167.1.0/24" "fd39:8ed9:8f8a:1ef2::/64"];
+        # Route all VPN traffic (IPv6 only) through relay
+        allowedIPs = ["12.167.1.0/24" "fd42:af9e:1c7d:8b3a::/64"];
         # endpoint = "73.15.57.26:51820"; # Public IP for roaming
         endpoint = "t2.local:51820";
         persistentKeepalive = 25;
@@ -88,7 +88,7 @@
     ];
   };
   networking.extraHosts = ''
-    fd39:8ed9:8f8a:1ef2:dd0a:f2af:7af1:ea6d adder-ws
-    fd39:8ed9:8f8a:1ef2:2630:18fc:b9d8:13be t2
+    fd42:af9e:1c7d:8b3a:d693:90ff:fe28:5167 adder-ws
+    fd42:af9e:1c7d:8b3a:b241:6fff:fe14:8a72 t2
   '';
 }
