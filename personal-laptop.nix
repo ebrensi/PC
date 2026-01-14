@@ -87,11 +87,4 @@
       # }
     ];
   };
-  networking.extraHosts =
-    ''
-      fd42:af9e:1c7d:8b3a:d693:90ff:fe28:5167 adder-ws
-      fd42:af9e:1c7d:8b3a:b241:6fff:fe14:8a72 t2
-    ''
-    + "\n"
-    + (import /home/efrem/dev/Guardian/provision/nix/packages/guardian-hosts.nix {inherit (pkgs) lib;});
 }
