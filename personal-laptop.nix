@@ -14,10 +14,6 @@
     Host vm
       Hostname 127.0.0.1
       Port 2222
-
-    Host t1 t2 m1 jetson
-      Hostname %h.local
-      ProxyJump adder-ws
   '';
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
@@ -29,7 +25,7 @@
   nix.settings.substituters = let
     argstr = "trusted=true&compress=true";
   in [
-    # "ssh-ng://efrem@home?priority=1000&${argstr}"
+    # "ssh-ng://efrem@adder-ws?priority=1000&${argstr}"
   ];
   nix.settings.trusted-public-keys = with (import ./secrets/public-keys.nix); [home-cache-key];
   nix.buildMachines = let
@@ -42,8 +38,8 @@
     machines = [
       # ["home" "x86_64-linux" 4 100]
       # ["home" "aarch64-linux" 4 100]
-      ["m1" "aarch64-linux" 4 10]
-      ["jetson" "aarch64-linux" 2 10]
+      # ["m1" "aarch64-linux" 4 10]
+      # ["j1" "aarch64-linux" 2 10]
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
