@@ -23,7 +23,7 @@
   boot = {
     initrd.availableKernelModules = ["xhci_pci" "nvme" "thunderbolt" "uas" "sd_mod" "sdhci_pci"];
     initrd.kernelModules = [];
-    kernelModules = ["kvm-intel"];
+    kernelModules = ["kvm-intel" "iwlwifi"];
     extraModulePackages = [];
   };
   networking.useDHCP = lib.mkDefault true;
