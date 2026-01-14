@@ -66,7 +66,7 @@
   wireguard-peer = {
     listenPort = 51820;
     interface = "wghome";
-    ips = ["12.167.1.3/32" "fd39:8ed9:8f8a:1ef2:48bc:4627:74f7:c15c/128"];
+    ips = ["fd39:8ed9:8f8a:1ef2:48bc:4627:74f7:c15c/128"];
     privateKeyFile = config.age.secrets.wg-thinkpad.path;
     peers = [
       {
@@ -88,8 +88,6 @@
     ];
   };
   networking.extraHosts = ''
-    12.167.1.2 adder-ws
-    12.167.1.1 t2
     fd39:8ed9:8f8a:1ef2:dd0a:f2af:7af1:ea6d adder-ws
     fd39:8ed9:8f8a:1ef2:2630:18fc:b9d8:13be t2
   '';
