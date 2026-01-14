@@ -52,10 +52,13 @@
       # }
     ];
   };
-  networking.extraHosts = ''
-    fd42:af9e:1c7d:8b3a:1291:d1ff:fe9e:32c0 thinkpad
-    fd42:af9e:1c7d:8b3a:b241:6fff:fe14:8a72 t2
-  '';
+  networking.extraHosts =
+    ''
+      fd42:af9e:1c7d:8b3a:1291:d1ff:fe9e:32c0 thinkpad
+      fd42:af9e:1c7d:8b3a:b241:6fff:fe14:8a72 t2
+    ''
+    + "\n"
+    + (import /home/efrem/dev/Guardian/provision/nix/packages/guardian-hosts.nix {inherit (pkgs) lib;});
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
