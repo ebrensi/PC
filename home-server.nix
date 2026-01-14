@@ -6,7 +6,7 @@
 }: {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
-    ./wg-endpoint-discovery.nix
+    ./wireguard-peer.nix
   ];
 
   services.displayManager.autoLogin = {
@@ -28,67 +28,33 @@
     };
   };
 
-  networking.firewall = {
-    allowedUDPPorts = [51820];
-    trustedInterfaces = ["wghome"];
-    checkReversePath = false; # see https://discourse.nixos.org/t/solved-wireguard-and-firewall-weirdness/58126
-  };
-
   age.secrets.wg-key-home.file = ./secrets/wg-ws-adder.age;
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
-  networking.wireguard = {
-    interfaces = {
-      wghome = {
-        ips = ["12.167.1.2/32" "2601:643:867f:b080:8693:1960:e347:ff06/128"];
-        listenPort = 51820;
-        privateKeyFile = config.age.secrets.wg-key-home.path;
-        peers = [
-          {
-            name = "relay";
-            publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
-            allowedIPs = ["12.167.1.0/24" "2601:643:867f:b080::/64"]; # relay can be sent packets meant for any peer
-            endpoint = "t2.local:51820"; # this machine is always on the same LAN
-          }
-          # {
-          #   # name = "thinkpad";
-          #   publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
-          #   allowedIPs = ["12.167.1.3/32" "2601:643:867f:b080::1000/128"];
-          #   # endpoint = "thinkpad.local:51820";
-          #   persistentKeepalive = 25;
-          # }
-        ];
-      };
-    };
+  wireguard-peer = {
+    interface = "wghome";
+    ips = ["12.167.1.2/32" "2601:643:867f:b080:8693:1960:e347:ff06/128"];
+    listenPort = 51820;
+    privateKeyFile = config.age.secrets.wg-key-home.path;
+    peers = [
+      {
+        name = "relay";
+        publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
+        allowedIPs = ["12.167.1.0/24" "2601:643:867f:b080::/64"]; # relay can be sent packets meant for any peer
+        endpoint = "t2.local:51820"; # this machine is always on the same LAN
+      }
+      # {
+      #   # name = "thinkpad";
+      #   publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
+      #   allowedIPs = ["12.167.1.3/32" "2601:643:867f:b080::1000/128"];
+      #   # endpoint = "thinkpad.local:51820";
+      #   persistentKeepalive = 25;
+      # }
+    ];
   };
   networking.extraHosts = ''
     12.167.1.3 thinkpad
     12.167.1.1 t2
   '';
-
-  # Fix IPv6 route metrics to prioritize WireGuard over RA routes
-  systemd.services.wireguard-wghome-fix-routes = {
-    description = "Fix WireGuard IPv6 route metrics";
-    after = ["wireguard-wghome.service"];
-    wants = ["wireguard-wghome.service"];
-    wantedBy = ["multi-user.target"];
-
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-
-    script = ''
-      # Wait for WireGuard to create its routes
-      sleep 2
-
-      # Fix route metrics for all IPv6 routes on wghome interface
-      ${pkgs.iproute2}/bin/ip -6 route show dev wghome | while read route; do
-        dest=$(echo "$route" | ${pkgs.gawk}/bin/awk '{print $1}')
-        ${pkgs.iproute2}/bin/ip -6 route del "$dest" dev wghome 2>/dev/null || true
-        ${pkgs.iproute2}/bin/ip -6 route add "$dest" dev wghome metric 50
-      done
-    '';
-  };
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
@@ -108,9 +74,6 @@
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      # ["t1" "x86_64-linux" 1 100]
-      # ["t2" "x86_64-linux" 1 100]
-      # ["AP1" "x86_64-linux" 4 100]
       ["m1.local" "aarch64-linux" 4 1000]
     ];
   in
@@ -133,12 +96,6 @@
   nix.extraOptions = ''
     builders-use-substitutes = true
   '';
-
-  # This is for using this machine as a nix cache server
-  #  any files built here are signed with this private key
-  # Temporarily disabled due to encryption issues
-  # age.secrets.home-nix-cache.file = ./secrets/home-nix-cache.age;
-  # nix.settings.secret-key-files = [config.age.secrets.home-nix-cache.path];
 
   # Set a consistent mount point for my external USB drive
   #  connected via USB to thundebolt dock
