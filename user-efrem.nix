@@ -93,6 +93,23 @@ in {
     };
   };
 
+  # Enable foot-server for user session with correct target
+  systemd.user.services.foot-server = {
+    Unit = {
+      Description = "Foot terminal server";
+      PartOf = ["graphical-session.target"];
+    };
+    Service = {
+      Type = "notify";
+      ExecStart = "${pkgs.foot}/bin/foot --server";
+      Restart = "always";
+      RestartSec = "1s";
+    };
+    Install = {
+      WantedBy = ["default.target"];
+    };
+  };
+
   programs = {
     foot.enable = true;
     foot.settings = {
