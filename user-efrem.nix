@@ -29,11 +29,14 @@ in {
       visidata
       glow
       nix-btm
+      nix-top
       multitail
       alacritty
       wireguard-tools
 
       # Media
+      mpvpaper
+      waytrogen
       vlc
       imagemagick
       zoom
