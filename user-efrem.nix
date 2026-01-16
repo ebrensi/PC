@@ -120,6 +120,7 @@ in {
 
   programs = {
     foot.enable = true;
+    foot.theme = "catppuccin-mocha";
     foot.settings = {
       main = {
         initial-color-theme = 1;
