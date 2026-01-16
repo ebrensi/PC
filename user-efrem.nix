@@ -107,8 +107,9 @@ in {
   # Enable foot-server for user session with correct target
   systemd.user.services.foot-server = {
     description = "Foot terminal server";
-    partOf = ["graphical-session.target"];
-    wantedBy = ["default.target"];
+    wantedBy = ["cosmic-session.target"];
+    after = ["cosmic-session.target"];
+    partOf = ["cosmic-session.target"];
     serviceConfig = {
       Type = "simple";
       ExecStart = "${pkgs.foot}/bin/foot --server";
