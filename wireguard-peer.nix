@@ -99,21 +99,9 @@ in {
     # Disable NixOS-managed /etc/hosts to allow manual modification
     # Base content will be created by activation script instead
     environment.etc.hosts.enable = false;
-
-    # Create initial /etc/hosts with base content on system activation
-    system.activationScripts.setup-mutable-hosts = ''
-          if [ ! -f /etc/hosts ]; then
-            echo "Creating mutable /etc/hosts..."
-            cat > /etc/hosts <<-EOF
-      127.0.0.1 localhost
-      ::1 localhost
-      127.0.0.2 ${config.networking.hostName}
-      fd42:af9e:1c7d:8b3a:d693:90ff:fe28:5167 adder-ws
-      fd42:af9e:1c7d:8b3a:1291:d1ff:fe9e:32c0 thinkpad
-      fd42:af9e:1c7d:8b3a:b241:6fff:fe14:8a72 t2
-      EOF
-            chmod 644 /etc/hosts
-          fi
-    '';
+    systemd.tmpfiles.rules = [
+      # "R /etc/hosts"
+      "C /etc/hosts 644 efrem users - ${config.environment.etc.hosts.source}"
+    ];
   };
 }
