@@ -33,6 +33,7 @@ in {
       multitail
       alacritty
       wireguard-tools
+      wg-friendly-peer-names
 
       # Media
       mpvpaper
