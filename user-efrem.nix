@@ -42,6 +42,7 @@ in {
       waytrogen # wallpaper manager
       mpv-unwrapped
       imagemagick
+      wlr-randr
       zoom
       # ffmpeg
       # gimp
