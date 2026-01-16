@@ -1,5 +1,4 @@
 {
-  pkgs,
   lib,
   rustPlatform,
   fetchFromGitHub,
@@ -9,12 +8,10 @@
   vulkan-loader,
   wayland,
   wayland-protocols,
+  ffmpeg_7,
   llvmPackages,
   stdenv,
 }:
-let
-  ffmpeg = pkgs.ffmpeg-full.overrideAttrs (_: { doCheck = false; });
-in
 rustPlatform.buildRustPackage rec {
   pname = "waywe-rs";
   version = "unstable-2026-01-16";
@@ -56,7 +53,7 @@ EOF
     vulkan-loader
     wayland
     wayland-protocols
-    ffmpeg
+    ffmpeg_7
   ];
 
   # Set LIBCLANG_PATH for bindgen
@@ -66,7 +63,7 @@ EOF
   BINDGEN_EXTRA_CLANG_ARGS = builtins.concatStringsSep " " [
     "-isystem ${llvmPackages.libclang.lib}/lib/clang/${lib.getVersion llvmPackages.clang}/include"
     "-isystem ${stdenv.cc.libc.dev}/include"
-    "-isystem ${ffmpeg.dev}/include"
+    "-isystem ${ffmpeg_7.dev}/include"
   ];
 
   # The project builds two binaries: waywe and waywe-daemon
@@ -75,7 +72,7 @@ EOF
   # Ensure Vulkan and VA-API libraries can be found at runtime
   postInstall = ''
     wrapProgram $out/bin/waywe-daemon \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [libva vulkan-loader ffmpeg]}
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [libva vulkan-loader ffmpeg_7]}
   '';
 
   meta = with lib; {
