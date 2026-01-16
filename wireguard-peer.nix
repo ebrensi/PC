@@ -100,7 +100,7 @@ in {
     # Base content will be created by activation script instead
     environment.etc.hosts.enable = false;
     systemd.tmpfiles.rules = [
-      # "R /etc/hosts"
+      "R /etc/hosts"
       "C /etc/hosts 644 efrem users - ${config.environment.etc.hosts.source}"
     ];
   };

@@ -355,4 +355,9 @@ in {
     fd42:af9e:1c7d:8b3a:1291:d1ff:fe9e:32c0 thinkpad
     fd42:af9e:1c7d:8b3a:b241:6fff:fe14:8a72 t2
   '';
+  environment.etc."wireguard/peers".text = ''
+    qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=:t2 (relay)
+    wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=:thinkpad
+    srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=:adde-ws
+  '';
 }
