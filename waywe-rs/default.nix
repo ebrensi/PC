@@ -22,8 +22,9 @@ in {
     # This will start waywe-daemon when you log in
     systemd.user.services.waywe-daemon = {
       description = "Waywe Wayland Wallpaper Daemon";
-      wantedBy = ["default.target"];
-      after = ["default.target"];
+      wantedBy = ["cosmic-session.target"];
+      after = ["cosmic-session.target"];
+      partOf = ["cosmic-session.target"];
       serviceConfig = {
         Type = "simple";
         ExecStart = "${pkgs.callPackage ./waywe-rs.nix {}}/bin/waywe-daemon";

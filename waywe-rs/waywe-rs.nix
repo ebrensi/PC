@@ -41,6 +41,12 @@ fn main() {
     println!("cargo:rustc-link-lib=va");
 }
 EOF
+
+    # Patch wl_compositor version from 6 to 5 for Cosmic compatibility
+    # Cosmic only supports wl_compositor version 5
+    find crates/wayland-client -type f -name "*.rs" -exec sed -i 's/wl_compositor.*version.*6/wl_compositor version 5/g' {} \;
+    find crates/wayland-client -type f -name "*.rs" -exec sed -i 's/WlCompositor::version() == 6/WlCompositor::version() == 5/g' {} \;
+    find crates/wayland-client -type f -name "*.rs" -exec sed -i 's/bind.*wl_compositor.*6/bind wl_compositor 5/g' {} \;
   '';
 
   nativeBuildInputs = [
