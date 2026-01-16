@@ -3,9 +3,8 @@
   lib,
   ...
 }: {
-  imports = [
-    # ./waywe-rs
-  ];
+  imports = [./waywe-rs];
+  services.waywe-rs.enable = true;
 
   # Cosmic desktop
   services.desktopManager.cosmic.enable = true;
