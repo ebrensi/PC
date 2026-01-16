@@ -78,13 +78,13 @@
         # endpoint = "t2.local:51820";
         persistentKeepalive = 25;
       }
-      # {
-      #   # name = "adderws";
-      #   publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
-      #   allowedIPs = ["12.167.1.2/32" "fd39:8ed9:8f8a:1ef2:dd0a:f2af:7af1:ea6d/128"];
-      #   # endpoint = "adder-ws.local:51820";
-      #   persistentKeepalive = 25;
-      # }
+      {
+        # name = "adderws";
+        publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
+        allowedIPs = ["12.167.1.2/32" "fd39:8ed9:8f8a:1ef2:dd0a:f2af:7af1:ea6d/128"];
+        # endpoint = "adder-ws.local:51820";
+        persistentKeepalive = 25;
+      }
     ];
   };
 }

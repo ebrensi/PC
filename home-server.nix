@@ -43,13 +43,13 @@
         allowedIPs = ["12.167.1.0/24" "fd42:af9e:1c7d:8b3a::/64"];
         endpoint = "t2.local:51820"; # this machine is always on the same LAN
       }
-      # {
-      #   # name = "thinkpad";
-      #   publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
-      #   allowedIPs = ["12.167.1.3/32" "fd39:8ed9:8f8a:1ef2:48bc:4627:74f7:c15c/128"];
-      #   # endpoint = "thinkpad.local:51820";
-      #   persistentKeepalive = 25;
-      # }
+      {
+        # name = "thinkpad";
+        publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
+        allowedIPs = ["12.167.1.3/32" "fd39:8ed9:8f8a:1ef2:48bc:4627:74f7:c15c/128"];
+        # endpoint = "thinkpad.local:51820";
+        persistentKeepalive = 25;
+      }
     ];
   };
 
