@@ -36,9 +36,10 @@ in {
       wg-friendly-peer-names
 
       # Media
-      mpvpaper
-      waytrogen
-      vlc
+      mpvpaper # video wallpaper
+      yt-dlp-light # Youtube downloader
+      waytrogen # wallpaper manager
+      mpv-unwrapped
       imagemagick
       zoom
       # ffmpeg
