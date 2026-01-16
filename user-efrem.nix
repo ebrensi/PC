@@ -120,16 +120,10 @@ in {
 
   programs = {
     foot.enable = true;
-    foot.theme = "catppuccin-mocha";
     foot.settings = {
       main = {
         initial-color-theme = 1;
         font = "Noto Sans Mono:size=12";
-      };
-      colors = {
-        alpha = 0.7;
-      };
-      colors2 = {
       };
       csd = {
         preferred = "none";
