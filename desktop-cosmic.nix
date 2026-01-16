@@ -4,7 +4,7 @@
   ...
 }: {
   imports = [
-    ./waywe-rs
+    # ./waywe-rs
   ];
 
   # Cosmic desktop

@@ -34,11 +34,12 @@ in {
       alacritty
       wireguard-tools
       wg-friendly-peer-names
+      tcpdump
       hwinfo
 
       # Media
       mpvpaper # video wallpaper
-      yt-dlp-light # Youtube downloader
+      yt-dlp # Youtube downloader
       waytrogen # wallpaper manager
       mpv-unwrapped
       imagemagick
@@ -121,6 +122,7 @@ in {
     foot.settings = {
       main = {
         initial-color-theme = 1;
+        font = "Noto Sans Mono:size=12";
       };
       colors = {
         alpha = 0.7;
