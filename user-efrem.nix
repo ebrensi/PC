@@ -277,6 +277,8 @@ in {
       yay = "nixos-rebuild switch --flake ${flake-path} --sudo |& nom";
       N = "sudo -E nnn -dH";
       del = "trash-put";
+      wg = "sudo wg";
+      wgg = "sudo wgg";
     };
 
     # Environment Variables (for this user)
