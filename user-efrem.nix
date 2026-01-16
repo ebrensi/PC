@@ -45,6 +45,9 @@ in {
       # shotcut
       # libreoffice-fresh
       dev-scripts.tmx
+
+      # Networking
+      socat
     ];
     initialPassword = "password";
     openssh.authorizedKeys.keys = with public-keys; [
