@@ -125,6 +125,9 @@ in {
         initial-color-theme = 1;
         font = "Noto Sans Mono:size=12";
       };
+      colors = {
+        alpha = 0.7;
+      };
       csd = {
         preferred = "none";
       };
