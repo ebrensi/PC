@@ -66,7 +66,7 @@
       enable = true;
       nssmdns4 = false;
       nssmdns6 = false;
-      ipv6 = false;
+      ipv6 = true;
       openFirewall = true;
       publish = {
         # see https://linux.die.net/man/5/avahi-daemon.conf
