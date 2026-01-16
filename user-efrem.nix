@@ -34,6 +34,7 @@ in {
       alacritty
       wireguard-tools
       wg-friendly-peer-names
+      hwinfo
 
       # Media
       mpvpaper # video wallpaper
