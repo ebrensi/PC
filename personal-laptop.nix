@@ -74,7 +74,7 @@
         publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
         # Route all VPN traffic (IPv6 only) through relay
         allowedIPs = ["12.167.1.0/24" "fd42:af9e:1c7d:8b3a::/64"];
-        endpoint = "73.15.57.26:51820"; # Public IP for roaming
+        endpoint = "[2601:643:867f:b080:b241:6fff:fe14:8a72]:51820"; # "73.15.57.26:51820"; # Public IP for roaming
         # endpoint = "t2.local:51820";
         persistentKeepalive = 25;
       }
@@ -83,7 +83,7 @@
         publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
         allowedIPs = ["12.167.1.2/32" "fd39:8ed9:8f8a:1ef2:dd0a:f2af:7af1:ea6d/128"];
         # endpoint = "adder-ws.local:51820";
-        persistentKeepalive = 25;
+        # persistentKeepalive = 25;
       }
     ];
   };
