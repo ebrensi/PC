@@ -4,9 +4,8 @@
   # Generate the discovery script with configurable parameters
   makeDiscoveryScript = {
     interface,
-    registryUrl ? "http://12.167.1.1:8888",
-    wgPort ? "51820",
-    relayPublicKey ? "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=",
+    registryUrl,
+    wgPort,
   }: let
     wg = "${pkgs.wireguard-tools}/bin/wg";
     curl = "${pkgs.curl}/bin/curl";
@@ -14,6 +13,7 @@
     avahi = "${pkgs.avahi}/bin";
     netcat = "${pkgs.netcat}/bin/nc";
     awk = "${pkgs.gawk}/bin/awk";
+    port = builtins.toString wgPort;
   in ''
     echo "Starting WireGuard endpoint discovery..."
 
@@ -25,15 +25,15 @@
     # Function to extract IP from endpoint (handles both IPv4 and IPv6 with brackets)
     extract_ip() {
       local endpoint=$1
-      # IPv6: [2001:db8::1]:51820 -> 2001:db8::1
-      # IPv4: 1.2.3.4:51820 -> 1.2.3.4
+      # IPv6: [fd42:af9e::::1]:${port} -> fd42:af9e::::1
+      # IPv4: 1.2.3.4:${port} -> 1.2.3.4
       echo "$endpoint" | sed -E 's/\[(.+)\]:[0-9]+/\1/; s/([^:]+):[0-9]+$/\1/'
     }
 
     # Function to test if an endpoint is reachable
     test_endpoint() {
       local ip=$1
-      local port=${wgPort}
+      local port=${port}
       if is_ipv6 "$ip"; then
         timeout 2 ${netcat} -6 -zu "$ip" "$port" 2>/dev/null
       else
@@ -122,8 +122,8 @@
               OUR_LAN_IP=$(ip route get "$PEER_LAN_IP" 2>/dev/null | grep -oP 'src \K\S+')
 
               if [ -n "$OUR_LAN_IP" ] && test_endpoint "$OUR_LAN_IP"; then
-                echo "Found routing-aware LAN endpoint: $OUR_LAN_IP:${wgPort} (to reach $PEER_LAN_IP)"
-                TARGET_ENDPOINT="$OUR_LAN_IP:${wgPort}"
+                echo "Found routing-aware LAN endpoint: $OUR_LAN_IP:${port} (to reach $PEER_LAN_IP)"
+                TARGET_ENDPOINT="$OUR_LAN_IP:${port}"
               else
                 echo "LAN routing check failed, skipping update to preserve static endpoint"
                 continue
