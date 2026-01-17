@@ -365,6 +365,6 @@ in {
   environment.etc."wireguard/peers".text = ''
     qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=:t2 (relay)
     wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=:thinkpad
-    srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=:adde-ws
+    srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=:adder-ws
   '';
 }
