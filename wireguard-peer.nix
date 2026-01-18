@@ -36,8 +36,7 @@ in {
     endpoint-registry-url = lib.mkOption {
       type = lib.types.str;
       description = "";
-      # default = "http://[fd42::1]:8888";
-      default = "http://12.167.1.1:8888";
+      default = "http://[fd42::1]:8888";
     };
   };
 
