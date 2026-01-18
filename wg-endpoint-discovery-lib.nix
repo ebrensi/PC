@@ -25,7 +25,7 @@
     # Function to extract IP from endpoint (handles both IPv4 and IPv6 with brackets)
     extract_ip() {
       local endpoint=$1
-      # IPv6: [fd42:af9e::::1]:${port} -> fd42:af9e::::1
+      # IPv6: [fd42::1]:${port} -> fd42::1
       # IPv4: 1.2.3.4:${port} -> 1.2.3.4
       echo "$endpoint" | sed -E 's/\[(.+)\]:[0-9]+/\1/; s/([^:]+):[0-9]+$/\1/'
     }
