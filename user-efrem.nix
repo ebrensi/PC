@@ -357,10 +357,10 @@ in {
     '';
   };
   networking.extraHosts = ''
-    fd42:af9e:1c7d:8b3a:d693:90ff:fe28:5167 adder-ws
-    fd42:af9e:1c7d:8b3a:d693:90ff:fe28:5167 home
-    fd42:af9e:1c7d:8b3a:1291:d1ff:fe9e:32c0 thinkpad
-    fd42:af9e:1c7d:8b3a:b241:6fff:fe14:8a72 t2
+    fd42::2 adder-ws
+    fd42::2 home
+    fd42::3 thinkpad
+    fd42::1 t2
   '';
   environment.etc."wireguard/peers".text = ''
     qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=:t2 (relay)

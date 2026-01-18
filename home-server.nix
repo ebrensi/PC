@@ -32,7 +32,7 @@
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
   wireguard-peer = {
     interface = "wghome";
-    ips = ["12.167.1.2/32" "fd42:af9e:1c7d:8b3a:d693:90ff:fe28:5167/128"];
+    ips = ["12.167.1.2/32" "fd42::2/128"];
     listenPort = 51820;
     privateKeyFile = config.age.secrets.wg-key-home.path;
     peers = [
@@ -40,13 +40,13 @@
         name = "relay";
         publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
         # Route all VPN traffic (IPv6 only) through relay
-        allowedIPs = ["12.167.1.0/24" "fd42:af9e:1c7d:8b3a::/64"];
+        allowedIPs = ["12.167.1.0/24" "fd42::/64"];
         endpoint = "[2601:643:867f:b080:b241:6fff:fe14:8a72]:51820";
       }
       {
-        # name = "thinkpad";
+        name = "thinkpad";
         publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
-        allowedIPs = ["12.167.1.3/32" "fd39:8ed9:8f8a:1ef2:48bc:4627:74f7:c15c/128"];
+        allowedIPs = ["12.167.1.3/32" "fd42::3/128"];
         # endpoint = "thinkpad.local:51820";
         # persistentKeepalive = 25;
       }
