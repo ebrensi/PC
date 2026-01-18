@@ -48,7 +48,7 @@
         publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
         allowedIPs = ["12.167.1.3/32" "fd42::3/128"];
         # endpoint = "thinkpad.local:51820";
-        # persistentKeepalive = 25;
+        persistentKeepalive = 25;
       }
     ];
   };

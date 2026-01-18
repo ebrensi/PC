@@ -82,7 +82,7 @@
         publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
         allowedIPs = ["12.167.1.2/32" "fd42::2/128"];
         # endpoint = "adder-ws.local:51820";
-        # persistentKeepalive = 25;
+        persistentKeepalive = 25;
       }
     ];
   };
