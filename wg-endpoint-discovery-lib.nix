@@ -111,7 +111,12 @@
             esac
 
             # Get peer's LAN IP - prefer IPv6, fallback to IPv4
+            # Filter out link-local IPv6 addresses (fe80::) as they're not usable for WireGuard
             PEER_LAN_IP=$(${avahi}/avahi-resolve-host-name -6 "$HOSTNAME" 2>/dev/null | ${awk} '{print $2}')
+            if [ -n "$PEER_LAN_IP" ] && echo "$PEER_LAN_IP" | grep -q "^fe80:"; then
+              echo "  Skipping link-local IPv6 address $PEER_LAN_IP, trying IPv4..."
+              PEER_LAN_IP=""
+            fi
             if [ -z "$PEER_LAN_IP" ]; then
               PEER_LAN_IP=$(${avahi}/avahi-resolve-host-name -4 "$HOSTNAME" 2>/dev/null | ${awk} '{print $2}')
             fi
