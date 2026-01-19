@@ -27,6 +27,8 @@
       "ipv6.route-metric" = 0;
     };
   };
+  # Restrict avahi to wifi interface to avoid asynchronous routing problems
+  services.avahi.allowInterfaces = ["wlp0s20f3"];
 
   age.secrets.wg-key-home.file = ./secrets/wg-ws-adder.age;
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
@@ -103,8 +105,6 @@
   };
   # Enable exFAT filesystem support for this USB drive
   boot.supportedFilesystems = ["exfat"];
-
-  services.avahi.allowInterfaces = ["wlp0s20f3"];
 
   # This is a laptop machine acting as a server so we don't want it to sleep
   # When hooked to a dock or external power
