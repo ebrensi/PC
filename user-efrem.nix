@@ -294,7 +294,6 @@ in {
       NNN_OPEN = "micro";
       NNN_GUI = 0;
       NNN_OPTS = "EAoaux";
-      # SSH_AUTH_SOCK is set by NixOS ssh module when programs.ssh.startAgent = true
     };
 
     # This runs when a new shell is started (for this user)

@@ -35,6 +35,7 @@
     enable = true;
     dnssec = "allow-downgrade";
     fallbackDns = ["1.1.1.1" "8.8.8.8"];
+    extraConfig = "MulticastDNS=no";
   };
 
   services = {
@@ -64,8 +65,8 @@
 
     avahi = {
       enable = true;
-      nssmdns4 = false;
-      nssmdns6 = false;
+      nssmdns4 = true;
+      nssmdns6 = true;
       ipv6 = true;
       openFirewall = true;
       publish = {
