@@ -104,7 +104,7 @@
   # Enable exFAT filesystem support for this USB drive
   boot.supportedFilesystems = ["exfat"];
 
-  # services.avahi.denyInterfaces = ["eno0"];
+  services.avahi.allowInterfaces = ["wlp0s20f3"];
 
   # This is a laptop machine acting as a server so we don't want it to sleep
   # When hooked to a dock or external power
