@@ -36,9 +36,9 @@
 
     avahi = {
       enable = true;
-      nssmdns4 = false;
-      nssmdns6 = false;
-      ipv6 = false;
+      nssmdns4 = true;
+      nssmdns6 = true;
+      ipv6 = true;
       openFirewall = true;
       publish = {
         # see https://linux.die.net/man/5/avahi-daemon.conf
@@ -74,7 +74,6 @@
     micro
     speedtest-cli
 
-    awscli2 # For building & publishing Vision Docker image
     zstd # Compression for docker image tarball
     openssl # For SHA256 checksum generation
     go # For VERSION calculation via svu tool
