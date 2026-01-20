@@ -33,9 +33,11 @@
   # Fixes problem with nix S3 cache uploads going into timeout loop
   services.resolved = {
     enable = true;
-    dnssec = "allow-downgrade";
-    fallbackDns = ["1.1.1.1" "8.8.8.8"];
-    settings.Resolve.MulticastDNS = "no";
+    settings.Resolve = {
+      DNSSEC = "allow-downgrade";
+      MulticastDNS = "no";
+      FallbackDNS = ["1.1.1.1" "8.8.8.8"];
+    };
   };
 
   services = {
