@@ -14,8 +14,8 @@
     user = "efrem";
   };
 
-  # nix.settings.extra-platforms = ["aarch64-linux"];
-  # boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  nix.settings.extra-platforms = ["aarch64-linux"];
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
   nixpkgs.config.allowUnsupportedSystem = true;
 
   networking.networkmanager.settings = {
@@ -79,15 +79,15 @@
     (map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines)
     ++ [
       {
-        hostName = "j1"; # Your Jetson or remote builder
-        sshUser = "efrem";
-        sshKey = "/home/efrem/.ssh/id_ed25519";
-        protocol = "ssh-ng";
-        system = "aarch64-linux";
-        maxJobs = 2;
-        speedFactor = 1;
-        supportedFeatures = ["big-parallel"];
-        mandatoryFeatures = [];
+        # hostName = "j1"; # Your Jetson or remote builder
+        # sshUser = "efrem";
+        # sshKey = "/home/efrem/.ssh/id_ed25519";
+        # protocol = "ssh-ng";
+        # system = "aarch64-linux";
+        # maxJobs = 2;
+        # speedFactor = 1;
+        # supportedFeatures = ["big-parallel"];
+        # mandatoryFeatures = [];
       }
     ];
 
