@@ -74,22 +74,10 @@
     };
     machines = [
       ["m1" "aarch64-linux" 4 1000]
+      # ["j1" "aarch64-linux" 2 1] # Jetson - disabled, too slow/unreliable
     ];
   in
-    (map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines)
-    ++ [
-      {
-        hostName = "j1"; # Your Jetson or remote builder
-        sshUser = "efrem";
-        sshKey = "/home/efrem/.ssh/id_ed25519";
-        protocol = "ssh-ng";
-        system = "aarch64-linux";
-        maxJobs = 2;
-        speedFactor = 1;
-        supportedFeatures = ["big-parallel"];
-        mandatoryFeatures = [];
-      }
-    ];
+    map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
 
   nix.distributedBuilds = true;
   nix.extraOptions = ''
