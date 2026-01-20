@@ -17,11 +17,6 @@
   in ''
     echo "Starting WireGuard endpoint discovery..."
 
-    # Function to detect if address is IPv6
-    is_ipv6() {
-      echo "$1" | grep -q ":"
-    }
-
     # Function to extract IP from endpoint (handles both IPv4 and IPv6 with brackets)
     extract_ip() {
       local endpoint=$1
@@ -33,12 +28,7 @@
     # Function to test if an endpoint is reachable
     test_endpoint() {
       local ip=$1
-      local port=${port}
-      if is_ipv6 "$ip"; then
-        timeout 2 ${netcat} -6 -zu "$ip" "$port" 2>/dev/null
-      else
-        timeout 2 ${netcat} -4 -zu "$ip" "$port" 2>/dev/null
-      fi
+      timeout 2 ${netcat} -zu "$ip" "${port}" 2>/dev/null
     }
 
     while true; do
@@ -95,6 +85,7 @@
 
         # Determine target endpoint
         TARGET_ENDPOINT="$endpoint"
+        KEEPALIVE=25
 
         # If peer is on same LAN (same public IP), use routing-aware discovery
         if [ "$PEER_PUBLIC_IP" = "$OUR_PUBLIC_IP" ]; then
@@ -129,6 +120,7 @@
               if [ -n "$OUR_LAN_IP" ] && test_endpoint "$OUR_LAN_IP"; then
                 echo "Found routing-aware LAN endpoint: $OUR_LAN_IP:${port} (to reach $PEER_LAN_IP)"
                 TARGET_ENDPOINT="$OUR_LAN_IP:${port}"
+                KEEPALIVE=0  # no keepAlive needed for LAN connection
               else
                 echo "LAN routing check failed, skipping update to preserve static endpoint"
                 continue
@@ -152,21 +144,11 @@
 
           # Set endpoint with appropriate keepalive based on protocol
           TARGET_IP=$(extract_ip "$TARGET_ENDPOINT")
-          if is_ipv6 "$TARGET_IP"; then
-            echo "  Using IPv6 - no persistent keepalive needed"
-            ${wg} set ${interface} peer "$pubkey" endpoint "$TARGET_ENDPOINT" persistent-keepalive 0
-          else
-            echo "  Using IPv4 - setting persistent keepalive"
-            ${wg} set ${interface} peer "$pubkey" endpoint "$TARGET_ENDPOINT" persistent-keepalive 25
-          fi
+          ${wg} set ${interface} peer "$pubkey" endpoint "$TARGET_ENDPOINT" persistent-keepalive $KEEPALIVE
 
           # Trigger connection with ping
           if [ -n "$PEER_VPN_IP" ]; then
-            if is_ipv6 "$PEER_VPN_IP"; then
-              ${pkgs.iputils}/bin/ping6 -c 2 -W 1 "$PEER_VPN_IP" &>/dev/null &
-            else
-              ${ping} -c 2 -W 1 "$PEER_VPN_IP" &>/dev/null &
-            fi
+            ${ping} -c 2 -W 1 "$PEER_VPN_IP" &>/dev/null &
           fi
         fi
       done
