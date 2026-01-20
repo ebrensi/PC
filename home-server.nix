@@ -49,7 +49,7 @@
       #   name = "thinkpad";
       #   publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
       #   allowedIPs = ["12.167.1.3/32" "fd42::3/128"];
-      #   # endpoint = "thinkpad.local:51820";
+      #   # endpoint = "thinkpad.local:51820"; # [ 2601:643:867f:b080::1004]:51820;
       #   persistentKeepalive = 25;
       # }
     ];
