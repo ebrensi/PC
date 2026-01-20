@@ -39,7 +39,7 @@ in {
       default = "http://[fd42::1]:8888";
     };
     endpoint-discovery = lib.mkEnableOption ''
-      Enable Endpoint Discovery for P2P connections
+      Enable Endpoint Discovery Service to facilitate P2P connections
     '';
   };
 
