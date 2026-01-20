@@ -49,7 +49,7 @@
       #   name = "thinkpad";
       #   publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
       #   allowedIPs = ["12.167.1.3/32" "fd42::3/128"];
-      #   # endpoint = "thinkpad.local:51820"; # [ 2601:643:867f:b080::1004]:51820;
+      #   # endpoint = "thinkpad.local:51820";
       #   persistentKeepalive = 25;
       # }
     ];
@@ -73,13 +73,13 @@
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      ["m1.local" "aarch64-linux" 4 1000]
+      ["m1" "aarch64-linux" 4 1000]
     ];
   in
     (map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines)
     ++ [
       {
-        hostName = "j1.local"; # Your Jetson or remote builder
+        hostName = "j1"; # Your Jetson or remote builder
         sshUser = "efrem";
         sshKey = "/home/efrem/.ssh/id_ed25519";
         protocol = "ssh-ng";
