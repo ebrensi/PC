@@ -45,13 +45,13 @@
         allowedIPs = ["12.167.1.0/24" "fd42::/64"];
         endpoint = "[2601:643:867f:b080:b241:6fff:fe14:8a72]:51820";
       }
-      {
-        name = "thinkpad";
-        publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
-        allowedIPs = ["12.167.1.3/32" "fd42::3/128"];
-        # endpoint = "thinkpad.local:51820";
-        persistentKeepalive = 25;
-      }
+      # {
+      #   name = "thinkpad";
+      #   publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
+      #   allowedIPs = ["12.167.1.3/32" "fd42::3/128"];
+      #   # endpoint = "thinkpad.local:51820";
+      #   persistentKeepalive = 25;
+      # }
     ];
   };
 
