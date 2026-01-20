@@ -134,12 +134,15 @@ in {
     };
     tmux = {
       clock24 = true;
-      terminal = "tmux-direct";
+      terminal = "tmux-256color";
       plugins = with pkgs.tmuxPlugins; [
         cpu
       ];
       extraConfigBeforePlugins = ''
         set -g mouse on
+
+        # Enable truecolor support for foot and xterm-256color terminals
+        set -ag terminal-overrides ",foot:Tc,foot-direct:Tc,xterm-256color:Tc"
 
         # Allow system clipboard access for nested tmux sessions
         # https://github.com/tmux/tmux/wiki/Clipboard#terminal-support---tmux-inside-tmux
