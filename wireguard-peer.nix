@@ -38,14 +38,15 @@ in {
       description = "";
       default = "http://[fd42::1]:8888";
     };
+    endpoint-discovery = lib.mkEnableOption ''
+      Enable Endpoint Discovery for P2P connections
+    '';
   };
 
   config = {
     networking.wireguard.interfaces.${cfg.interface} = {inherit (cfg) ips listenPort privateKeyFile peers;};
 
-    systemd.services.wireguard-endpoint-discovery = let
-      discoveryLib = import ./wg-endpoint-discovery-lib.nix {inherit pkgs;};
-    in {
+    systemd.services.wireguard-endpoint-discovery = lib.mkIf cfg.endpoint-discovery {
       description = "WireGuard Endpoint Discovery Client";
       after = ["wg-quick-${cfg.interface}.service" "network-online.target"];
       wants = ["wg-quick-${cfg.interface}.service" "network-online.target"];
@@ -58,11 +59,14 @@ in {
         User = "root";
       };
 
-      script = discoveryLib.makeDiscoveryScript {
-        interface = cfg.interface;
-        registryUrl = cfg.endpoint-registry-url;
-        wgPort = builtins.toString cfg.listenPort;
-      };
+      script = let
+        discoveryLib = import ./wg-endpoint-discovery-lib.nix {inherit pkgs;};
+      in
+        discoveryLib.makeDiscoveryScript {
+          interface = cfg.interface;
+          registryUrl = cfg.endpoint-registry-url;
+          wgPort = builtins.toString cfg.listenPort;
+        };
     };
 
     # Fix IPv6 route metrics to prioritize WireGuard over RA routes
