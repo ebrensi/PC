@@ -171,7 +171,6 @@ in {
         johnpapa.winteriscoming
         jdinhlife.gruvbox
         silofy.hackthebox
-        sainnhe.gruvbox-material
         naumovs.theme-oceanicnext
         dhedgecock.radical-vscode
         custom.ahmadawais.shades-of-purple
