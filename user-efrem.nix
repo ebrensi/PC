@@ -169,7 +169,6 @@ in {
         emroussel.atomize-atom-one-dark-theme
         nur.just-black
         johnpapa.winteriscoming
-        jdinhlife.gruvbox
         silofy.hackthebox
         naumovs.theme-oceanicnext
         dhedgecock.radical-vscode
