@@ -9,6 +9,11 @@
   cfg = config.wireguard-peer;
 in {
   options.wireguard-peer = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable wireguard interface";
+    };
     listenPort = lib.mkOption {
       type = lib.types.port;
       default = 51820;
