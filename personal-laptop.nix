@@ -64,7 +64,7 @@
   age.secrets.wg-thinkpad.file = ./secrets/wg-thinkpad.age;
   # public key: wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=
   wireguard-peer = {
-    enable = false;
+    enable = true;
     listenPort = 51820;
     interface = "wghome";
     ips = ["12.167.1.3/32" "fd42::3/128"];
