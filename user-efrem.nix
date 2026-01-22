@@ -356,6 +356,7 @@ in {
       ssh-add -q ~/.ssh/AngelProtection 2>/dev/null
     '';
   };
+
   networking.extraHosts = ''
     fd42::2 adder-ws
     fd42::2 home
@@ -363,6 +364,12 @@ in {
     fd42::1 t2
     2601:643:867f:b080::1003 m1
   '';
+  # Disable NixOS-managed /etc/hosts to allow manual modification
+  environment.etc.hosts.enable = false;
+  systemd.tmpfiles.rules = [
+    "R /etc/hosts"
+    "C /etc/hosts 644 efrem users - ${config.environment.etc.hosts.source}"
+  ];
   environment.etc."wireguard/peers".text = ''
     qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=:t2 (relay)
     wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=:thinkpad
