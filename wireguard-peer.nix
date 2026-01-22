@@ -48,7 +48,7 @@ in {
     '';
   };
 
-  config = {
+  config = lib.mkIf cfg.enable {
     networking.wireguard.interfaces.${cfg.interface} = {inherit (cfg) ips listenPort privateKeyFile peers;};
 
     systemd.services.wireguard-endpoint-discovery = lib.mkIf cfg.endpoint-discovery {
