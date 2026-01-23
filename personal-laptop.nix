@@ -76,7 +76,7 @@
         # Route all VPN traffic (IPv6 only) through relay
         allowedIPs = ["12.167.1.0/24" "fd42::/64"];
         endpoint = "73.15.57.26:51820"; # "[2601:643:867f:b080:b241:6fff:fe14:8a72]:51820"; # Public IP for roaming
-        persistentKeepalive = 25;
+        # persistentKeepalive = 25;
       }
       # {
       #   name = "adderws";
