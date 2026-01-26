@@ -21,12 +21,26 @@
     networkmanager = {
       enable = true;
       dns = "systemd-resolved";
+      wifi.backend = "iwd";
     };
     firewall = {
       enable = true;
       allowedTCPPorts = [22];
     };
     timeServers = options.networking.timeServers.default ++ ["time.aws.com"];
+
+    wireless.iwd = {
+      enable = lib.mkForce true;
+      settings = {
+        Network = {
+          EnableIPv6 = true;
+          # RoutePriorityOffset = 0;
+        };
+        Settings = {
+          AutoConnect = true;
+        };
+      };
+    };
   };
 
   # Allows fallback to other DNS servers if this LAN's DNS is slow or failing

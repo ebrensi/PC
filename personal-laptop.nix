@@ -65,6 +65,7 @@
   # public key: wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=
   wireguard-peer = {
     enable = true;
+    # endpoint-discovery = true;
     listenPort = 51820;
     interface = "wghome";
     ips = ["12.167.1.3/32" "fd42::3/128"];
