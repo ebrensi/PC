@@ -8,9 +8,6 @@
   services.displayManager.cosmic-greeter.enable = true;
   services.system76-scheduler.enable = true;
 
-  # cosmic doesn't have good bluetooth support yet, so use blueman for now
-  services.blueman.enable = true;
-
   environment.sessionVariables = {
     COSMIC_DATA_CONTROL_ENABLED = "1";
     NIXOS_OZONE_WL = "1";
