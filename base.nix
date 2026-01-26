@@ -34,6 +34,7 @@
       settings = {
         Network = {
           EnableIPv6 = true;
+          NameResolvingService = "systemd";
           # RoutePriorityOffset = 0;
         };
         Settings = {
