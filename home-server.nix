@@ -33,6 +33,7 @@
   age.secrets.wg-key-home.file = ./secrets/wg-ws-adder.age;
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
   wireguard-peer = {
+    enable = true;
     interface = "wghome";
     ips = ["12.167.1.2/32" "fd42::2/128"];
     listenPort = 51820;
