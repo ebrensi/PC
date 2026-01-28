@@ -32,24 +32,18 @@
 
   age.secrets.wg-key-home.file = ./secrets/wg-ws-adder.age;
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
-  wireguard-peer = {
+  wireguard-peer = let
+    prefix = config.wireguard-peer.prefix;
+  in {
     enable = true;
-    interface = "wghome";
-    ips = ["12.167.1.2/32" "fd42::2/128"];
+    ips = ["${prefix}1/128"];
     listenPort = 51820;
     privateKeyFile = config.age.secrets.wg-key-home.path;
     peers = [
       {
-        name = "relay";
-        publicKey = "qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=";
-        # Route all VPN traffic (IPv6 only) through relay
-        allowedIPs = ["12.167.1.0/24" "fd42::/64"];
-        endpoint = "[2601:643:867f:b080:b241:6fff:fe14:8a72]:51820";
-      }
-      {
         name = "thinkpad";
         publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
-        allowedIPs = ["12.167.1.3/32" "fd42::3/128"];
+        allowedIPs = ["${prefix}2/128"];
       }
     ];
   };
@@ -57,10 +51,6 @@
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
     # SSH config for remote home-server
-
-    Host vm
-      Hostname 127.0.0.1
-      Port 2222
   '';
 
   nix.buildMachines = let

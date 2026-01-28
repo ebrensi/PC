@@ -22,7 +22,7 @@ in {
     interface = lib.mkOption {
       type = lib.types.str;
       description = "WireGuard VPN interface name";
-      default = "wghome";
+      default = "wg-home";
     };
     ips = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -33,6 +33,18 @@ in {
       type = lib.types.path;
       description = "";
     };
+    cidr = lib.mkOption {
+      type = lib.types.str;
+      description = "WireGuard VPN CIDR";
+      default = "fd00::/120"; # gives us fd00::1 to fd00::ff
+    };
+    prefix = lib.mkOption {
+      type = lib.types.str;
+      description = "WireGuard VPN Prefix";
+      default = builtins.elemAt (lib.splitString "/" cfg.cidr) 0;
+      internal = true;
+      readOnly = true;
+    };
     peers = lib.mkOption {
       type = lib.types.listOf lib.types.attrs;
       description = "";
@@ -41,7 +53,7 @@ in {
     endpoint-registry-url = lib.mkOption {
       type = lib.types.str;
       description = "";
-      default = "http://[fd42::1]:8888";
+      default = "http://[${cfg.prefix}1]:8888";
     };
     endpoint-discovery = lib.mkEnableOption ''
       Enable Endpoint Discovery Service to facilitate P2P connections

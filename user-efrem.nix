@@ -16,7 +16,7 @@ in {
   users.users.${user} = {
     isNormalUser = true;
     description = "Efrem Rensi";
-    extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp" "wireshark"];
+    extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp"];
     packages = with pkgs; let
       dev-scripts = import ./dev-scripts.nix {inherit pkgs;};
     in [
@@ -234,6 +234,10 @@ in {
         # Agent forwarding configuration
         ForwardAgent yes
         IdentityAgent $SSH_AUTH_SOCK
+
+      Host vm
+        Hostname ::1
+        Port 2222
     '';
     iftop.enable = true;
   };
@@ -363,15 +367,15 @@ in {
 
   # Disable NixOS-managed /etc/hosts to allow manual modification
   environment.etc.hosts.enable = false;
-  networking.extraHosts = ''
-    fd42::2 adder-ws
-    fd42::2 home
-    fd42::3 thinkpad
-    fd42::1 t2
+  networking.extraHosts = let
+    prefix = config.wireguard-peer.prefix;
+  in ''
+    ${prefix}1 adder-ws
+    ${prefix}1 home
+    ${prefix}2 thinkpad
     2601:643:867f:b080::100a m1
   '';
   environment.etc."wireguard/peers".text = ''
-    qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=:t2 (relay)
     wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=:thinkpad
     srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=:adder-ws
   '';
