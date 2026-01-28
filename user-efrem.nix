@@ -368,7 +368,7 @@ in {
     fd42::2 home
     fd42::3 thinkpad
     fd42::1 t2
-    2601:643:867f:b080::1003 m1
+    2601:643:867f:b080::100a m1
   '';
   environment.etc."wireguard/peers".text = ''
     qtyeOtl/yxdpsELc8xdcC6u0a1p+IZU0HwHrHhUpGxc=:t2 (relay)
