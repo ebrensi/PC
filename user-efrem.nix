@@ -373,7 +373,6 @@ in {
     ${prefix}1 adder-ws
     ${prefix}1 home
     ${prefix}2 thinkpad
-    2601:643:867f:b080::100a m1
   '';
   environment.etc."wireguard/peers".text = ''
     wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=:thinkpad
