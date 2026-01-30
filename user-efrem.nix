@@ -24,8 +24,6 @@ in {
       micro
       termscp
       google-chrome
-      claude-code
-      opencode
       visidata
       glow
       nix-btm
@@ -36,6 +34,11 @@ in {
       wg-friendly-peer-names
       tcpdump
       hwinfo
+
+      # AI coding tools
+      claude-code
+      gemini-cli
+      opencode
 
       # Media
       mpvpaper # video wallpaper
