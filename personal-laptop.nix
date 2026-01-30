@@ -72,8 +72,13 @@
         name = "adderws";
         publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
         allowedIPs = ["${prefix}1/128"];
-        endpoint = "73.15.57.26:55555"; # [2601:643:867f:b080::1000]:55555
+        endpoint = "73.15.57.26:55555";
       }
+      # {
+      #   name = "phone";
+      #   publicKey = "Y5PxUuaIJi0emIQMkZW5EZDkSAY6Ed4ABAJdGlzpkTI=";
+      #   allowedIPs = ["${prefix}3"];
+      # }
     ];
   };
 }

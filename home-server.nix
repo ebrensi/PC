@@ -45,6 +45,11 @@
         publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
         allowedIPs = ["${prefix}2/128"];
       }
+      {
+        name = "phone";
+        publicKey = "Y5PxUuaIJi0emIQMkZW5EZDkSAY6Ed4ABAJdGlzpkTI=";
+        allowedIPs = ["${prefix}3"];
+      }
     ];
   };
 
