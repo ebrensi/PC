@@ -48,7 +48,7 @@
       {
         name = "phone";
         publicKey = "Y5PxUuaIJi0emIQMkZW5EZDkSAY6Ed4ABAJdGlzpkTI=";
-        allowedIPs = ["${prefix}3"];
+        allowedIPs = ["${prefix}3/128"];
       }
     ];
   };
