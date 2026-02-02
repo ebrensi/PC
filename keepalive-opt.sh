@@ -3,7 +3,7 @@
 # Configuration
 INTERFACE="wg-home"
 PEER_ID="srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA="
-PEER_IP="fd001" # The internal WireGuard IP of the peer to ping
+PEER_IP="fd00::1" # The internal WireGuard IP of the peer to ping
 
 # Initial State
 CURRENT_TEST=25    # Start at the standard 25s
@@ -11,7 +11,7 @@ LAST_GOOD=25
 MAX_KNOWN_BAD=3600 # 1 hour
 MODE="EXPAND"      # Start by doubling
 
-echo "Starting discovery for Peer: ${PEER_ID:0:8}..."
+echo "Starting discovery for Peer: $PEER_ID..."
 
 while true; do
     echo "------------------------------------------------"
