@@ -91,7 +91,7 @@ in {
   '';
 
   services.eternal-terminal.enable = true;
-  serviccs.avahi.extraServiceFiles = {
+  services.avahi.extraServiceFiles = {
     guardian-cluster = ''
       <?xml version="1.0" standalone='no'?>
       <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
