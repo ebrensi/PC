@@ -73,7 +73,14 @@
         publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
         allowedIPs = ["${prefix}1/128"];
         endpoint = "73.15.57.26:55555";
-        persistentKeepalive = 180;
+        # persistentKeepalive = 180;
+      }
+      {
+        name = "m1";
+        publicKey = "aZEHKJGXFvCe8eOmMCdhD+okIuOkQUULZzKJZ+MWDRU=";
+        allowedIPs = ["${prefix}4/128"];
+        # endpoint = "73.15.57.26:55555";
+        # persistentKeepalive = 180;
       }
       # {
       #   name = "phone";

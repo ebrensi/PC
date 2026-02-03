@@ -50,6 +50,13 @@
         publicKey = "Y5PxUuaIJi0emIQMkZW5EZDkSAY6Ed4ABAJdGlzpkTI=";
         allowedIPs = ["${prefix}3/128"];
       }
+      {
+        name = "m1";
+        publicKey = "aZEHKJGXFvCe8eOmMCdhD+okIuOkQUULZzKJZ+MWDRU=";
+        allowedIPs = ["${prefix}4/128"];
+        # endpoint = "73.15.57.26:55555";
+        # persistentKeepalive = 180;
+      }
     ];
   };
 

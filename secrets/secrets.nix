@@ -17,4 +17,5 @@ in {
   "aws-credentials.age".publicKeys = all-machines ++ [user-efrem];
   "wg-ws-adder.age".publicKeys = [home-server] ++ [user-efrem];
   "wg-thinkpad.age".publicKeys = [laptop] ++ [user-efrem];
+  "wg-m1.age".publicKeys = [m1] ++ [user-efrem];
 }

@@ -394,10 +394,12 @@ in {
     ${prefix}1 home
     ${prefix}2 thinkpad
     ${prefix}3 phone
+    ${prefix}4 m1
   '';
   environment.etc."wireguard/peers".text = ''
     wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=:thinkpad
     srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=:adder-ws
     Y5PxUuaIJi0emIQMkZW5EZDkSAY6Ed4ABAJdGlzpkTI=:phone
+    aZEHKJGXFvCe8eOmMCdhD+okIuOkQUULZzKJZ+MWDRU=:m1
   '';
 }

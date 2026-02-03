@@ -9,6 +9,7 @@
 }: {
   imports = [
     "${modulesPath}/profiles/headless.nix"
+    ./wireguard-peer.nix
   ];
   hardware.graphics.enable = false;
 
@@ -124,6 +125,30 @@
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
+  };
+
+  age.secrets.wg-m1.file = ./secrets/wg-m1.age;
+  # public key: aZEHKJGXFvCe8eOmMCdhD+okIuOkQUULZzKJZ+MWDRU=
+  wireguard-peer = let
+    prefix = config.wireguard-peer.prefix;
+  in {
+    enable = true;
+    listenPort = 51820;
+    ips = ["${prefix}4/128"];
+    privateKeyFile = config.age.secrets.wg-m1.path;
+    peers = [
+      {
+        name = "adderws";
+        publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
+        allowedIPs = ["${prefix}1/128"];
+        endpoint = "73.15.57.26:55555";
+      }
+      {
+        name = "thinkpad";
+        publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
+        allowedIPs = ["${prefix}2/128"];
+      }
+    ];
   };
 
   programs = {
