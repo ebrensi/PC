@@ -380,7 +380,7 @@ in {
       ssh-add -q ~/.ssh/AngelProtection 2>/dev/null
 
       myMachines () {
-        ${pkgs.avahi}/bin/avahi-browse -pr ${avahi-service-type}
+        ${pkgs.avahi}/bin/avahi-browse -pr ${avahi-service-type} | grep -i "^=;.*;IP*" | awk -F';' '{print $4, $8}' | sort -u
       }
     '';
   };
