@@ -7,6 +7,7 @@
 }: let
   user = "efrem";
   public-keys = import ./secrets/public-keys.nix;
+  avahi-service-type = "_efrem._tcp";
 in {
   imports = [./dev-folders.nix];
 
@@ -90,6 +91,18 @@ in {
   '';
 
   services.eternal-terminal.enable = true;
+  serviccs.avahi.extraServiceFiles = {
+    guardian-cluster = ''
+      <?xml version="1.0" standalone='no'?>
+      <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+      <service-group>
+        <name replace-wildcards="yes">%h</name>
+        <service>
+          <type>${service-type}</type>
+        </service>
+      </service-group>
+    '';
+  };
 
   # Auto-create shared tmux session on boot (matches tmx behavior)
   systemd.services.tmux-shared = let
@@ -365,6 +378,10 @@ in {
       # Add SSH keys to the systemd ssh-agent
       ssh-add -q ~/.ssh/id_ed25519 2>/dev/null
       ssh-add -q ~/.ssh/AngelProtection 2>/dev/null
+
+      myMachines () {
+        ${pkgs.avahi}/bin/avahi-browse -pr ${avahi-service-type}
+      }
     '';
   };
 
