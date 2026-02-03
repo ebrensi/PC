@@ -98,7 +98,7 @@ in {
       <service-group>
         <name replace-wildcards="yes">%h</name>
         <service>
-          <type>${service-type}</type>
+          <type>${avahi-service-type}</type>
         </service>
       </service-group>
     '';
