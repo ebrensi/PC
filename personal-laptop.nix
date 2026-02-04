@@ -13,6 +13,7 @@
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
   nix.settings.extra-platforms = ["aarch64-linux"];
+  nixpkgs.config.allowUnsupportedSystem = true;
 
   # Configure home server as a substituter
   # Priority is set high (1000) so it's only used after public caches
@@ -20,7 +21,7 @@
   nix.settings.substituters = let
     argstr = "trusted=true&compress=true";
   in [
-    # "ssh-ng://efrem@adder-ws?priority=1000&${argstr}"
+    "ssh-ng://efrem@home?priority=1000&${argstr}"
   ];
   nix.settings.trusted-public-keys = with (import ./secrets/public-keys.nix); [home-cache-key];
   nix.buildMachines = let
@@ -32,8 +33,8 @@
     };
     machines = [
       # ["home" "x86_64-linux" 4 100]
-      # ["home" "aarch64-linux" 4 100]
-      # ["m1" "aarch64-linux" 4 10]
+      # ["home" "aarch64-linux" 2 100]
+      ["m1" "aarch64-linux" 4 10]
       # ["j1" "aarch64-linux" 2 10]
     ];
   in

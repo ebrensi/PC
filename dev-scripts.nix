@@ -60,11 +60,11 @@ in rec {
     # NIX_SSHOPTS="$sshOpts" nix-copy-closure -s --gzip --to "$targetHost" "$storePath"
     echo "Done Copying."
   '';
-  deploy-direct = pkgs.writeShellScriptBin "deploy-direct" ''
+  deploy-binaries = pkgs.writeShellScriptBin "deploy-binaries" ''
     # Build toplevel of an arbitrary flake path locally, copy the closure it directly to a remote machine,
     #  and activate it there. Use this script to update the NixOS system already running on a remote machine,
     #  without using the remote cache.
-    # Usage: deploy-direct <flakePath> <host:port>
+    # Usage: deploy-binaries <flakePath> <host:port>
 
     source ${nix-config}
 
