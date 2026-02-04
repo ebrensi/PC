@@ -94,7 +94,7 @@
     mkBuilder = hostName: system: maxJobs: speedFactor: {
       inherit hostName system maxJobs speedFactor;
       sshUser = "efrem";
-      sshKey = "/home/efrem/.ssh/id_ed25519";
+      sshKey = "/root/.ssh/id_ed25519";
       protocol = "ssh-ng";
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };

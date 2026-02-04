@@ -80,6 +80,10 @@ in {
     "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
     "d /tmp/nixbtm 0777 root root -"
 
+    # Root SSH key for nix remote builders (copies user's key)
+    "d  /root/.ssh                  700 root root -"
+    "C+ /root/.ssh/id_ed25519       600 root root - ${HOME}/.ssh/id_ed25519"
+
     # Copy /etc/hosts nix store source to /etc/hosts, where it will be editable
     "R /etc/hosts"
     "C /etc/hosts 644 efrem users - ${config.environment.etc.hosts.source}"
