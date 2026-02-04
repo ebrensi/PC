@@ -21,7 +21,8 @@
   nix.settings.substituters = let
     argstr = "trusted=true&compress=true";
   in [
-    "ssh-ng://efrem@home?priority=1000&${argstr}"
+    # "ssh-ng://efrem@home?priority=1000&${argstr}"  # slow due to powerline connection
+    "ssh-ng://efrem@m1?${argstr}"
   ];
   nix.settings.trusted-public-keys = with (import ./secrets/public-keys.nix); [home-cache-key];
   nix.buildMachines = let
