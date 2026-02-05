@@ -20,6 +20,18 @@
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
 
+  # Intel GPU hardware acceleration for video decoding
+  hardware.graphics.extraPackages = with pkgs; [
+    intel-media-driver # VAAPI for hardware video decoding
+    vpl-gpu-rt # Intel Video Processing Library
+  ];
+
+  # GPU diagnostic tools
+  environment.systemPackages = with pkgs; [
+    libva-utils # vainfo command to verify VAAPI
+    intel-gpu-tools # intel_gpu_top to monitor GPU usage
+  ];
+
   # fileSystems."/" = {
   #   device = "/dev/disk/by-uuid/016bb68b-b54d-4490-8fd8-35d1c42d6dba";
   #   fsType = "btrfs";
