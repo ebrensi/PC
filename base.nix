@@ -160,8 +160,6 @@
     tig
     nodePackages_latest.prettier
 
-    # nvtopPackages.full  # Disabled while cuda builds fail
-
     # Utilities
     wl-clipboard-x11
     wl-clipboard-rs
