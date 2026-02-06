@@ -35,6 +35,7 @@ in {
       wg-friendly-peer-names
       tcpdump
       hwinfo
+      powertop
 
       # AI coding tools
       claude-code
@@ -74,7 +75,19 @@ in {
   systemd.tmpfiles.rules = let
     HOME = "/home/${user}";
     publicKeyFile = pkgs.writeText "id_ed25519.pub" public-keys.personal-ssh-key;
+    mpvConfig = pkgs.writeText "mpv.conf" ''
+      hwdec=auto
+    '';
+    chromeFlags = pkgs.writeText "chrome-flags.conf" ''
+      --enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL
+      --disable-features=UseChromeOSDirectVideoDecoder
+      --enable-gpu-rasterization
+      --enable-zero-copy
+    '';
   in [
+    "d  ${HOME}/.config/mpv          755 ${user} users -"
+    "L+ ${HOME}/.config/mpv/mpv.conf 644 ${user} users - ${mpvConfig}"
+    "L+ ${HOME}/.config/chrome-flags.conf 644 ${user} users - ${chromeFlags}"
     "d  ${HOME}/dev                 775 ${user} users -"
     "L+ ${HOME}/.tigrc              600 ${user} users - /etc/tig/config"
     "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"

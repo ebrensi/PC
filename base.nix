@@ -183,7 +183,15 @@
     git.enable = true;
     git.lfs.enable = true;
     lazygit.enable = true;
-    firefox.enable = true;
+    firefox = {
+      enable = true;
+      preferences = {
+        # Hardware video acceleration via VA-API
+        "media.ffmpeg.vaapi.enabled" = true;
+        "media.hardware-video-decoding.force-enabled" = true;
+        "gfx.webrender.all" = true;
+      };
+    };
     xwayland.enable = true;
     wavemon.enable = true;
     usbtop.enable = true; # not building
