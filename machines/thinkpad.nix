@@ -30,6 +30,7 @@
   environment.systemPackages = with pkgs; [
     libva-utils # vainfo command to verify VAAPI
     intel-gpu-tools # intel_gpu_top to monitor GPU usage
+    nvtopPackages.intel
   ];
 
   # fileSystems."/" = {
