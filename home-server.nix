@@ -106,9 +106,7 @@
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
 
   nix.distributedBuilds = true;
-  nix.extraOptions = ''
-    builders-use-substitutes = true
-  '';
+  nix.extraOptions = ''builders-use-substitutes = true'';
 
   # Set a consistent mount point for my external USB drive
   #  connected via USB to thundebolt dock
