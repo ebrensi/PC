@@ -75,4 +75,17 @@
       "nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20="
     ];
   };
+
+  # Ensure correct ownership on the alt nix store after mount
+  # The alt store is accessed directly (not via daemon) so efrem needs ownership
+  systemd.services.nix-alt-store-permissions = {
+    description = "Set permissions on alternate nix store";
+    after = ["mnt-nix\\x2dalt.mount"];
+    requires = ["mnt-nix\\x2dalt.mount"];
+    wantedBy = ["mnt-nix\\x2dalt.mount"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'chown -R efrem:nixbld /mnt/nix-alt/nix && chmod 1775 /mnt/nix-alt/nix/store'";
+    };
+  };
 }
