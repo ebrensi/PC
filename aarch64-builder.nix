@@ -85,6 +85,26 @@
     python3 # needed by uv for pip compile
     gcc
 
+    # Build to alternate nix store on USB NVMe
+    # Usage: nix-build-ext .#package
+    # The external store is configured as a substituter, so results are
+    # automatically available to the local store without explicit copying
+    (pkgs.writeShellScriptBin "nix-build-ext" ''
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      ALT_STORE="/mnt/nix-alt"
+
+      if ! mountpoint -q "$ALT_STORE"; then
+        echo "Error: $ALT_STORE is not mounted. Is the USB drive connected?"
+        exit 1
+      fi
+
+      echo "Building to external store: $ALT_STORE"
+      nix build --store "$ALT_STORE" "$@"
+      echo "Done. Result available via substituter."
+    '')
+
     # Docker cleanup script - removes old guardian/vision images, keeps build cache
     (pkgs.writeShellScriptBin "docker-cleanup-vision" ''
       #!/usr/bin/env bash
@@ -125,6 +145,13 @@
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
+  };
+
+  # Ensure Docker waits for the external drive mount (if configured)
+  # This prevents Docker from failing or using wrong directory if mount is slow
+  systemd.services.docker = {
+    after = ["var-lib-docker.mount"];
+    wants = ["var-lib-docker.mount"];
   };
 
   age.secrets.wg-m1.file = ./secrets/wg-m1.age;
