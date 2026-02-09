@@ -74,6 +74,8 @@
     extra-trusted-public-keys = [
       "nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20="
     ];
+    # Trust unsigned paths from local alt store
+    require-sigs = false;
   };
 
   # Ensure correct ownership on the alt nix store after mount
