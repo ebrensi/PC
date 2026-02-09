@@ -31,7 +31,7 @@
       };
     };
 
-    services.eternal-terminal.enable = true;
+    eternal-terminal.enable = true;
 
     # See https://discourse.nixos.org/t/timezones-how-to-setup-on-a-laptop/33853/7
     automatic-timezoned.enable = true;
