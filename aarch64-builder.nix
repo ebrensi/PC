@@ -145,6 +145,4 @@
     git.enable = true;
     htop.enable = true;
   };
-
-  virtualisation.docker.enable = true;
 }
