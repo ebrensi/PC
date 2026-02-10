@@ -207,7 +207,7 @@ in {
       flake-path = "/home/${user}/dev/PC";
     in {
       flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
-      yay = "nixos-rebuild switch --flake ${flake-path} --sudo |& nom";
+      yay = ''nixos-rebuild switch --flake ${flake-path} --sudo |& nom; running=$(uname -r); new=$(ls /run/current-system/kernel-modules/lib/modules/); if [ "$running" != "$new" ]; then echo ""; echo "Kernel changed: $running -> $new. Reboot to apply."; fi'';
       N = "sudo -E nnn -dH";
       del = "trash-put";
       wg = "sudo wg";
