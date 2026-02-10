@@ -1,30 +1,47 @@
+# Lenovo ThinkPad X1 11th Gen
+# Hardware config inlined (no nixos-hardware dependency)
 {
   config,
   lib,
   pkgs,
   modulesPath,
-  #
-  nixos-hardware,
   ...
 }: {
   imports = [
-    nixos-hardware.nixosModules.lenovo-thinkpad-x1-11th-gen
     "${modulesPath}/installer/scan/not-detected.nix"
   ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
-  boot.initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme"];
-  boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-intel"];
-  boot.extraModulePackages = [];
+  boot = {
+    initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme"];
+    initrd.kernelModules = ["i915"];
+    kernelModules = ["kvm-intel"];
+    extraModulePackages = [];
+    # Force probe for 11th gen Intel GPU
+    kernelParams = ["i915.force_probe=a7a1"];
+  };
 
-  # Intel GPU hardware acceleration for video decoding
-  hardware.graphics.extraPackages = with pkgs; [
-    intel-media-driver # VAAPI for hardware video decoding
-    vpl-gpu-rt # Intel Video Processing Library
-  ];
+  # SSD optimization
+  services.fstrim.enable = true;
+
+  hardware = {
+    enableRedistributableFirmware = true;
+    cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+    # ThinkPad TrackPoint
+    trackpoint.enable = true;
+    trackpoint.emulateWheel = true;
+
+    # Graphics
+    graphics.enable = true;
+    # NOTE: Intel GPU packages commented out - may cause system crashes.
+    # Uncomment if VAAPI is needed and system is stable:
+    graphics.extraPackages = with pkgs; [
+      intel-media-driver # VAAPI for hardware video decoding
+      vpl-gpu-rt # Intel Video Processing Library
+    ];
+  };
 
   # GPU diagnostic tools
   environment.systemPackages = with pkgs; [

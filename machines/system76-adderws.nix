@@ -1,37 +1,43 @@
 # Configuration Specific to System76 Adder WS Laptop WorkStation
+# Hardware config inlined (no nixos-hardware dependency)
 {
   config,
   lib,
   pkgs,
-  nixos-hardware,
   modulesPath,
   ...
 }: {
-  # hardware profiles from nixos-hardware
-  imports = with nixos-hardware.nixosModules; [
+  imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
-    system76
-    common-cpu-intel
-    common-gpu-intel
-    common-gpu-nvidia # (GPU Offload mode)
-    # common-gpu-nvidia-sync # (GPU Sync mode)
-    common-pc-ssd
-    common-pc-laptop
-    common-hidpi
   ];
 
   boot = {
     initrd.availableKernelModules = ["xhci_pci" "nvme" "thunderbolt" "uas" "sd_mod" "sdhci_pci"];
-    initrd.kernelModules = [];
+    initrd.kernelModules = ["i915"]; # Load Intel GPU early for console
     kernelModules = ["kvm-intel" "iwlwifi"];
     extraModulePackages = [];
   };
   networking.useDHCP = lib.mkDefault true;
 
+  # SSD optimization (from common-pc-ssd)
+  services.fstrim.enable = true;
+
+  # System76 hardware support
+  hardware.system76.enableAll = true;
+
   hardware = {
     enableRedistributableFirmware = true;
     cpu.intel.updateMicrocode = true;
     firmware = [pkgs.linux-firmware];
+
+    # Graphics - NVIDIA hybrid with Intel iGPU
+    graphics.enable = true;
+    # graphics.extraPackages = [
+    #   pkgs.intel-compute-runtime # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-opencl-intel
+    #   pkgs.intel-media-driver # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-va-api-intel
+    #   pkgs.vpl-gpu-rt # https://wiki.nixos.org/wiki/Intel_Graphics
+    # ];
+
     nvidia = {
       open = true;
       nvidiaSettings = true;
@@ -44,16 +50,13 @@
       };
     };
     nvidia-container-toolkit.enable = true;
-    graphics.extraPackages = [
-      pkgs.intel-compute-runtime # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-opencl-intel
-      pkgs.intel-media-driver # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-va-api-intel
-      pkgs.vpl-gpu-rt # https://wiki.nixos.org/wiki/Intel_Graphics
-    ];
   };
 
   services = {
     # See https://support.system76.com/articles/system76-software/
     power-profiles-daemon.enable = false;
+    # NVIDIA driver (from common-gpu-nvidia)
+    xserver.videoDrivers = ["nvidia"];
   };
 
   # see https://wiki.archlinux.org/title/Hardware_video_acceleration#Verification

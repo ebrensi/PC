@@ -6,7 +6,6 @@
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-apple-silicon.url = "github:nix-community/nixos-apple-silicon";
     agenix = {
       url = "github:ryantm/agenix";
@@ -23,7 +22,7 @@
       pkgs-stable = import self.inputs.nixpkgs-stable {system = "x86_64-linux";};
       system-base = nixpkgs.lib.nixosSystem {
         specialArgs = {
-          inherit (self.inputs) nixos-hardware agenix;
+          inherit (self.inputs) agenix;
           inherit pkgs-stable;
         };
         modules = [
