@@ -3,7 +3,9 @@
   pkgs,
   modulesPath,
   ...
-}: {
+}: let
+  user = "efrem";
+in {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
     ./wireguard-peer.nix
@@ -11,7 +13,7 @@
 
   services.displayManager.autoLogin = {
     enable = true;
-    user = "efrem";
+    user = user;
   };
 
   nix.settings.extra-platforms = ["aarch64-linux"];
@@ -93,7 +95,7 @@
   nix.buildMachines = let
     mkBuilder = hostName: system: maxJobs: speedFactor: {
       inherit hostName system maxJobs speedFactor;
-      sshUser = "efrem";
+      sshUser = user;
       sshKey = "/root/.ssh/id_ed25519";
       protocol = "ssh-ng";
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];

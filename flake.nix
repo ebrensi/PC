@@ -30,14 +30,19 @@
           self.inputs.disko.nixosModules.disko
           self.inputs.agenix.nixosModules.default
           ./base.nix
-          ./desktop-cosmic.nix
           ./user-efrem.nix
           ./disko-laptop-ssd.nix
         ];
       };
+      gui-base = system-base.extendModules {
+        modules = [
+          ./desktop-cosmic.nix
+          ./graphical.nix
+        ];
+      };
     in {
       # System76 Adder WS (Laptop WorkStation)
-      adder-ws = system-base.extendModules {
+      adder-ws = gui-base.extendModules {
         modules = [
           ./machines/system76-adderws.nix
           ./home-server.nix
@@ -46,17 +51,16 @@
       };
 
       # Lenovo ThinkPad X1 Carbon 11th Gen
-      thinkpad = system-base.extendModules {
+      thinkpad = gui-base.extendModules {
         modules = [
           ./machines/thinkpad.nix
           ./personal-laptop.nix
           {networking.hostName = "thinkpad";}
         ];
       };
+
       # Apple Mac Mini M1 configured as aarch64 builder
-      # TODO: maybe have this set up as a nix-darwin system
-      #  so that we can still use it as a mac desktop
-      m1 = nixpkgs.lib.nixosSystem {
+      m1 = system-base.extendModules {
         system = "aarch64-linux";
         modules = [
           self.inputs.nixos-apple-silicon.nixosModules.apple-silicon-support

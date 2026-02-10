@@ -63,54 +63,6 @@ in {
   config = lib.mkIf cfg.enable {
     networking.wireguard.interfaces.${cfg.interface} = {inherit (cfg) ips listenPort privateKeyFile peers;};
 
-    systemd.services.wireguard-endpoint-discovery = lib.mkIf cfg.endpoint-discovery {
-      description = "WireGuard Endpoint Discovery Client";
-      after = ["wg-quick-${cfg.interface}.service" "network-online.target"];
-      wants = ["wg-quick-${cfg.interface}.service" "network-online.target"];
-      wantedBy = ["multi-user.target"];
-
-      serviceConfig = {
-        Type = "simple";
-        Restart = "always";
-        RestartSec = "30s";
-        User = "root";
-      };
-
-      script = let
-        discoveryLib = import ./wg-endpoint-discovery-lib.nix {inherit pkgs;};
-      in
-        discoveryLib.makeDiscoveryScript {
-          interface = cfg.interface;
-          registryUrl = cfg.endpoint-registry-url;
-          wgPort = builtins.toString cfg.listenPort;
-        };
-    };
-
-    # Fix IPv6 route metrics to prioritize WireGuard over RA routes
-    systemd.services."wireguard-${cfg.interface}-fix-routes" = {
-      description = "Fix WireGuard IPv6 route metrics";
-      after = ["wireguard-${cfg.interface}.service"];
-      wants = ["wireguard-${cfg.interface}.service"];
-      wantedBy = ["multi-user.target"];
-
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-
-      script = ''
-        # Wait for WireGuard to create its routes
-        sleep 2
-
-        # Fix route metrics for all IPv6 routes on ${cfg.interface} interface
-        ${pkgs.iproute2}/bin/ip -6 route show dev ${cfg.interface} | while read route; do
-          dest=$(echo "$route" | ${pkgs.gawk}/bin/awk '{print $1}')
-          ${pkgs.iproute2}/bin/ip -6 route del "$dest" dev ${cfg.interface} 2>/dev/null || true
-          ${pkgs.iproute2}/bin/ip -6 route add "$dest" dev ${cfg.interface} metric 50
-        done
-      '';
-    };
-
     networking.firewall = {
       allowedUDPPorts = [cfg.listenPort];
       trustedInterfaces = ["${cfg.interface}"];

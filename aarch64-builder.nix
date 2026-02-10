@@ -11,6 +11,9 @@
     "${modulesPath}/profiles/headless.nix"
     ./wireguard-peer.nix
   ];
+
+  nixpkgs.hostPlatform = "aarch64-linux";
+  nixpkgs.buildPlatform = "aarch64-linux";
   hardware.graphics.enable = false;
 
   networking = {
@@ -64,8 +67,6 @@
     dates = "weekly";
     options = "--delete-older-than 30d";
   };
-
-  nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
     # see https://search.nixos.org/packages?channel=unstable
@@ -229,17 +230,4 @@
       "guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="
     ];
   };
-  nix.nixPath = ["nixpkgs=${pkgs.path}"];
-
-  users.users.efrem = {
-    isNormalUser = true;
-    description = "Efrem Rensi";
-    extraGroups = ["networkmanager" "wheel" "docker" "nixbld"];
-    initialPassword = "p";
-    openssh.authorizedKeys.keys = with (import ./secrets/public-keys.nix); [personal-ssh-key];
-  };
-  security.sudo.wheelNeedsPassword = false;
-
-  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  system.stateVersion = "25.11"; # Did you read the comment?
 }

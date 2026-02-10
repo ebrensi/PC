@@ -63,17 +63,6 @@
       };
     };
 
-    printing = {
-      # see https://wiki.nixos.org/wiki/Printing
-      enable = true;
-      cups-pdf.enable = true;
-      browsing = true;
-      drivers = [
-        pkgs.cups-filters
-        pkgs.cups-browsed
-      ];
-    };
-
     fwupd.enable = true;
 
     # See https://discourse.nixos.org/t/timezones-how-to-setup-on-a-laptop/33853/7
@@ -181,18 +170,8 @@
     git.enable = true;
     git.lfs.enable = true;
     lazygit.enable = true;
-    firefox = {
-      enable = true;
-      preferences = {
-        # Hardware video acceleration via VA-API
-        "media.ffmpeg.vaapi.enabled" = true;
-        "media.hardware-video-decoding.force-enabled" = true;
-        "gfx.webrender.all" = true;
-      };
-    };
-    xwayland.enable = true;
     wavemon.enable = true;
-    usbtop.enable = true; # not building
+    usbtop.enable = true;
     htop.enable = true;
     iotop.enable = true;
     fzf.fuzzyCompletion = true;
@@ -201,33 +180,6 @@
       enable = true;
       vimAlias = true;
     };
-    vscode.enable = true;
-    vscode.extensions = with pkgs.vscode-extensions; [
-      # For all extenstions
-      # see https://search.nixos.org/packages?channel=unstable&query=vscode-extensions
-
-      # Nix
-      jnoortheen.nix-ide
-      bbenoist.nix
-      jeff-hykin.better-nix-syntax
-
-      # Python
-      ms-toolsai.jupyter
-      ms-python.python
-      ms-python.vscode-pylance
-      ms-python.pylint
-      # ms-python.flake8
-      ms-python.mypy-type-checker
-      ms-python.isort
-      ms-python.debugpy
-      ms-python.black-formatter
-      charliermarsh.ruff
-
-      # Go
-      golang.go
-
-      tamasfe.even-better-toml
-    ];
 
     # This would go in /etc/ssh/ssh_config in a traditional linux distro
     ssh.extraConfig = ''
@@ -245,39 +197,6 @@
     nerd-fonts.fira-code
     nerd-fonts.droid-sans-mono
   ];
-
-  hardware.bluetooth = {
-    # https://nixos.wiki/wiki/Bluetooth
-    enable = true;
-    powerOnBoot = true;
-    settings = {
-      General = {
-        # Shows battery charge of connected devices on supported Bluetooth adapters.
-        Experimental = true;
-        # When enabled other devices can connect faster to us, however
-        # the tradeoff is increased power consumption.
-        FastConnectable = true;
-      };
-      Policy = {
-        # Enable all controllers when they are found. This includes
-        # adapters present on start as well as adapters that are plugged
-        # in later on.
-        AutoEnable = true;
-      };
-    };
-  };
-
-  # Enable sound with pipewire (not Pulse Audio).
-  # https://wiki.nixos.org/wiki/PipeWire
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-  };
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];

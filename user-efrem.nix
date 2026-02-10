@@ -3,11 +3,13 @@
   config,
   lib,
   pkgs,
+  #
+  # user ? "efrem",
   ...
 }: let
   user = "efrem";
   public-keys = import ./secrets/public-keys.nix;
-  avahi-service-type = "_efrem._tcp";
+  avahi-service-type = "_${user}._tcp";
 in {
   imports = [./dev-folders.nix];
 
@@ -16,44 +18,24 @@ in {
 
   users.users.${user} = {
     isNormalUser = true;
-    description = "Efrem Rensi";
-    extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp"];
+    extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp" "nixbld"];
     packages = with pkgs; let
       dev-scripts = import ./dev-scripts.nix {inherit pkgs;};
     in [
       # https://search.nixos.org/packages?channel=unstable&
       micro
       termscp
-      google-chrome
       visidata
       glow
       nix-btm
       nix-top
       multitail
-      alacritty
       wireguard-tools
       wg-friendly-peer-names
       tcpdump
       hwinfo
       powertop
 
-      # AI coding tools
-      claude-code
-      gemini-cli
-      opencode
-
-      # Media
-      mpvpaper # video wallpaper
-      yt-dlp # Youtube downloader
-      waytrogen # wallpaper manager
-      mpv-unwrapped
-      imagemagick
-      wlr-randr
-      zoom
-      # ffmpeg
-      # gimp
-      # shotcut
-      # libreoffice-fresh
       dev-scripts.tmx
 
       # Networking
@@ -75,19 +57,7 @@ in {
   systemd.tmpfiles.rules = let
     HOME = "/home/${user}";
     publicKeyFile = pkgs.writeText "id_ed25519.pub" public-keys.personal-ssh-key;
-    mpvConfig = pkgs.writeText "mpv.conf" ''
-      hwdec=auto
-    '';
-    chromeFlags = pkgs.writeText "chrome-flags.conf" ''
-      --enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL
-      --disable-features=UseChromeOSDirectVideoDecoder
-      --enable-gpu-rasterization
-      --enable-zero-copy
-    '';
   in [
-    "d  ${HOME}/.config/mpv          755 ${user} users -"
-    "L+ ${HOME}/.config/mpv/mpv.conf 644 ${user} users - ${mpvConfig}"
-    "L+ ${HOME}/.config/chrome-flags.conf 644 ${user} users - ${chromeFlags}"
     "d  ${HOME}/dev                 775 ${user} users -"
     "L+ ${HOME}/.tigrc              600 ${user} users - /etc/tig/config"
     "L+ ${HOME}/.ssh/id_ed25519.pub 644    -           -   - ${publicKeyFile}"
@@ -141,34 +111,7 @@ in {
     };
   };
 
-  # Enable foot-server for user session with correct target
-  systemd.user.services.foot-server = {
-    description = "Foot terminal server";
-    wantedBy = ["cosmic-session.target"];
-    after = ["cosmic-session.target"];
-    partOf = ["cosmic-session.target"];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.foot}/bin/foot --server";
-      Restart = "always";
-      RestartSec = "1s";
-    };
-  };
-
   programs = {
-    foot.enable = true;
-    foot.settings = {
-      main = {
-        initial-color-theme = 1;
-        font = "Noto Sans Mono:size=12";
-      };
-      colors = {
-        alpha = 0.7;
-      };
-      csd = {
-        preferred = "none";
-      };
-    };
     tmux = {
       clock24 = true;
       terminal = "tmux-256color";
@@ -191,49 +134,7 @@ in {
         set -g status-right "CPU: #{cpu_percentage} | %H:%M"
       '';
     };
-    vscode = {
-      extensions = with pkgs.vscode-extensions; let
-        custom = pkgs.callPackage ./vscode-custom-extensions.nix {};
-      in [
-        ms-azuretools.vscode-containers
-        ms-vscode.makefile-tools
 
-        # Color Themes
-        teabyii.ayu
-        nonylene.dark-molokai-theme
-        dracula-theme.theme-dracula
-        hiukky.flate
-        emroussel.atomize-atom-one-dark-theme
-        nur.just-black
-        johnpapa.winteriscoming
-        silofy.hackthebox
-        naumovs.theme-oceanicnext
-        dhedgecock.radical-vscode
-        custom.ahmadawais.shades-of-purple
-        custom.liviuschera.noctis
-        custom.wesbos.theme-cobalt2
-
-        # Utilities
-        redhat.vscode-yaml
-        saoudrizwan.claude-dev
-        yzane.markdown-pdf
-        wakatime.vscode-wakatime
-        waderyan.gitblame
-        timonwong.shellcheck
-        mechatroner.rainbow-csv
-        kamadorueda.alejandra
-        jgclark.vscode-todo-highlight
-        irongeek.vscode-env
-        github.copilot
-        esbenp.prettier-vscode
-        davidanson.vscode-markdownlint
-        codezombiech.gitignore
-        wmaurer.change-case
-        custom.ktnrg45.vscode-cython
-        # shardulm94.trailing-spaces
-        # stephlin.vscode-tmux-keybinding
-      ];
-    };
     direnv = {
       enable = true;
       enableBashIntegration = true;
@@ -275,34 +176,20 @@ in {
     iftop.enable = true;
   };
 
-  # age.identityPaths = ["/var/lib/persistent/age-decrypt-key"];
-
   age.secrets = let
     HOME = "/home/${user}";
   in {
-    # personal-ssh-key = {
-    #   file = ./secrets/.age/efrem.age;
-    #   path = "${HOME}/.ssh/id_ed25519";
-    #   mode = "600";
-    #   owner = "efrem";
-    # };
-    # AP-ssh-key = {
-    #   file = ./secrets/.age/AngelProtection-efrem.age;
-    #   path = "${HOME}/.ssh/AngelProtection";
-    #   mode = "600";
-    #   owner = "efrem";
-    # };
     wakatime-cfg = {
       file = ./secrets/wakatime.age;
       path = "${HOME}/.wakatime.cfg";
       mode = "600";
-      owner = "efrem";
+      owner = user;
     };
     aws-credentials = {
       file = ./secrets/aws-credentials.age;
       path = "${HOME}/.aws/credentials";
       mode = "644";
-      owner = "efrem";
+      owner = user;
     };
   };
 
@@ -378,13 +265,6 @@ in {
         device=$2
         echo "Writing $image to $device"
         sudo dd if=$image of=$device status=progress bs=4M conv=fsync oflag=direct && sudo eject $device && echo "Device $device ejected. You may now remove it."
-      }
-
-      write-zst-image () {
-        # Usage: write-zst-image image.img.zst /dev/sdX
-        zippedImage=$1
-        device=$2
-        ${pkgs.zstd}/bin/zstd -d $zippedImage -c | write-image - $device
       }
 
       title () {
