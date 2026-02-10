@@ -234,7 +234,7 @@
   users.users.efrem = {
     isNormalUser = true;
     description = "Efrem Rensi";
-    extraGroups = ["networkmanager" "wheel" "docker"];
+    extraGroups = ["networkmanager" "wheel" "docker" "nixbld"];
     initialPassword = "p";
     openssh.authorizedKeys.keys = with (import ./secrets/public-keys.nix); [personal-ssh-key];
   };
