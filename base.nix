@@ -85,15 +85,6 @@
     };
   };
 
-  # Security
-  security.polkit.enable = true;
-
-  # Virtualization (useful for development/testing)
-  virtualisation = {
-    docker.enable = true;
-    libvirtd.enable = true;
-  };
-
   # Auto optimize the Nix store
   nix.optimise = {
     automatic = true;
