@@ -27,57 +27,9 @@
   services = {
     speechd.enable = false;
     pipewire.enable = lib.mkForce false;
-    openssh = {
-      enable = true;
-      settings = {
-        AllowAgentForwarding = true;
-      };
-    };
-
-    eternal-terminal.enable = true;
-
-    # See https://discourse.nixos.org/t/timezones-how-to-setup-on-a-laptop/33853/7
-    automatic-timezoned.enable = true;
-    geoclue2.geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
-
-    avahi = {
-      enable = true;
-      nssmdns4 = true;
-      nssmdns6 = true;
-      ipv6 = true;
-      openFirewall = true;
-      publish = {
-        # see https://linux.die.net/man/5/avahi-daemon.conf
-        enable = true;
-        userServices = true;
-        addresses = true;
-      };
-    };
-  };
-
-  # Auto optimize the Nix store
-  nix.optimise = {
-    automatic = true;
-    dates = ["03:45"];
-  };
-
-  # Automatic garbage collection for Nix store
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 30d";
   };
 
   environment.systemPackages = with pkgs; [
-    # see https://search.nixos.org/packages?channel=unstable
-    autossh
-    btop
-    nnn
-    nix-output-monitor
-    fastfetch
-    micro
-    speedtest-cli
-
     zstd # Compression for docker image tarball
     openssl # For SHA256 checksum generation
     go # For VERSION calculation via svu tool
@@ -187,24 +139,5 @@
     bat.enable = true;
     git.enable = true;
     htop.enable = true;
-  };
-
-  age.secrets.aws-credentials = {
-    file = ./secrets/aws-credentials.age;
-    path = "/home/efrem/.aws/credentials";
-    mode = "644";
-    owner = "efrem";
-  };
-
-  nix.settings = {
-    experimental-features = ["nix-command" "flakes"];
-    trusted-users = ["efrem"];
-    substituters = [
-      "https://cache.nixos.org?priority=0"
-      "https://guardian-ops-nix.s3.us-west-2.amazonaws.com?priority=1"
-    ];
-    trusted-public-keys = [
-      "guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="
-    ];
   };
 }
