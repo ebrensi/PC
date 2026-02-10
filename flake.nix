@@ -61,7 +61,6 @@
 
       # Apple Mac Mini M1 configured as aarch64 builder
       m1 = system-base.extendModules {
-        system = "aarch64-linux";
         modules = [
           self.inputs.nixos-apple-silicon.nixosModules.apple-silicon-support
           self.inputs.agenix.nixosModules.default
