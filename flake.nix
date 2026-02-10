@@ -31,13 +31,13 @@
           self.inputs.agenix.nixosModules.default
           ./base.nix
           ./user-efrem.nix
-          ./disko-laptop-ssd.nix
         ];
       };
       gui-base = system-base.extendModules {
         modules = [
           ./desktop-cosmic.nix
           ./graphical.nix
+          ./disko-laptop-ssd.nix
         ];
       };
     in {
