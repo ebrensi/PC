@@ -74,10 +74,7 @@
             networking.hostName = "m1";
             services.openssh.enable = true;
             nixpkgs.config.allowUnfree = true;
-            nix.settings = {
-              experimental-features = ["nix-command" "flakes"];
-              download-buffer-size = 524288000;
-            };
+            nix.settings.experimental-features = ["nix-command" "flakes"];
             system.stateVersion = "25.05";
           }
         ];
