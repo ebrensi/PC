@@ -59,23 +59,13 @@
       };
 
       # Apple Mac Mini M1 configured as aarch64 builder
-      m1 = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit (self.inputs) agenix;
-        };
+      m1 = system-base.extendModules {
         modules = [
           self.inputs.nixos-apple-silicon.nixosModules.apple-silicon-support
           self.inputs.agenix.nixosModules.default
           ./machines/mac-mini-m1.nix
           ./aarch64-builder.nix
-          ./user-efrem.nix
-          {
-            networking.hostName = "m1";
-            services.openssh.enable = true;
-            nixpkgs.config.allowUnfree = true;
-            nix.settings.experimental-features = ["nix-command" "flakes"];
-            system.stateVersion = "25.05";
-          }
+          {networking.hostName = "m1";}
         ];
       };
     };
