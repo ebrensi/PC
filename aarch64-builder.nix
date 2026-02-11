@@ -112,12 +112,6 @@
     enableOnBoot = true;
   };
 
-  # Ensure Docker waits for the external drive mount (if configured)
-  # This prevents Docker from failing or using wrong directory if mount is slow
-  systemd.services.docker = {
-    after = ["var-lib-docker.mount"];
-    wants = ["var-lib-docker.mount"];
-  };
 
   age.secrets.wg-m1.file = ./secrets/wg-m1.age;
   # public key: aZEHKJGXFvCe8eOmMCdhD+okIuOkQUULZzKJZ+MWDRU=

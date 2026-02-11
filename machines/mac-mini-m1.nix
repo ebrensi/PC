@@ -78,6 +78,12 @@
     require-sigs = false;
   };
 
+  # Docker storage lives on USB NVMe - don't start Docker without it
+  systemd.services.docker = {
+    after = ["var-lib-docker.mount"];
+    bindsTo = ["var-lib-docker.mount"];
+  };
+
   # Ensure correct ownership on the alt nix store after mount
   # The alt store is accessed directly (not via daemon) so efrem needs ownership
   systemd.services.nix-alt-store-permissions = {
