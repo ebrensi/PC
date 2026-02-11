@@ -110,16 +110,6 @@ in {
   nix.distributedBuilds = true;
   nix.extraOptions = ''builders-use-substitutes = true'';
 
-  # Set a consistent mount point for my external USB drive
-  #  connected via USB to thundebolt dock
-  fileSystems."/mnt/sandisk" = {
-    device = "/dev/disk/by-uuid/EADF-760A";
-    fsType = "exfat";
-    options = ["nofail" "x-systemd.automount" "x-systemd.device-timeout=5" "noatime"];
-  };
-  # Enable exFAT filesystem support for this USB drive
-  boot.supportedFilesystems = ["exfat"];
-
   # This is a laptop machine acting as a server so we don't want it to sleep
   # When hooked to a dock or external power
   services.logind.settings.Login = {
