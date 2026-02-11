@@ -128,7 +128,6 @@
         buildInputs = [self.inputs.agenix.packages.x86_64-linux.agenix] ++ dev-scripts-list;
         NIX_CONFIG = ''
           warn-dirty = false  # We don't need to see this warning on every build
-          always-allow-substitutes = true
         '';
       };
     };

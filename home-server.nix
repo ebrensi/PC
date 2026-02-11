@@ -101,7 +101,7 @@ in {
       supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
     };
     machines = [
-      ["m1.local" "aarch64-linux" 4 1000]
+      ["m1" "aarch64-linux" 4 1000]
       # ["j1" "aarch64-linux" 2 1] # Jetson - disabled, too slow/unreliable
     ];
   in
