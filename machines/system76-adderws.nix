@@ -32,15 +32,15 @@
 
     # Graphics - NVIDIA hybrid with Intel iGPU
     graphics.enable = true;
-    # graphics.extraPackages = [
-    #   pkgs.intel-compute-runtime # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-opencl-intel
-    #   pkgs.intel-media-driver # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-va-api-intel
-    #   pkgs.vpl-gpu-rt # https://wiki.nixos.org/wiki/Intel_Graphics
-    # ];
+    graphics.extraPackages = [
+      pkgs.intel-compute-runtime # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-opencl-intel
+      pkgs.intel-media-driver # https://nixos.org/manual/nixos/stable/#sec-gpu-accel-va-api-intel
+      pkgs.vpl-gpu-rt # https://wiki.nixos.org/wiki/Intel_Graphics
+    ];
 
     nvidia = {
       open = true;
-      nvidiaSettings = true;
+      nvidiaSettings = false;
       powerManagement.enable = true;
       powerManagement.finegrained = true;
       prime = {
