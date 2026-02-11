@@ -4,7 +4,6 @@
   lib,
   pkgs,
   #
-  # user ? "efrem",
   ...
 }: let
   user = "efrem";
@@ -18,7 +17,7 @@ in {
 
   users.users.${user} = {
     isNormalUser = true;
-    extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp" "nixbld"];
+    extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp"];
     packages = with pkgs; let
       dev-scripts = import ./dev-scripts.nix {inherit pkgs;};
     in [
