@@ -97,6 +97,16 @@
     '')
   ];
 
+  # Ensure alt Nix store directories exist with correct permissions
+  # when the USB NVMe is mounted
+  systemd.tmpfiles.rules = [
+    "d /mnt/nix-alt/nix 0755 root root -"
+    "d /mnt/nix-alt/nix/store 1775 root nixbld -"
+    "d /mnt/nix-alt/nix/var 0755 root root -"
+    "d /mnt/nix-alt/nix/var/nix 0755 root root -"
+    "d /mnt/nix-alt/nix/var/nix/db 0755 root root -"
+  ];
+
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
