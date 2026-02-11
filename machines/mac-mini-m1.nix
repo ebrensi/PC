@@ -93,7 +93,7 @@
     wantedBy = ["mnt-nix\\x2dalt.mount"];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash -c 'chown -R efrem:nixbld /mnt/nix-alt/nix && chmod 1775 /mnt/nix-alt/nix/store'";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'chown -R efrem:users /mnt/nix-alt/nix && chmod -R u+rwX /mnt/nix-alt/nix'";
     };
   };
 }
