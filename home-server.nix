@@ -103,7 +103,7 @@ in {
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
 
-  nix.settings.extra-platforms = ["aarch64-linux"];
+  # nix.settings.extra-platforms = ["aarch64-linux"];
   # boot.binfmt.emulatedSystems = ["aarch64-linux"];
   nixpkgs.config.allowUnsupportedSystem = true;
 

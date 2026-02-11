@@ -43,7 +43,7 @@
     builders-use-substitutes = true
   '';
   # boot.binfmt.emulatedSystems = ["aarch64-linux"];
-  nix.settings.extra-platforms = ["aarch64-linux"];
+  # nix.settings.extra-platforms = ["aarch64-linux"];
   nixpkgs.config.allowUnsupportedSystem = true;
 
   services.logind.settings.Login = {
