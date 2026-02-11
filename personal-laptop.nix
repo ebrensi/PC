@@ -11,10 +11,6 @@
     # SSH config for personal laptop
   '';
 
-  boot.binfmt.emulatedSystems = ["aarch64-linux"];
-  nix.settings.extra-platforms = ["aarch64-linux"];
-  nixpkgs.config.allowUnsupportedSystem = true;
-
   # Configure home server as a substituter
   # Priority is set high (1000) so it's only used after public caches
   # This prevents timeout issues while still allowing substitution from home
@@ -46,6 +42,9 @@
   nix.extraOptions = ''
     builders-use-substitutes = true
   '';
+  # boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  nix.settings.extra-platforms = ["aarch64-linux"];
+  nixpkgs.config.allowUnsupportedSystem = true;
 
   services.logind.settings.Login = {
     HandleLidSwitch = "ignore";

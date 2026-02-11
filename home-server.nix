@@ -16,10 +16,6 @@ in {
     user = user;
   };
 
-  nix.settings.extra-platforms = ["aarch64-linux"];
-  boot.binfmt.emulatedSystems = ["aarch64-linux"];
-  nixpkgs.config.allowUnsupportedSystem = true;
-
   networking.networkmanager.settings = {
     # Prefer wifi over wired ethernet when both are available
     # since wired connection is a relatively slow Powerline connection
@@ -106,6 +102,10 @@ in {
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
+
+  nix.settings.extra-platforms = ["aarch64-linux"];
+  # boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  nixpkgs.config.allowUnsupportedSystem = true;
 
   nix.distributedBuilds = true;
   nix.extraOptions = ''builders-use-substitutes = true'';
