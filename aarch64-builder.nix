@@ -97,11 +97,6 @@
     '')
   ];
 
-  zramSwap = {
-    enable = true;
-    memoryPercent = 50;
-  };
-
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
