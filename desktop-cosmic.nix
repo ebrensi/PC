@@ -20,6 +20,9 @@
   services.gnome.gcr-ssh-agent.enable = lib.mkForce false;
   services.gnome.gnome-keyring.enable = lib.mkForce false;
 
+  # Provides NM secret agent needed for GUI-based WiFi credential entry
+  programs.nm-applet.enable = true;
+
   # We will use this until Cosmic's firmware update works
   environment.systemPackages = with pkgs; [
     cosmic-wallpapers
