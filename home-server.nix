@@ -57,31 +57,25 @@ in {
     ];
   };
 
-  networking.interfaces.wlan0 = {
-    useDHCP = false;
-    ipv4.addresses = [
-      {
-        address = "192.168.1.66";
-        prefixLength = 24;
-      }
-    ];
+  networking.networkmanager.ensureProfiles.profiles.home-wifi = {
+    connection = {
+      id = "CiscoKid";
+      type = "wifi";
+      interface-name = "wlan0";
+    };
+    wifi = {
+      mode = "infrastructure";
+      ssid = "CiscoKid";
+    };
+    ipv4 = {
+      method = "manual";
+      address1 = "192.168.1.66/24,192.168.1.1";
+      dns = "1.1.1.1;1.0.0.1;192.168.1.1;";
+    };
+    ipv6 = {
+      method = "auto";
+    };
   };
-
-  # Tell NetworkManager to not manage wlan0 (we configure it statically above)
-  networking.networkmanager.unmanaged = ["wlan0"];
-
-  # Default gateway for adder-ws
-  networking.defaultGateway = {
-    address = "192.168.1.1";
-    interface = "wlan0";
-  };
-
-  # DNS servers for adder-ws (since we disabled DHCP)
-  networking.nameservers = [
-    "1.1.1.1" # Cloudflare primary
-    "1.0.0.1" # Cloudflare secondary
-    "192.168.1.1" # Router (fallback)
-  ];
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
