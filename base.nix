@@ -148,6 +148,7 @@
     speedtest-cli
     systemctl-tui
     jq
+    nmap
 
     agenix.packages.${pkgs.stdenv.hostPlatform.system}.agenix
   ];
