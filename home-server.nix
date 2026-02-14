@@ -45,6 +45,11 @@ in {
     ];
   };
 
+  # Prevent NM from auto-creating default connection profiles for wired interfaces.
+  # Without this, auto-generated profiles race with bridge member profiles and win,
+  # leaving br0 with no members and stuck in "connecting" state.
+  networking.networkmanager.settings.main.no-auto-default = "*";
+
   networking.networkmanager.ensureProfiles.profiles = {
     # Bridge device
     br0 = {
