@@ -16,6 +16,18 @@ in {
     user = user;
   };
 
+  networking.networkmanager.settings = {
+    # Prefer wifi over wired ethernet when both are available
+    # since wired connection is a relatively slow Powerline connection
+    connection-wifi = {
+      match-device = "type:wifi";
+      "ipv4.route-metric" = 0;
+      "ipv6.route-metric" = 0;
+    };
+  };
+  # Restrict avahi to wifi interface to avoid asynchronous routing problems
+  # services.avahi.allowInterfaces = ["wlan0"];
+
   age.secrets.wg-key-home.file = ./secrets/wg-ws-adder.age;
   # public-key: srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=
   wireguard-peer = let
@@ -45,75 +57,23 @@ in {
     ];
   };
 
-  # Prevent NM from auto-creating default connection profiles for wired interfaces.
-  # Without this, auto-generated profiles race with bridge member profiles and win,
-  # leaving br0 with no members and stuck in "connecting" state.
-  networking.networkmanager.settings.main.no-auto-default = "*";
-
-  networking.networkmanager.ensureProfiles.profiles = {
-    # Bridge device
-    br0 = {
-      connection = {
-        id = "br0";
-        type = "bridge";
-        interface-name = "br0";
-      };
-      bridge = {
-        stp = true;
-      };
-      ipv4 = {
-        method = "auto"; # DHCP for wired
-        route-metric = 100; # lower priority than wifi
-      };
-      ipv6 = {
-        method = "auto";
-        route-metric = 100;
-      };
+  networking.networkmanager.ensureProfiles.profiles.home-wifi = {
+    connection = {
+      id = "CiscoKid";
+      type = "wifi";
+      interface-name = "wlan0";
     };
-
-    # Bridge member: onboard ethernet
-    br0-eno0 = {
-      connection = {
-        id = "br0-eno0";
-        type = "ethernet";
-        interface-name = "eno0";
-        master = "br0";
-        slave-type = "bridge";
-      };
+    wifi = {
+      mode = "infrastructure";
+      ssid = "CiscoKid";
     };
-
-    # Bridge member: USB/dock ethernet
-    br0-dock = {
-      connection = {
-        id = "br0-dock";
-        type = "ethernet";
-        interface-name = "enp45s0u1u4u3u1";
-        master = "br0";
-        slave-type = "bridge";
-      };
+    ipv4 = {
+      method = "manual";
+      address1 = "192.168.1.66/24,192.168.1.1";
+      dns = "1.1.1.1;1.0.0.1;192.168.1.1;";
     };
-
-    # WiFi - static IP, preferred route
-    home-wifi = {
-      connection = {
-        id = "CiscoKid";
-        type = "wifi";
-        interface-name = "wlan0";
-      };
-      wifi = {
-        mode = "infrastructure";
-        ssid = "CiscoKid";
-      };
-      ipv4 = {
-        method = "manual";
-        address1 = "192.168.1.66/24,192.168.1.1";
-        dns = "1.1.1.1;1.0.0.1;192.168.1.1;";
-        route-metric = 10; # preferred over bridge
-      };
-      ipv6 = {
-        method = "auto";
-        route-metric = 10;
-      };
+    ipv6 = {
+      method = "auto";
     };
   };
 
