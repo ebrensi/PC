@@ -16,7 +16,7 @@
   boot = {
     initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme"];
     initrd.kernelModules = ["i915"];
-    kernelModules = ["kvm-intel"];
+    kernelModules = ["kvm-intel" "iwlwifi"];
     extraModulePackages = [];
     # Force probe for 11th gen Intel GPU
     kernelParams = ["i915.force_probe=a7a1"];
