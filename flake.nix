@@ -45,7 +45,10 @@
         modules = [
           ./machines/system76-adderws.nix
           ./home-server.nix
-          {networking.hostName = "adder-ws";}
+          ({pkgs, ...}: {
+            networking.hostName = "adder-ws";
+            boot.kernelPackages = pkgs.linuxPackages_6_18; # Pin until NVIDIA open driver supports 6.19
+          })
         ];
       };
 
