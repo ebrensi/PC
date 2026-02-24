@@ -97,12 +97,10 @@
     '')
   ];
 
-
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
   };
-
 
   age.secrets.wg-m1.file = ./secrets/wg-m1.age;
   # public key: aZEHKJGXFvCe8eOmMCdhD+okIuOkQUULZzKJZ+MWDRU=
@@ -124,6 +122,11 @@
         name = "thinkpad";
         publicKey = "wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=";
         allowedIPs = ["${prefix}2/128"];
+      }
+      {
+        name = "AP1";
+        publicKey = "tpiOxpH1iI/Y5MU7yyVdfFMQBblM+HWPObMlFPF7tlw=";
+        allowedIPs = ["fd42::9d0c:6962:4451:2cff/128"];
       }
     ];
   };
