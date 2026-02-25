@@ -5,6 +5,28 @@
   ...
 }: let
   user = "efrem";
+  ai = pkgs.writeShellScriptBin "ai" ''
+    # Wrapper around aider with interactive model selection via gum filter.
+    # Ollama models are fetched live; Claude models are listed statically.
+    # All extra args are passed through to aider.
+
+    CLAUDE_MODELS=$(printf '%s\n' \
+      "claude-sonnet-4-20250514" \
+      "claude-haiku-4-5-20251001" \
+      "claude-opus-4-20250514")
+
+    OLLAMA_MODELS=$(${pkgs.ollama}/bin/ollama list 2>/dev/null \
+      | tail -n +2 \
+      | awk '{print "ollama/" $1}')
+
+    SELECTED=$(printf '%s\n%s\n' "$CLAUDE_MODELS" "$OLLAMA_MODELS" \
+      | ${pkgs.gum}/bin/gum filter \
+          --placeholder "Select a model..." \
+          --height 12)
+
+    [ -z "$SELECTED" ] && exit 0
+    exec ${pkgs.aider-chat}/bin/aider --model "$SELECTED" "$@"
+  '';
 in {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
@@ -148,8 +170,9 @@ in {
   };
 
   # Configuration for Aider to work
-  environment.systemPackages = [pkgs.aider-chat];
+  environment.systemPackages = [pkgs.aider-chat ai];
   environment.etc."aider/aider.conf.yml".text = ''
+    ollama-api-base: http://localhost:11434
     model: ollama/qwen2.5-coder:7b
   '';
   systemd.tmpfiles.rules = [
