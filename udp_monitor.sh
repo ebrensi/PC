@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 # Define the network interface and UDP port
 INTERFACE=wlan0
