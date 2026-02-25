@@ -42,22 +42,47 @@
 
     # Build to alternate nix store on USB NVMe
     # Usage: nix-build-ext .#package
-    # The external store is configured as a substituter, so results are
-    # automatically available to the local store without explicit copying
     (pkgs.writeShellScriptBin "nix-build-ext" ''
-      #!/usr/bin/env bash
       set -euo pipefail
-
       ALT_STORE="/mnt/nix-alt"
+      if ! mountpoint -q "$ALT_STORE"; then
+        echo "Error: $ALT_STORE is not mounted. Is the USB drive connected?" >&2
+        exit 1
+      fi
+      echo "Building to external store: $ALT_STORE" >&2
+      nix build --store "$ALT_STORE" "$@"
+    '')
+
+    # Build the m1 system config to the alt store, copy to primary store, and switch.
+    # Usage: nixos-rebuild-ext [flake-path]   (defaults to current directory)
+    (pkgs.writeShellScriptBin "nixos-rebuild-ext" ''
+      set -euo pipefail
+      FLAKE="''${1:-.}"
+      ALT_STORE="/mnt/nix-alt"
+      nom="${pkgs.nix-output-monitor}/bin/nom"
 
       if ! mountpoint -q "$ALT_STORE"; then
-        echo "Error: $ALT_STORE is not mounted. Is the USB drive connected?"
+        echo "Error: $ALT_STORE is not mounted. Is the USB drive connected?" >&2
         exit 1
       fi
 
-      echo "Building to external store: $ALT_STORE"
-      nix build --store "$ALT_STORE" "$@"
-      echo "Done. Result available via substituter."
+      echo "==> Building m1 configuration to $ALT_STORE..." >&2
+      altPath=$(
+        $nom build "$FLAKE#nixosConfigurations.m1.config.system.build.toplevel" \
+          --store "$ALT_STORE" \
+          --no-link \
+          --print-out-paths
+      )
+      canonicalPath="/nix/store/$(basename "$altPath")"
+      echo "==> Built: $canonicalPath" >&2
+
+      echo "==> Copying closure to primary store..." >&2
+      nix copy --from "local?root=$ALT_STORE" --no-check-sigs "$canonicalPath"
+
+      echo "==> Activating..." >&2
+      sudo nix-env -p /nix/var/nix/profiles/system --set "$canonicalPath"
+      sudo "$canonicalPath/bin/switch-to-configuration" switch
+      echo "==> Done." >&2
     '')
 
     # Docker cleanup script - removes old guardian/vision images, keeps build cache
