@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define the network interface and UDP port
-INTERFACE="eth0"
-PORT="5000"
+INTERFACE=wlan0
+PORT=51820
 
 # Create a temporary file to store packet counts
 TEMP_FILE=$(mktemp)
