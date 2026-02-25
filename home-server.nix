@@ -57,6 +57,12 @@ in {
     ];
   };
 
+  # Static IP for wlan0 via NM profile.
+  # Note: iwd handles WiFi auth from /var/lib/iwd/CiscoKid.psk (managed outside Nix).
+  # NM+iwd backend can't pass PSK via secret agent, so iwd must know the PSK itself.
+  # The PSK here is only needed for NM to recognise this as a WPA2 profile when
+  # matching the iwd-initiated connection — NM won't re-authenticate.
+  # Trade-off: PSK ends up in the Nix store (world-readable on this machine).
   networking.networkmanager.ensureProfiles.profiles.home-wifi = {
     connection = {
       id = "CiscoKid";
@@ -66,6 +72,10 @@ in {
     wifi = {
       mode = "infrastructure";
       ssid = "CiscoKid";
+    };
+    wifi-security = {
+      key-mgmt = "wpa-psk";
+      psk = "demaria1";
     };
     ipv4 = {
       method = "manual";
