@@ -57,28 +57,6 @@
     power-profiles-daemon.enable = false;
     # NVIDIA driver (from common-gpu-nvidia)
     xserver.videoDrivers = ["nvidia"];
-
-    # RTX 4050 Mobile — 6 GB VRAM.
-    #  Best options
-    #  qwen2.5:7b — best general-purpose model that fits comfortably
-    #  qwen2.5-coder:7b — if you want coding focus
-    #   ollama pull qwen2.5:7b
-    # ollama-cuda is broken in current nixpkgs (cuda_compat missing src); use Vulkan instead.
-    # VK_ICD_FILENAMES forces the NVIDIA Vulkan ICD so PRIME offload doesn't fall back to Intel.
-    ollama = {
-      enable = true;
-      package = pkgs.ollama-vulkan;
-      host = "0.0.0.0";
-      environmentVariables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
-    };
-  };
-
-  networking.firewall.allowedTCPPorts = [11434];
-
-  # CUDA binary cache — avoids having to build/fetch CUDA redist packages from source
-  nix.settings = {
-    substituters = ["https://cuda-maintainers.cachix.org"];
-    trusted-public-keys = ["cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="];
   };
 
   # see https://wiki.archlinux.org/title/Hardware_video_acceleration#Verification
