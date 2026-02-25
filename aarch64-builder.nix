@@ -138,4 +138,5 @@
     git.enable = true;
     htop.enable = true;
   };
+  boot.loader.systemd-boot.configurationLimit = 5;
 }
