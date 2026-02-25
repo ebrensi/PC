@@ -5,6 +5,8 @@
   lib,
   pkgs,
   modulesPath,
+  #
+  pkgs-stable,
   ...
 }: {
   imports = [
@@ -65,6 +67,6 @@
     vdpauinfo # vdpauinfo
     vulkan-tools # vulkaninfo
     intel-gpu-tools # intel_gpu_top
-    # nvtopPackages.full
+    pkgs-stable.nvtopPackages.full
   ];
 }

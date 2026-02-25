@@ -19,7 +19,7 @@
     ...
   }: {
     nixosConfigurations = let
-      pkgs-stable = import self.inputs.nixpkgs-stable {system = "x86_64-linux";};
+      pkgs-stable = import self.inputs.nixpkgs-stable {system = "x86_64-linux"; config.allowUnfree = true;};
       system-base = nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit (self.inputs) agenix;
