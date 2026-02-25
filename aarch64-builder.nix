@@ -16,6 +16,17 @@
   nixpkgs.buildPlatform = "aarch64-linux";
   hardware.graphics.enable = false;
 
+  users.users.builder = {
+    isSystemUser = true; # No password, UID < 1000, no home dir
+    group = "builder";
+    shell = pkgs.bash; # SSH needs a shell to run `nix-store --serve`
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFMlODk3W6OUoCdDCSPOPasBO/ldWEPKQaUC9wTedSX0 guardian@AP1"
+    ];
+  };
+  users.groups.builder = {};
+  nix.settings.trusted-users = ["builder"]; # Allows builder to interact with nix daemon
+
   networking = {
     # networkmanager.enable = true;
     firewall = {
