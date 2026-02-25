@@ -10,16 +10,11 @@
     # Ollama models are fetched live; Claude models are listed statically.
     # All extra args are passed through to aider.
 
-    CLAUDE_MODELS=$(printf '%s\n' \
-      "claude-sonnet-4-20250514" \
-      "claude-haiku-4-5-20251001" \
-      "claude-opus-4-20250514")
-
     OLLAMA_MODELS=$(${pkgs.ollama}/bin/ollama list 2>/dev/null \
       | tail -n +2 \
       | awk '{print "ollama/" $1}')
 
-    SELECTED=$(printf '%s\n%s\n' "$CLAUDE_MODELS" "$OLLAMA_MODELS" \
+    SELECTED=$(printf '%s\n%s\n' "$OLLAMA_MODELS"  \
       | ${pkgs.gum}/bin/gum filter \
           --placeholder "Select a model..." \
           --height 12)
@@ -170,13 +165,31 @@ in {
   };
 
   # Configuration for Aider to work
-  environment.systemPackages = [pkgs.aider-chat ai];
+  environment.systemPackages = [pkgs.aider-chat ai pkgs.opencode];
   environment.etc."aider/aider.conf.yml".text = ''
-    ollama-api-base: http://localhost:11434
     model: ollama/qwen2.5-coder:7b
   '';
+  environment.etc."opencode/opencode.json".text = builtins.toJSON {
+    "$schema" = "https://opencode.ai/config.json";
+    autoupdate = false;
+    # model = "anthropic/claude-sonnet-4-5";
+    # small_model = "ollama/qwen2.5-coder:7b";
+    model = "ollama/qwen2.5-coder:7b";
+    provider = {
+      anthropic.options.apiKey = "{env:ANTHROPIC_API_KEY}";
+      ollama = {
+        npm = "@ai-sdk/openai-compatible";
+        name = "Ollama";
+        options.baseURL = "http://localhost:11434/v1";
+        models."qwen2.5-coder:7b".name = "Qwen 2.5 Coder 7B";
+      };
+    };
+  };
+
   systemd.tmpfiles.rules = [
     "L+ /home/${user}/.aider.conf.yml 644 ${user} users - /etc/aider/aider.conf.yml"
+    "d  /home/${user}/.config/opencode 755 ${user} users -"
+    "L+ /home/${user}/.config/opencode/opencode.json 644 ${user} users - /etc/opencode/opencode.json"
   ];
   networking.firewall.allowedTCPPorts = [11434];
   environment.sessionVariables = {
