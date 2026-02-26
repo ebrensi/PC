@@ -301,18 +301,14 @@ in {
         command = "npx";
         args = ["-y" "@modelcontextprotocol/server-filesystem" "/home/${user}"];
       };
-      git = {
-        type = "stdio";
-        command = "npx";
-        args = ["-y" "@modelcontextprotocol/server-git"];
-      };
       nixos = {
         type = "stdio";
-        command = "mcp-nixos";
+        command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
         args = [];
       };
     };
   };
+
   environment.etc."wireguard/peers".text = ''
     wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=:thinkpad
     srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=:adder-ws

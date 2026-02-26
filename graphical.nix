@@ -14,7 +14,6 @@ in {
     claude-code
     gemini-cli
     opencode
-    mcp-nixos
 
     # Media
     mpvpaper # video wallpaper

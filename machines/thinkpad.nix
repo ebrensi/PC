@@ -49,47 +49,4 @@
     intel-gpu-tools # intel_gpu_top to monitor GPU usage
     nvtopPackages.intel
   ];
-
-  # fileSystems."/" = {
-  #   device = "/dev/disk/by-uuid/016bb68b-b54d-4490-8fd8-35d1c42d6dba";
-  #   fsType = "btrfs";
-  #   options = ["subvol=root"];
-  # };
-
-  # fileSystems."/nix" = {
-  #   device = "/dev/disk/by-uuid/016bb68b-b54d-4490-8fd8-35d1c42d6dba";
-  #   fsType = "btrfs";
-  #   options = ["subvol=nix"];
-  # };
-
-  # fileSystems."/home" = {
-  #   device = "/dev/disk/by-uuid/016bb68b-b54d-4490-8fd8-35d1c42d6dba";
-  #   fsType = "btrfs";
-  #   options = ["subvol=home"];
-  # };
-
-  # fileSystems."/snapshots" = {
-  #   device = "/dev/disk/by-uuid/016bb68b-b54d-4490-8fd8-35d1c42d6dba";
-  #   fsType = "btrfs";
-  #   options = ["subvol=snapshots"];
-  # };
-
-  # fileSystems."/boot" = {
-  #   device = "/dev/disk/by-uuid/3AAC-D675";
-  #   fsType = "vfat";
-  #   options = ["fmask=0077" "dmask=0077"];
-  # };
-
-  # fileSystems."/swap" = {
-  #   device = "/dev/disk/by-uuid/016bb68b-b54d-4490-8fd8-35d1c42d6dba";
-  #   fsType = "btrfs";
-  #   options = ["subvol=swap"];
-  # };
-
-  # fileSystems."/var/lib/docker/overlay2/c81d03fdb23bf79f55a3a766c9b75d36e6e8676dd3977267df3c7603c9802af8/merged" = {
-  #   device = "overlay";
-  #   fsType = "overlay";
-  # };
-
-  # swapDevices = [];
 }
