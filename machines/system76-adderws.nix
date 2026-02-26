@@ -44,7 +44,10 @@
       open = true;
       nvidiaSettings = false;
       powerManagement.enable = true;
-      powerManagement.finegrained = true;
+      # finegrained = true causes the GPU to enter D3cold during idle and get
+      # permanently stuck (nvidia-smi "Unknown Error", ollama GPU discovery timeout)
+      # after ~21h idle. Regression with open modules + kernel 6.18.x.
+      powerManagement.finegrained = false;
       prime = {
         offload.enable = true;
         nvidiaBusId = "PCI:1:0:0";
