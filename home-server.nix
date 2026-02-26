@@ -187,11 +187,6 @@ in {
     };
   };
 
-  "ollama-sidekick": {
-      "command": "npx",
-      "args": ["-y", "@andrewbrereton/claude-sidekick"]
-    }
-
   systemd.tmpfiles.rules = [
     "L+ /home/${user}/.aider.conf.yml 644 ${user} users - /etc/aider/aider.conf.yml"
     "d  /home/${user}/.config/opencode 755 ${user} users -"
