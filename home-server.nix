@@ -166,7 +166,7 @@ in {
   };
 
   # Configuration for Aider to work
-  environment.systemPackages = [pkgs.aider-chat ai pkgs.opencode];
+  environment.systemPackages = with pkgs; [ai aider-chat opencode qwen-code];
   environment.etc."aider/aider.conf.yml".text = ''
     model: ollama/qwen2.5-coder:7b
   '';
@@ -187,11 +187,33 @@ in {
     };
   };
 
+  environment.etc."qwen/settings.json".text = builtins.toJSON {
+    modelProviders.openai = [
+      {
+        id = "qwen2.5-coder:7b";
+        name = "Local qwen2.5-coder";
+        baseUrl = "http://localhost:11434/v1";
+        envKey = "OLLAMA_API_KEY";
+      }
+    ];
+    env.OLLAMA_API_KEY = "ollama";
+    security.auth.selectedType = "openai";
+    model.name = "qwen2.5-coder:7b";
+  };
+
   systemd.tmpfiles.rules = [
     "L+ /home/${user}/.aider.conf.yml 644 ${user} users - /etc/aider/aider.conf.yml"
     "d  /home/${user}/.config/opencode 755 ${user} users -"
     "L+ /home/${user}/.config/opencode/opencode.json 644 ${user} users - /etc/opencode/opencode.json"
   ];
+
+  # qwen-code writes a version field back to settings.json, so it must be a
+  # real writable file — not a symlink into the read-only Nix store.
+  # Copy on every activation so nix config changes still propagate.
+  system.activationScripts.qwen-settings.text = ''
+    install -Dm644 /etc/qwen/settings.json /home/${user}/.qwen/settings.json
+    chown ${user}:users /home/${user}/.qwen/settings.json
+  '';
   networking.firewall.allowedTCPPorts = [11434];
   environment.sessionVariables = {
     OLLAMA_API_BASE = "http://localhost:11434";
