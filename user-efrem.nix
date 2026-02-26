@@ -305,7 +305,7 @@ in {
       };
       nixos = {
         type = "stdio";
-        command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
+        command = "${pkgs.mcp-nixos.overridePythonAttrs { doCheck = false; }}/bin/mcp-nixos";
         args = [];
       };
     };
