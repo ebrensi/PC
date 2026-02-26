@@ -308,10 +308,6 @@ in {
         command = "${pkgs.mcp-nixos.overridePythonAttrs {doCheck = false;}}/bin/mcp-nixos";
         args = [];
       };
-      ollama-sidekick = {
-        command = "npx";
-        args = ["-y" "@andrewbrereton/claude-sidekick"];
-      };
     };
   };
 
