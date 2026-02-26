@@ -5,6 +5,23 @@
   ...
 }: let
   user = "efrem";
+  ai = pkgs.writeShellScriptBin "ai" ''
+    # Wrapper around aider with interactive model selection via gum filter.
+    # Ollama models are fetched live; Claude models are listed statically.
+    # All extra args are passed through to aider.
+
+    OLLAMA_MODELS=$(${pkgs.ollama}/bin/ollama list 2>/dev/null \
+      | tail -n +2 \
+      | awk '{print "ollama/" $1}')
+
+    SELECTED=$(printf '%s\n%s\n' "$OLLAMA_MODELS"  \
+      | ${pkgs.gum}/bin/gum filter \
+          --placeholder "Select a model..." \
+          --height 12)
+
+    [ -z "$SELECTED" ] && exit 0
+    exec ${pkgs.aider-chat}/bin/aider --model "$SELECTED" "$@"
+  '';
 in {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
@@ -57,6 +74,12 @@ in {
     ];
   };
 
+  # Static IP for wlan0 via NM profile.
+  # Note: iwd handles WiFi auth from /var/lib/iwd/CiscoKid.psk (managed outside Nix).
+  # NM+iwd backend can't pass PSK via secret agent, so iwd must know the PSK itself.
+  # The PSK here is only needed for NM to recognise this as a WPA2 profile when
+  # matching the iwd-initiated connection — NM won't re-authenticate.
+  # Trade-off: PSK ends up in the Nix store (world-readable on this machine).
   networking.networkmanager.ensureProfiles.profiles.home-wifi = {
     connection = {
       id = "CiscoKid";
@@ -66,6 +89,10 @@ in {
     wifi = {
       mode = "infrastructure";
       ssid = "CiscoKid";
+    };
+    wifi-security = {
+      key-mgmt = "wpa-psk";
+      psk = "demaria1";
     };
     ipv4 = {
       method = "manual";
@@ -117,4 +144,55 @@ in {
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
+
+  # RTX 4050 Mobile — 6 GB VRAM.
+  #  Best options
+  #  qwen2.5:7b — best general-purpose model that fits comfortably
+  #  qwen2.5-coder:7b — if you want coding focus
+  #   ollama pull qwen2.5:7b
+  # ollama-cuda is broken in current nixpkgs (cuda_compat missing src); use Vulkan instead.
+  # VK_ICD_FILENAMES forces the NVIDIA Vulkan ICD so PRIME offload doesn't fall back to Intel.
+  services.ollama = {
+    enable = true;
+    package = pkgs.ollama-vulkan;
+    host = "0.0.0.0";
+    environmentVariables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
+  };
+  # CUDA binary cache — avoids having to build/fetch CUDA redist packages from source
+  nix.settings = {
+    substituters = ["https://cuda-maintainers.cachix.org"];
+    trusted-public-keys = ["cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="];
+  };
+
+  # Configuration for Aider to work
+  environment.systemPackages = [pkgs.aider-chat ai pkgs.opencode];
+  environment.etc."aider/aider.conf.yml".text = ''
+    model: ollama/qwen2.5-coder:7b
+  '';
+  environment.etc."opencode/opencode.json".text = builtins.toJSON {
+    "$schema" = "https://opencode.ai/config.json";
+    autoupdate = false;
+    # model = "anthropic/claude-sonnet-4-5";
+    # small_model = "ollama/qwen2.5-coder:7b";
+    model = "ollama/qwen2.5-coder:7b";
+    provider = {
+      anthropic.options.apiKey = "{env:ANTHROPIC_API_KEY}";
+      ollama = {
+        npm = "@ai-sdk/openai-compatible";
+        name = "Ollama";
+        options.baseURL = "http://localhost:11434/v1";
+        models."qwen2.5-coder:7b".name = "Qwen 2.5 Coder 7B";
+      };
+    };
+  };
+
+  systemd.tmpfiles.rules = [
+    "L+ /home/${user}/.aider.conf.yml 644 ${user} users - /etc/aider/aider.conf.yml"
+    "d  /home/${user}/.config/opencode 755 ${user} users -"
+    "L+ /home/${user}/.config/opencode/opencode.json 644 ${user} users - /etc/opencode/opencode.json"
+  ];
+  networking.firewall.allowedTCPPorts = [11434];
+  environment.sessionVariables = {
+    OLLAMA_API_BASE = "http://localhost:11434";
+  };
 }

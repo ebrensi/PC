@@ -12,6 +12,8 @@
 in {
   imports = [./dev-folders.nix];
 
+  boot.loader.systemd-boot.configurationLimit = lib.mkDefault 10;
+
   security.sudo.wheelNeedsPassword = false;
   users.mutableUsers = true;
 

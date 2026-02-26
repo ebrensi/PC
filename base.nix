@@ -87,6 +87,7 @@
 
   # Auto optimize the Nix store
   nix.optimise = {
+    persistent = false;
     automatic = true;
     dates = ["03:45"];
   };
