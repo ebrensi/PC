@@ -39,6 +39,8 @@ in {
 
       # Networking
       socat
+
+      nodejs # provides npx for MCP servers
     ];
     initialPassword = "password";
     openssh.authorizedKeys.keys = with public-keys; [
@@ -292,6 +294,25 @@ in {
     ${prefix}3 phone
     ${prefix}4 m1
   '';
+  environment.etc."claude-code/managed-mcp.json".text = builtins.toJSON {
+    mcpServers = {
+      filesystem = {
+        type = "stdio";
+        command = "npx";
+        args = ["-y" "@modelcontextprotocol/server-filesystem" "/home/${user}"];
+      };
+      git = {
+        type = "stdio";
+        command = "npx";
+        args = ["-y" "@modelcontextprotocol/server-git"];
+      };
+      nixos = {
+        type = "stdio";
+        command = "mcp-nixos";
+        args = [];
+      };
+    };
+  };
   environment.etc."wireguard/peers".text = ''
     wa7WjWFn1SsOLQwOw3EMC1JY29WjU7vLvNlxRtySoTg=:thinkpad
     srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=:adder-ws
