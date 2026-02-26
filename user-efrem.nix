@@ -305,8 +305,12 @@ in {
       };
       nixos = {
         type = "stdio";
-        command = "${pkgs.mcp-nixos.overridePythonAttrs { doCheck = false; }}/bin/mcp-nixos";
+        command = "${pkgs.mcp-nixos.overridePythonAttrs {doCheck = false;}}/bin/mcp-nixos";
         args = [];
+      };
+      ollama-sidekick = {
+        command = "npx";
+        args = ["-y" "@andrewbrereton/claude-sidekick"];
       };
     };
   };
