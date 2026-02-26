@@ -108,7 +108,6 @@ in {
         kamadorueda.alejandra
         jgclark.vscode-todo-highlight
         irongeek.vscode-env
-        github.copilot
         esbenp.prettier-vscode
         davidanson.vscode-markdownlint
         codezombiech.gitignore
@@ -116,6 +115,9 @@ in {
         custom.ktnrg45.vscode-cython
         # shardulm94.trailing-spaces
         # stephlin.vscode-tmux-keybinding
+
+        # AI
+        github.copilot-chat
       ];
     };
   };
