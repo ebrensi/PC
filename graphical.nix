@@ -55,6 +55,8 @@ in {
     xwayland.enable = true;
     vscode = {
       enable = true;
+      # No gnome-keyring on COSMIC; use plaintext storage to suppress the popup
+      package = pkgs.vscode.override { commandLineArgs = "--password-store=basic"; };
       extensions = with pkgs.vscode-extensions; let
         custom = pkgs.callPackage ./vscode-custom-extensions.nix {};
       in [
