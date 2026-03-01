@@ -156,7 +156,7 @@ in {
         bind % split-window -h -c "#{pane_current_path}"
 
         # Set status-right BEFORE plugins load so they can interpolate the variables
-        set -g status-right "#(hostname) #{net_speed} #{cpu_percentage} CPU | %H:%M #{tmux_mode_indicator}"
+        set -g status-right "#(hostname) | #{net_speed} | #{cpu_percentage}-CPU | %H:%M #{tmux_mode_indicator}"
       '';
     };
 
