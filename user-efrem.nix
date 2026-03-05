@@ -237,6 +237,7 @@ in {
       del = "trash-put";
       wg = "sudo wg";
       wgg = "sudo wgg";
+      dev = "nix develop";
     };
 
     # Environment Variables (for this user)
