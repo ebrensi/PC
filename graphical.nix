@@ -210,4 +210,12 @@ in {
     docker.enable = true;
     libvirtd.enable = true;
   };
+
+  # libvirt generates virt-secret-init-encryption.service with /usr/bin/sh which
+  # doesn't exist on NixOS. ExecStart must be a list so NixOS emits an empty
+  # ExecStart= reset line before the replacement in the drop-in.
+  systemd.services.virt-secret-init-encryption.serviceConfig.ExecStart = lib.mkForce [
+    ""
+    "/bin/sh -c 'umask 0077 && (dd if=/dev/random status=none bs=32 count=1 | systemd-creds encrypt --name=secrets-encryption-key - /var/lib/libvirt/secrets/secrets-encryption-key)'"
+  ];
 }

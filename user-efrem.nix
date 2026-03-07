@@ -121,16 +121,7 @@ in {
       baseIndex = 1;
       plugins = with pkgs.tmuxPlugins; [
         cpu
-        (net-speed.overrideAttrs (_: {
-          # pkgs.tmuxPlugins.net-speed ships #!/bin/bash shebangs that are never
-          # patched, so ALL scripts (including the entry .tmux file) silently fail
-          # on NixOS where /bin/bash is absent.
-          postPatch = ''
-            substituteInPlace net_speed.tmux scripts/net_speed.sh \
-              scripts/download_speed.sh scripts/upload_speed.sh scripts/helpers.sh \
-              --replace-fail '#!/bin/bash -' "#!${pkgs.bash}/bin/bash -"
-          '';
-        }))
+        dotbar
         mode-indicator
         # tmux-powerline
       ];
@@ -148,15 +139,19 @@ in {
 
         set-option -g set-titles on
         set-option -g set-titles-string "#{pane_title}"
-        set -g @net_speed_interfaces "wlan0 eno0"
-        set -g @net_speed_format "D:%6s U:%6s"
 
         bind c new-window -c "#{pane_current_path}"
         bind '"' split-window -c "#{pane_current_path}"
         bind % split-window -h -c "#{pane_current_path}"
 
+        set-option -g renumber-windows on
+        set -g base-index 1
+        setw -g pane-base-index 1
+
         # Set status-right BEFORE plugins load so they can interpolate the variables
-        set -g status-right "#{tmux_mode_indicator}|#(hostname)|#{net_speed}|#{cpu_percentage}|%H:%M"
+        set -g @tmux-dotbar-right true
+        set -g @tmux-dotbar-status-right-text "#{tmux_mode_indicator} #(hostname)  #{cpu_percentage} %H:%M"
+        # set -g status-right "#{tmux_mode_indicator}|#(hostname)|#{cpu_percentage}|%H:%M"
       '';
     };
 
