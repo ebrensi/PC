@@ -94,38 +94,24 @@ in {
     '';
   };
 
-  # Auto-create shared tmux session on boot (matches tmx behavior)
-  systemd.services.tmux-shared = let
-    socketFolder = "/tmp/tmux-shared";
-    sessionName = "shared";
-  in {
-    description = "Shared tmux session for SSH users";
-    wantedBy = ["multi-user.target"];
-    after = ["network.target"];
-
-    serviceConfig = {
-      Type = "forking";
-      User = user;
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${socketFolder}";
-      ExecStart = ''${pkgs.tmux}/bin/tmux -2 -S ${socketFolder}/${sessionName} new-session -d -s ${sessionName}'';
-      ExecStartPost = "${pkgs.coreutils}/bin/chmod 666 ${socketFolder}/${sessionName}";
-      Restart = "on-failure";
-      RestartSec = "10s";
-    };
-  };
-
   programs = {
     tmux = {
       clock24 = true;
       terminal = "tmux-256color";
       baseIndex = 1;
+      # dotbar must precede cpu so cpu can replace #{cpu_percentage} in the status-right dotbar sets.
       plugins = with pkgs.tmuxPlugins; [
-        cpu
         dotbar
-        mode-indicator
+        cpu
         # tmux-powerline
       ];
+      # extraConfigBeforePlugins runs before plugin run-shells, so dotbar reads these options.
+      # @tmux-dotbar-status-right is the v0.3.0 API (full format string used verbatim as status-right).
       extraConfigBeforePlugins = ''
+        set -g @tmux-dotbar-right true
+        set -g @tmux-dotbar-status-right "#[bg=#0B0E14,fg=#565B66] #(hostname)  #{cpu_percentage} %H:%M #[bg=#0B0E14,fg=#565B66]"
+      '';
+      extraConfig = ''
         set -g mouse on
 
         # Enable truecolor support for foot and xterm-256color terminals
@@ -147,11 +133,6 @@ in {
         set-option -g renumber-windows on
         set -g base-index 1
         setw -g pane-base-index 1
-
-        # Set status-right BEFORE plugins load so they can interpolate the variables
-        set -g @tmux-dotbar-right true
-        set -g @tmux-dotbar-status-right-text "#{tmux_mode_indicator} #(hostname)  #{cpu_percentage} %H:%M"
-        # set -g status-right "#{tmux_mode_indicator}|#(hostname)|#{cpu_percentage}|%H:%M"
       '';
     };
 
