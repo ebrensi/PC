@@ -33,10 +33,10 @@ in {
     foot.enable = true;
     foot.settings = {
       main = {
-        initial-color-theme = 1;
+        initial-color-theme = "dark";
         font = "Noto Sans Mono:size=12";
       };
-      colors = {
+      colors-dark = {
         alpha = 0.7;
       };
       csd = {
