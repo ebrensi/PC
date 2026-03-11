@@ -113,48 +113,15 @@ in rec {
     ssh $sshOpts $dest "sudo $storePath/bin/switch-to-configuration switch"
   '';
 
-  tmx = let
-    socket-folder = "/tmp/tmux-shared";
-    defaultSessionName = "shared";
-  in
-    pkgs.writeShellScriptBin "tmx" ''
-      # Create/attach to a shared named tmux session accessible by all users
-      # usage: tmx [session-name]
-
-      SOCKDIR=${socket-folder}
-      mkdir -p $SOCKDIR
-      chmod 777 $SOCKDIR
-      if [ $# -eq 0 ]; then
-        echo "tmx (shared tmux) sessions:"
-        has_sessions=false
-        for socket in ${socket-folder}/*; do
-          if [ -S "$socket" ]; then
-            # Try to list sessions, if it fails the server is dead
-            sessions=$(tmux -S "$socket" list-sessions 2>/dev/null)
-            if [ -n "$sessions" ]; then
-              has_sessions=true
-              socket_name=$(basename "$socket")
-              echo "  [$socket_name]:"
-              echo "$sessions" | sed 's/^/    /'
-            else
-              # Clean up dead socket
-              rm -f "$socket"
-            fi
-          fi
-        done
-        [ "$has_sessions" = false ] && echo "  (none)"
-
-        echo
-        echo "Private (${builtins.getEnv "USER"}) tmux sessions:"
-        tmux list-sessions 2>/dev/null || echo "  (none)"
-        exit 0
-      fi
-
-      SESSION_NAME=$1
-      SOCKET=$SOCKDIR/$SESSION_NAME
-      tmux -S $SOCKET new-session -As $SESSION_NAME
-      chmod 666 $SOCKET
-      # Set terminal title
-      echo -ne "\033]0;$(hostname -s):$SESSION_NAME\007"
-    '';
+  tmx = pkgs.writeShellScriptBin "tmx" ''
+    # Create/attach to a named tmux session
+    # usage: tmx [session-name]
+    if [ $# -eq 0 ]; then
+      tmux list-sessions 2>/dev/null || echo "(no sessions)"
+      exit 0
+    fi
+    SESSION_NAME=$1
+    tmux new-session -As "$SESSION_NAME"
+    echo -ne "\033]0;$$(hostname -s):$SESSION_NAME\007"
+  '';
 }
