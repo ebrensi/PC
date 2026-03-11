@@ -171,7 +171,7 @@ in {
         IdentityAgent $SSH_AUTH_SOCK
 
       Host vm
-        Hostname ::1
+        Hostname 127.0.0.1
         Port 2222
     '';
     iftop.enable = true;
