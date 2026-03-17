@@ -36,6 +36,7 @@ in {
       tcpdump
       hwinfo
       powertop
+      gitui
 
       dev-scripts.tmx
 
