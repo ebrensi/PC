@@ -214,6 +214,7 @@ in {
       wg = "sudo wg";
       wgg = "sudo wgg";
       dev = "nix develop";
+      code = "codium";
     };
 
     # Environment Variables (for this user)
