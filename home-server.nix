@@ -5,23 +5,6 @@
   ...
 }: let
   user = "efrem";
-  ai = pkgs.writeShellScriptBin "ai" ''
-    # Wrapper around aider with interactive model selection via gum filter.
-    # Ollama models are fetched live; Claude models are listed statically.
-    # All extra args are passed through to aider.
-
-    OLLAMA_MODELS=$(${pkgs.ollama}/bin/ollama list 2>/dev/null \
-      | tail -n +2 \
-      | awk '{print "ollama/" $1}')
-
-    SELECTED=$(printf '%s\n%s\n' "$OLLAMA_MODELS"  \
-      | ${pkgs.gum}/bin/gum filter \
-          --placeholder "Select a model..." \
-          --height 12)
-
-    [ -z "$SELECTED" ] && exit 0
-    exec ${pkgs.aider-chat}/bin/aider --model "$SELECTED" "$@"
-  '';
 in {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
@@ -157,7 +140,7 @@ in {
     package = pkgs.ollama-vulkan;
     # package = pkgs.ollama-cuda;
     host = "0.0.0.0";
-    environmentVariables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
+    # environmentVariables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
   };
   # CUDA binary cache — avoids having to build/fetch CUDA redist packages from source
   nix.settings = {
@@ -166,10 +149,8 @@ in {
   };
 
   # Configuration for Aider to work
-  environment.systemPackages = with pkgs; [ai aider-chat opencode qwen-code];
-  environment.etc."aider/aider.conf.yml".text = ''
-    model: ollama/qwen2.5-coder:7b
-  '';
+  environment.systemPackages = with pkgs; [opencode qwen-code];
+
   environment.etc."opencode/opencode.json".text = builtins.toJSON {
     "$schema" = "https://opencode.ai/config.json";
     autoupdate = false;
@@ -202,7 +183,6 @@ in {
   };
 
   systemd.tmpfiles.rules = [
-    "L+ /home/${user}/.aider.conf.yml 644 ${user} users - /etc/aider/aider.conf.yml"
     "d  /home/${user}/.config/opencode 755 ${user} users -"
     "L+ /home/${user}/.config/opencode/opencode.json 644 ${user} users - /etc/opencode/opencode.json"
   ];

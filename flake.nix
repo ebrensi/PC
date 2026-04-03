@@ -11,6 +11,7 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    claude-code-nix.url = "github:sadjow/claude-code-nix";
   };
 
   outputs = {
@@ -28,6 +29,7 @@
         modules = [
           self.inputs.disko.nixosModules.disko
           self.inputs.agenix.nixosModules.default
+          {nixpkgs.overlays = [self.inputs.claude-code-nix.overlays.default];}
           ./base.nix
           ./user-efrem.nix
         ];

@@ -12,6 +12,7 @@ in {
 
     # AI coding tools
     claude-code
+    claude-monitor
     gemini-cli
     opencode
 

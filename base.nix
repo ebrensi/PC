@@ -139,7 +139,7 @@
     nix-fast-build
     nixos-anywhere
     tig
-    nodePackages_latest.prettier
+    prettier
 
     # Utilities
     wl-clipboard-x11
@@ -193,8 +193,14 @@
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
-    substituters = ["https://nix-community.cachix.org"];
-    trusted-public-keys = ["nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
+    substituters = [
+      "https://nix-community.cachix.org"
+      "https://claude-code.cachix.org"
+    ];
+    trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+    ];
   };
   nix.nixPath = ["nixpkgs=${pkgs.path}"];
   system.stateVersion = "25.05";
