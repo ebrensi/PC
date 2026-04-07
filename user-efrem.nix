@@ -203,6 +203,8 @@ in {
       set mouse-wheel-cursor = no
 
       bind status P !git push origin
+      bind generic + !git commit --amend
+      bind generic 9 @sh -c "echo -n %(commit) | xclip -selection c"
     '';
     # Convenient keyboard aliases
     shellAliases = let
