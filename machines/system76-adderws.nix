@@ -66,6 +66,21 @@
 
   # see https://wiki.archlinux.org/title/Hardware_video_acceleration#Verification
   environment.systemPackages = with pkgs; [
+    # Separate launcher for Chrome using the NVIDIA dGPU via PRIME offload.
+    # Uses makeDesktopItem so it lands in XDG_DATA_DIRS (share/applications/),
+    # which is what COSMIC's app launcher actually searches.
+    (pkgs.makeDesktopItem {
+      name = "google-chrome-nvidia";
+      desktopName = "Google Chrome (NVIDIA dGPU)";
+      comment = "Access the Internet (NVIDIA dGPU)";
+      exec = "env __NV_PRIME_RENDER_OFFLOAD=1 __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0 __GLX_VENDOR_LIBRARY_NAME=nvidia __EGL_VENDOR_LIBRARY_FILENAMES=${config.hardware.nvidia.package}/share/glvnd/egl_vendor.d/10_nvidia.json /run/current-system/sw/bin/google-chrome-stable --render-node-override=/dev/dri/renderD129 %U";
+      icon = "google-chrome";
+      categories = ["Network" "WebBrowser"];
+      mimeTypes = ["text/html" "text/xml" "application/xhtml+xml" "x-scheme-handler/http" "x-scheme-handler/https"];
+      startupNotify = true;
+      startupWMClass = "Google-chrome";
+      keywords = ["Internet" "WWW" "Browser" "Web"];
+    })
     libva-utils # for vainfo
     vdpauinfo # vdpauinfo
     vulkan-tools # vulkaninfo
