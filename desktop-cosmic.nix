@@ -26,6 +26,5 @@
   # We will use this until Cosmic's firmware update works
   environment.systemPackages = with pkgs; [
     cosmic-wallpapers
-    firmware-updater
   ];
 }

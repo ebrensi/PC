@@ -20,7 +20,10 @@
     ...
   }: {
     nixosConfigurations = let
-      pkgs-stable = import self.inputs.nixpkgs-stable {system = "x86_64-linux"; config.allowUnfree = true;};
+      pkgs-stable = import self.inputs.nixpkgs-stable {
+        system = "x86_64-linux";
+        config.allowUnfree = true;
+      };
       system-base = nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit (self.inputs) agenix;
@@ -80,14 +83,13 @@
       platform = pkgs.stdenv.hostPlatform.system;
       keys = import ./secrets/public-keys.nix;
       dev-scripts-attrs = import ./dev-scripts.nix {inherit pkgs;};
-
       installer-base = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
         modules = [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"
           self.inputs.agenix.nixosModules.default
           ./network-installer.nix
           {
+            nixpkgs.hostPlatform = "x86_64-linux";
             networking.wireless.networks.CiscoKid.pskRaw = "8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55";
             users.users.root.openssh.authorizedKeys.keys = [keys.personal-ssh-key];
           }
