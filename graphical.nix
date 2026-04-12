@@ -57,7 +57,15 @@ in {
     vscode = {
       enable = true;
       # No gnome-keyring on COSMIC; use plaintext storage to suppress the popup
-      package = pkgs.vscodium.override {commandLineArgs = "--password-store=basic";};
+      package = pkgs.vscodium.override {
+        commandLineArgs = lib.concatStringsSep " " [
+          "--password-store=basic"
+          "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL"
+          "--enable-gpu-rasterization"
+          "--enable-zero-copy"
+          "--ozone-platform=wayland"
+        ];
+      };
       extensions = with pkgs.vscode-extensions; let
         custom = pkgs.callPackage ./vscode-custom-extensions.nix {};
       in [
