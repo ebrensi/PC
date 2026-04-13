@@ -53,6 +53,11 @@
     HandlePowerKey = "suspend";
   };
 
+  # Display note: COSMIC persists output configs per connected-display-set.
+  # After running `wlr-randr --output DP-1 --scale 1.5` once with the lid
+  # closed, COSMIC saved the correct single-display config (position 0,0,
+  # scale 1.5) and now applies it automatically on lid close.
+
   # Fingerprint reader (disabled for now)
   services.fprintd.enable = false;
   # security.pam.services.cosmic-greeter.text = lib.mkForce ''
