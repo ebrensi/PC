@@ -151,7 +151,7 @@
     jq
     nmap
 
-    (pkgs.callPackage ./hwmon {})
+    (pkgs.callPackage ./hmon.nix {})
     agenix.packages.${pkgs.stdenv.hostPlatform.system}.agenix
   ];
 

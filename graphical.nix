@@ -139,7 +139,7 @@ in {
   systemd.tmpfiles.rules = let
     HOME = "/home/${user}";
     mpvConfig = pkgs.writeText "mpv.conf" ''
-      hwdec=auto
+      hwdec=vaapi
     '';
     chromeFlags = pkgs.writeText "chrome-flags.conf" ''
       --enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL
