@@ -8,13 +8,13 @@
 }:
 stdenv.mkDerivation rec {
   pname = "hmon";
-  version = "1.0.0";
+  version = "1.0.1";
 
   src = fetchFromGitHub {
     owner = "sdk445";
     repo = "hmon";
     rev = "v${version}";
-    hash = "sha256-z0MAtMbpnj5aJkpt1biMjtFmTmcgLWUx2gzoHF744K4=";
+    hash = "sha256-EJbubUeQMa5yxIG1xf16wOSnXBor1mUKwyzIN4+Wa5k=";
   };
 
   nativeBuildInputs = [cmake pkg-config];
