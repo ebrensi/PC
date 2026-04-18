@@ -76,10 +76,18 @@ in {
     "C /etc/hosts 644 efrem users - ${config.environment.etc.hosts.source}"
   ];
 
-  boot.initrd.preDeviceCommands = ''
-    echo -e "If found, please contact:\nEfrem Rensi\n+1510-282-9225...\nBarefootEfrem@gmail.com" \
-      | ${pkgs.neo-cowsay}/bin/cowsay --bold --aurora -f dragon || true
-  '';
+  boot.initrd.systemd.services.contact-info = {
+    description = "Display contact info on boot";
+    wantedBy = [ "initrd.target" ];
+    unitConfig.DefaultDependencies = false;
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = toString (pkgs.writeShellScript "contact-info" ''
+        echo -e "If found, please contact:\nEfrem Rensi\n+1510-282-9225...\nBarefootEfrem@gmail.com" \
+          | ${pkgs.neo-cowsay}/bin/cowsay --bold --aurora -f dragon || true
+      '');
+    };
+  };
 
   services.eternal-terminal.enable = true;
   services.avahi.extraServiceFiles = {
