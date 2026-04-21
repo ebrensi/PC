@@ -37,6 +37,7 @@ in {
       hwinfo
       powertop
       gitui
+      gh
 
       dev-scripts.tmx
 
@@ -78,7 +79,7 @@ in {
 
   boot.initrd.systemd.services.contact-info = {
     description = "Display contact info on boot";
-    wantedBy = [ "initrd.target" ];
+    wantedBy = ["initrd.target"];
     unitConfig.DefaultDependencies = false;
     serviceConfig = {
       Type = "oneshot";
@@ -291,7 +292,7 @@ in {
       ssh-add -q ~/.ssh/AngelProtection 2>/dev/null
 
       myMachines () {
-        ${pkgs.avahi}/bin/avahi-browse -pr ${avahi-service-type} | grep -i "^=;.*;IP*" | awk -F';' '{print $4, $8}' | sort -u
+        ${pkgs.avahi}/bin/avahi-browse -tpr ${avahi-service-type} | grep -i "^=;.*;IP*" | awk -F';' '{print $4, $8}' | sort -u
       }
     '';
   };
