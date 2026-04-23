@@ -123,6 +123,7 @@ in {
       '';
       extraConfig = ''
         set -g mouse on
+        set -g focus-events on
 
         # Enable truecolor support for foot and xterm-256color terminals
         set -ag terminal-overrides ",foot:Tc,foot-direct:Tc,xterm-256color:Tc"
