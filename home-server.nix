@@ -133,14 +133,15 @@ in {
   #  qwen2.5:7b — best general-purpose model that fits comfortably
   #  qwen2.5-coder:7b — if you want coding focus
   #   ollama pull qwen2.5:7b
-  # ollama-cuda is broken in current nixpkgs (cuda_compat missing src); use Vulkan instead.
+  # ollama-cuda is broken in nixpkgs-unstable: cuda12.9-libcublas-12.9.1.4-static fails to build
+  # (same recurring pattern as the old cuda_compat missing-src bugs — no merged fix as of 2026-04-24).
   # VK_ICD_FILENAMES forces the NVIDIA Vulkan ICD so PRIME offload doesn't fall back to Intel.
   services.ollama = {
     enable = true;
     package = pkgs.ollama-vulkan;
     # package = pkgs.ollama-cuda;
     host = "0.0.0.0";
-    # environmentVariables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
+    environmentVariables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
   };
   # CUDA binary cache — avoids having to build/fetch CUDA redist packages from source
   nix.settings = {
