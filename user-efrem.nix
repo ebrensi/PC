@@ -309,6 +309,16 @@ in {
     ${prefix}3 phone
     ${prefix}4 m1
   '';
+  # aioboto3 15.5.0 tests fail against aiohttp 3.12+ (strict duplicate-header check).
+  # Disable tests via overlay until nixpkgs fixes it upstream.
+  nixpkgs.overlays = [
+    (_: prev: {
+      python3Packages = prev.python3Packages.overrideScope (_: pyPrev: {
+        aioboto3 = pyPrev.aioboto3.overridePythonAttrs (_: {doCheck = false;});
+      });
+    })
+  ];
+
   environment.etc."claude-code/managed-mcp.json".text = builtins.toJSON {
     mcpServers = {
       filesystem = {
@@ -318,7 +328,7 @@ in {
       };
       nixos = {
         type = "stdio";
-        command = "${pkgs.mcp-nixos.overridePythonAttrs {doCheck = false;}}/bin/mcp-nixos";
+        command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
         args = [];
       };
     };
