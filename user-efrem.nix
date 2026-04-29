@@ -315,6 +315,7 @@ in {
     (_: prev: {
       python3Packages = prev.python3Packages.overrideScope (_: pyPrev: {
         aioboto3 = pyPrev.aioboto3.overridePythonAttrs (_: {doCheck = false;});
+        fastmcp = pyPrev.fastmcp.overridePythonAttrs (_: {doCheck = false;});
       });
     })
   ];
