@@ -10,7 +10,7 @@
   public-keys = import ./secrets/public-keys.nix;
   avahi-service-type = "_${user}._tcp";
 in {
-  imports = [./dev-folders.nix];
+  imports = [./dev-folders.nix ./micro.nix];
 
   boot.loader.systemd-boot.configurationLimit = lib.mkDefault 10;
 
