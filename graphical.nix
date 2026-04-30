@@ -7,7 +7,15 @@
   user = "efrem";
 in {
   environment.systemPackages = with pkgs; [
-    google-chrome
+    (google-chrome.override {
+      commandLineArgs = lib.concatStringsSep " " [
+        "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL"
+        "--disable-features=UseChromeOSDirectVideoDecoder,WebRtcHideLocalIpsWithMdns"
+        "--enable-gpu-rasterization"
+        "--enable-zero-copy"
+        "--webrtc-ip-handling-policy=default_public_interface_only"
+      ];
+    })
     alacritty
 
     # AI coding tools
@@ -141,16 +149,9 @@ in {
     mpvConfig = pkgs.writeText "mpv.conf" ''
       hwdec=vaapi
     '';
-    chromeFlags = pkgs.writeText "chrome-flags.conf" ''
-      --enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL
-      --disable-features=UseChromeOSDirectVideoDecoder
-      --enable-gpu-rasterization
-      --enable-zero-copy
-    '';
   in [
     "d  ${HOME}/.config/mpv          755 ${user} users -"
     "L+ ${HOME}/.config/mpv/mpv.conf 644 ${user} users - ${mpvConfig}"
-    "L+ ${HOME}/.config/chrome-flags.conf 644 ${user} users - ${chromeFlags}"
   ];
 
   services.printing = {
