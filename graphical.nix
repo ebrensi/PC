@@ -10,10 +10,9 @@ in {
     (google-chrome.override {
       commandLineArgs = lib.concatStringsSep " " [
         "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL"
-        "--disable-features=UseChromeOSDirectVideoDecoder,WebRtcHideLocalIpsWithMdns"
+        "--disable-features=UseChromeOSDirectVideoDecoder"
         "--enable-gpu-rasterization"
         "--enable-zero-copy"
-        "--webrtc-ip-handling-policy=default_public_interface_only"
       ];
     })
     alacritty

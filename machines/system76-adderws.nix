@@ -21,6 +21,12 @@
   };
   networking.useDHCP = lib.mkDefault true;
 
+  # Stops eno0 from winning ARP for wlan0's IP; Chrome WebRTC binds sockets per-interface and never receives misrouted return traffic.
+  boot.kernel.sysctl = {
+    "net.ipv4.conf.eno0.arp_ignore" = 2;
+    "net.ipv4.conf.eno0.arp_announce" = 2;
+  };
+
   # SSD optimization (from common-pc-ssd)
   services.fstrim.enable = true;
 

@@ -39,6 +39,9 @@ in {
       gitui
       gh
 
+      slack-term
+      slack
+
       dev-scripts.tmx
 
       # Networking
