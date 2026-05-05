@@ -8,7 +8,6 @@
     color-link indent-char "#585273"
     color-link line-number "#585273"
     color-link current-line-number "#91ddff,#100E23"
-    color-link cursor-line "#,#2F2A47"
     color-link gutter-error "#F02E6E"
     color-link gutter-warning "#F2B482"
     color-link color-column "#2F2A47"
@@ -23,7 +22,7 @@
     color-link tabbar.inactive "#8A889D,#1e1c31"
 
     color-link cursor "#1e1c31,#91ddff"
-    color-link cursor-line "#,#100E23"
+    # color-link cursor-line "#cbe3e7,#100E23"
     color-link cursor-line-number "#91ddff,#100E23,bold"
 
     color-link selection "#,#3E3859"
