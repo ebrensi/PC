@@ -67,6 +67,9 @@
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
+  # Apple Silicon NVRAM is read-only from Linux; bootctl update always returns
+  # non-zero even with --no-variables.  graceful makes the failure non-fatal.
+  boot.loader.systemd-boot.graceful = true;
 
   hardware.asahi.extractPeripheralFirmware = false;
 
