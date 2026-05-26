@@ -203,6 +203,11 @@ in {
       mode = "644";
       owner = user;
     };
+    guardian-credentials = {
+      file = ./secrets/guardian-credentials.age;
+      owner = user;
+      mode = "0400";
+    };
   };
 
   environment = {
@@ -240,6 +245,10 @@ in {
       NNN_GUI = 0;
       NNN_OPTS = "EAoaux";
     };
+
+    shellInit = ''
+      source ${config.age.secrets.guardian-credentials.path}
+    '';
 
     # This runs when a new shell is started (for this user)
     # This would be like putting stuff in ~/.bashrc
