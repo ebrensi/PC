@@ -49,7 +49,7 @@
   services.resolved = {
     enable = true;
     settings.Resolve = {
-      DNSSEC = "allow-downgrade";
+      DNSSEC = "no"; # fix for Slack bug
       MulticastDNS = "no";
       FallbackDNS = ["1.1.1.1" "8.8.8.8"];
     };
