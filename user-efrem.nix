@@ -38,8 +38,8 @@ in {
       powertop
       gitui
       gh
-
       dev-scripts.tmx
+      slack
 
       # Networking
       socat

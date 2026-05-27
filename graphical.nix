@@ -136,9 +136,6 @@ in {
         custom.ktnrg45.vscode-cython
         # shardulm94.trailing-spaces
         # stephlin.vscode-tmux-keybinding
-
-        # AI
-        github.copilot-chat
       ];
     };
   };
