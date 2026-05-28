@@ -247,7 +247,7 @@ in {
     };
 
     shellInit = ''
-      source ${config.age.secrets.guardian-credentials.path}
+      [ -r ${config.age.secrets.guardian-credentials.path} ] && source ${config.age.secrets.guardian-credentials.path}
     '';
 
     # This runs when a new shell is started (for this user)
