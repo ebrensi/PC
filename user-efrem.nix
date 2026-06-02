@@ -25,7 +25,7 @@ in {
     in [
       # https://search.nixos.org/packages?channel=unstable&
       micro
-      termscp
+      # termscp
       visidata
       glow
       nix-btm

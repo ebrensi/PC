@@ -30,11 +30,11 @@ in {
     mpv-unwrapped
     imagemagick
     wlr-randr
-    zoom
-    # ffmpeg
-    # gimp
-    # shotcut
-    # libreoffice-fresh
+    # zoom
+    ffmpeg
+    gimp
+    shotcut
+    libreoffice-fresh
   ];
 
   programs = {
