@@ -161,6 +161,30 @@ in {
     ];
   };
 
+  # cups-browsed's auto-discovered "implicitclass" queues for these printers
+  # fail to resolve a destination ("No suitable destination host found by
+  # cups-browsed") even though the printers are reachable directly, so jobs
+  # never print. Configure direct driverless IPP queues instead, bypassing
+  # cups-browsed. See https://wiki.nixos.org/wiki/Printing
+  hardware.printers = {
+    ensurePrinters = [
+      {
+        name = "Brother_DCP_Direct";
+        description = "Brother DCP-L2550DW (direct)";
+        location = "Office";
+        deviceUri = "ipp://192.168.1.24:631/ipp/print";
+        model = "everywhere";
+      }
+      {
+        name = "Canon_MF750C_Direct";
+        description = "Canon MF750C (direct)";
+        location = "Office";
+        deviceUri = "ipp://192.168.1.59:631/ipp/print";
+        model = "everywhere";
+      }
+    ];
+  };
+
   # Enable foot-server for user session with correct target
   systemd.user.services.foot-server = {
     description = "Foot terminal server";
