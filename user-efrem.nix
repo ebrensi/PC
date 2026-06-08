@@ -40,6 +40,7 @@ in {
       gh
       dev-scripts.tmx
       slack
+      cheese
 
       # Networking
       socat
