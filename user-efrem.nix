@@ -22,31 +22,34 @@ in {
     extraGroups = ["docker" "networkmanager" "wheel" "audio" "video" "lp"];
     packages = with pkgs; let
       dev-scripts = import ./dev-scripts.nix {inherit pkgs;};
-    in [
-      # https://search.nixos.org/packages?channel=unstable&
-      micro
-      # termscp
-      visidata
-      glow
-      nix-btm
-      nix-top
-      multitail
-      wireguard-tools
-      wg-friendly-peer-names
-      tcpdump
-      hwinfo
-      powertop
-      gitui
-      gh
-      dev-scripts.tmx
-      slack
-      cheese
+    in
+      # Filter out packages unavailable on this host's platform (e.g. slack
+      # ships no aarch64-linux build), since this list is shared across machines.
+      lib.filter (lib.meta.availableOn pkgs.stdenv.hostPlatform) [
+        # https://search.nixos.org/packages?channel=unstable&
+        micro
+        # termscp
+        visidata
+        glow
+        nix-btm
+        nix-top
+        multitail
+        wireguard-tools
+        wg-friendly-peer-names
+        tcpdump
+        hwinfo
+        powertop
+        gitui
+        gh
+        dev-scripts.tmx
+        slack
+        cheese
 
-      # Networking
-      socat
+        # Networking
+        socat
 
-      nodejs # provides npx for MCP servers
-    ];
+        nodejs # provides npx for MCP servers
+      ];
     initialPassword = "password";
     openssh.authorizedKeys.keys = with public-keys; [
       personal-ssh-key
