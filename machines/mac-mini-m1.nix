@@ -11,67 +11,73 @@
   imports = ["${modulesPath}/installer/scan/not-detected.nix"];
   networking.wireless.enable = false;
 
-  boot.initrd.availableKernelModules = ["xhci_pci" "usbhid" "usb_storage"];
-  boot.initrd.kernelModules = [];
-  boot.kernelModules = [];
-  boot.extraModulePackages = [];
-  boot.supportedFilesystems = ["btrfs"];
-
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/2d27792c-8d6c-4744-a0eb-1190bb91ff15";
-    fsType = "ext4";
+  boot = {
+    # Use the systemd-boot EFI boot loader.
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = false;
+    # Apple Silicon NVRAM is read-only from Linux; bootctl update always returns
+    # non-zero even with --no-variables.  graceful makes the failure non-fatal.
+    loader.systemd-boot.graceful = true;
+    initrd.availableKernelModules = ["xhci_pci" "usbhid" "usb_storage"];
+    initrd.kernelModules = [];
+    kernelModules = [];
+    extraModulePackages = [];
+    supportedFilesystems = ["btrfs"];
   };
 
-  fileSystems."/nix" = {
-    device = "/dev/disk/by-uuid/744c8ca0-f54e-4c14-8ecc-0ba4ef363ae9";
-    fsType = "ext4";
-    options = ["noatime"];
-    neededForBoot = true;
-  };
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-uuid/2d27792c-8d6c-4744-a0eb-1190bb91ff15";
+      fsType = "ext4";
+    };
 
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/472B-1CEA";
-    fsType = "vfat";
-    options = ["fmask=0022" "dmask=0022"];
-  };
+    "/nix" = {
+      device = "/dev/disk/by-uuid/744c8ca0-f54e-4c14-8ecc-0ba4ef363ae9";
+      fsType = "ext4";
+      options = ["noatime"];
+      neededForBoot = true;
+    };
 
-  # USB NVMe SSD (SanDisk Extreme Pro 1.8TB)
-  # Formatted with disko-usb-nvme.nix, provides:
-  #   - /var/lib/docker: Docker storage (frees internal SSD)
-  #   - /mnt/nix-alt: Secondary nix store for large builds
-  #   - /mnt/usb-nvme: General storage
-  #
-  # nofail ensures system boots even if USB drive is disconnected
-  fileSystems."/var/lib/docker" = {
-    device = "/dev/disk/by-label/usb-nvme";
-    fsType = "btrfs";
-    options = ["subvol=@docker" "compress=zstd" "noatime" "nodatacow" "nofail"];
-  };
+    "/boot" = {
+      device = "/dev/disk/by-uuid/472B-1CEA";
+      fsType = "vfat";
+      options = ["fmask=0022" "dmask=0022"];
+    };
 
-  fileSystems."/mnt/nix-alt" = {
-    device = "/dev/disk/by-label/usb-nvme";
-    fsType = "btrfs";
-    options = ["subvol=@nix-alt" "compress=zstd" "noatime" "nofail"];
-  };
+    # USB NVMe SSD (SanDisk Extreme Pro 1.8TB)
+    # Formatted with disko-usb-nvme.nix, provides:
+    #   - /var/lib/docker: Docker storage (frees internal SSD)
+    #   - /mnt/nix-alt: Secondary nix store for large builds
+    #   - /mnt/usb-nvme: General storage
+    #
+    # nofail ensures system boots even if USB drive is disconnected
+    "/var/lib/docker" = {
+      device = "/dev/disk/by-label/usb-nvme";
+      fsType = "btrfs";
+      options = ["subvol=@docker" "compress=zstd" "noatime" "nodatacow" "nofail"];
+    };
 
-  fileSystems."/mnt/usb-nvme" = {
-    device = "/dev/disk/by-label/usb-nvme";
-    fsType = "btrfs";
-    options = ["subvol=@data" "compress=zstd" "noatime" "nofail"];
+    "/mnt/nix-alt" = {
+      device = "/dev/disk/by-label/usb-nvme";
+      fsType = "btrfs";
+      options = ["subvol=@nix-alt" "compress=zstd" "noatime" "nofail"];
+    };
+
+    "/mnt/usb-nvme" = {
+      device = "/dev/disk/by-label/usb-nvme";
+      fsType = "btrfs";
+      options = ["subvol=@data" "compress=zstd" "noatime" "nofail"];
+    };
   };
 
   swapDevices = [];
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = false;
-  # Apple Silicon NVRAM is read-only from Linux; bootctl update always returns
-  # non-zero even with --no-variables.  graceful makes the failure non-fatal.
-  boot.loader.systemd-boot.graceful = true;
-
-  hardware.asahi.extractPeripheralFirmware = false;
+  hardware.asahi = {
+    enable = true;
+    extractPeripheralFirmware = false;
+  };
 
   nix.settings = {
     extra-substituters = [
@@ -88,22 +94,24 @@
     require-sigs = false;
   };
 
-  # Docker storage lives on USB NVMe - don't start Docker without it
-  systemd.services.docker = {
-    after = ["var-lib-docker.mount"];
-    bindsTo = ["var-lib-docker.mount"];
-  };
+  systemd.services = {
+    # Docker storage lives on USB NVMe - don't start Docker without it
+    docker = {
+      after = ["var-lib-docker.mount"];
+      bindsTo = ["var-lib-docker.mount"];
+    };
 
-  # Ensure correct ownership on the alt nix store after mount
-  # The alt store is accessed directly (not via daemon) so efrem needs ownership
-  systemd.services.nix-alt-store-permissions = {
-    description = "Set permissions on alternate nix store";
-    after = ["mnt-nix\\x2dalt.mount"];
-    requires = ["mnt-nix\\x2dalt.mount"];
-    wantedBy = ["mnt-nix\\x2dalt.mount"];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash -c 'mkdir -p /mnt/nix-alt/nix/store /mnt/nix-alt/nix/var/nix && chown -R efrem:users /mnt/nix-alt/nix && chmod -R u+rwX /mnt/nix-alt/nix'";
+    # Ensure correct ownership on the alt nix store after mount
+    # The alt store is accessed directly (not via daemon) so efrem needs ownership
+    nix-alt-store-permissions = {
+      description = "Set permissions on alternate nix store";
+      after = ["mnt-nix\\x2dalt.mount"];
+      requires = ["mnt-nix\\x2dalt.mount"];
+      wantedBy = ["mnt-nix\\x2dalt.mount"];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.bash}/bin/bash -c 'mkdir -p /mnt/nix-alt/nix/store /mnt/nix-alt/nix/var/nix && chown -R efrem:users /mnt/nix-alt/nix && chmod -R u+rwX /mnt/nix-alt/nix'";
+      };
     };
   };
 }
