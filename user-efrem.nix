@@ -44,6 +44,7 @@ in {
         dev-scripts.tmx
         slack
         cheese
+        claude-monitor
 
         # Networking
         socat
