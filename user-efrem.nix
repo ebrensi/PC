@@ -331,6 +331,10 @@ in {
         aioboto3 = pyPrev.aioboto3.overridePythonAttrs (_: {doCheck = false;});
         fastmcp = pyPrev.fastmcp.overridePythonAttrs (_: {doCheck = false;});
       });
+      # mcp-nixos 2.4.3 test_read_text_file is flaky: it grabs a random small
+      # text file from /nix/store and asserts "Error" isn't in it, which fails
+      # whenever the chosen file happens to contain that substring incidentally.
+      mcp-nixos = prev.mcp-nixos.overridePythonAttrs (_: {doCheck = false;});
     })
   ];
 
