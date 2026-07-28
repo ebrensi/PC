@@ -72,6 +72,10 @@ in {
     wifi = {
       mode = "infrastructure";
       ssid = "CiscoKid";
+      # Disable WiFi power-saving. This is the always-on network link for the
+      # box (remote SSH/WireGuard) — radio powersave can drop the tunnel while
+      # idle even though the machine itself never actually suspends.
+      powersave = 2; # NM: 2 = disable
     };
     wifi-security = {
       key-mgmt = "wpa-psk";
@@ -117,6 +121,11 @@ in {
   # This is a laptop machine acting as a server so we don't want it to sleep
   # When hooked to a dock or external power
   services.logind.settings.Login = {
+    # Dont sleep when lid is closed, regardless of AC/dock detection.
+    # HandleLidSwitchExternalPower/Docked alone left the plain HandleLidSwitch
+    # default (suspend) in effect whenever logind didn't detect AC or a dock
+    # (e.g. a USB-C dock not recognized as a real ACPI dock station).
+    HandleLidSwitch = "ignore";
     # Dont sleep when lid is closed on external power
     HandleLidSwitchExternalPower = "ignore";
     # Dont sleep when lid is closed we are connected to a docking station
