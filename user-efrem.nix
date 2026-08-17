@@ -49,7 +49,8 @@ in {
         # Networking
         socat
 
-        nodejs # provides npx for MCP servers
+        nodejs # provides npx for MCP servers, and runs the wakatime claude-code plugin
+        wakatime-cli # found on PATH by the wakatime plugin/extension, so neither self-downloads a binary
       ];
     initialPassword = "password";
     openssh.authorizedKeys.keys = with public-keys; [
@@ -337,6 +338,18 @@ in {
       mcp-nixos = prev.mcp-nixos.overridePythonAttrs (_: {doCheck = false;});
     })
   ];
+
+  # Claude Code system-wide managed settings. Highest precedence, so these keys
+  # stay put no matter what ~/.claude/settings.json ends up containing.
+  # Time tracking: the wakatime plugin hooks every Claude Code session and shells
+  # out to wakatime-cli, which reads the API key from ~/.wakatime.cfg (agenix, above).
+  environment.etc."claude-code/managed-settings.json".text = builtins.toJSON {
+    extraKnownMarketplaces.wakatime.source = {
+      source = "git";
+      url = "https://github.com/wakatime/claude-code-wakatime.git";
+    };
+    enabledPlugins."claude-code-wakatime@wakatime" = true;
+  };
 
   environment.etc."claude-code/managed-mcp.json".text = builtins.toJSON {
     mcpServers = {
