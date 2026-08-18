@@ -144,6 +144,17 @@
     enableOnBoot = true;
   };
 
+  # The Guardian split build has this machine push its own build results to the
+  #  cache, and that copy runs over a non-interactive SSH session which inherits
+  #  no environment, so the credentials have to be reachable from the builder's
+  #  HOME. Which profile is read comes from the store URL, not AWS_PROFILE.
+  age.secrets.aws-credentials-builder = {
+    file = ./secrets/aws-credentials.age;
+    path = "${config.users.users.builder.home}/.aws/credentials";
+    mode = "400";
+    owner = "builder";
+  };
+
   age.secrets.wg-m1.file = ./secrets/wg-m1.age;
   # public key: aZEHKJGXFvCe8eOmMCdhD+okIuOkQUULZzKJZ+MWDRU=
   wireguard-peer = let
