@@ -17,9 +17,15 @@
   hardware.graphics.enable = false;
 
   users.users.builder = {
-    isSystemUser = true; # No password, UID < 1000, no home dir
+    isSystemUser = true; # No password, UID < 1000
     group = "builder";
     shell = pkgs.bash; # SSH needs a shell to run `nix-store --serve`
+    # `nix-store --serve` (nix.buildMachines) needs no home, but clients that run
+    # the nix CLI here over SSH -- nix-fast-build --remote runs nix-eval-jobs and
+    # `nix copy` on the builder -- fail outright when $HOME/.cache/nix cannot be
+    # created, and the default /var/empty is read-only.
+    home = "/var/lib/nix-builder";
+    createHome = true;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFMlODk3W6OUoCdDCSPOPasBO/ldWEPKQaUC9wTedSX0 guardian@AP1"
     ];
