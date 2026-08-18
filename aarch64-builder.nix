@@ -180,5 +180,5 @@
     git.enable = true;
     htop.enable = true;
   };
-  boot.loader.systemd-boot.configurationLimit = 5;
+  boot.loader.systemd-boot.configurationLimit = lib.mkDefault 5;
 }

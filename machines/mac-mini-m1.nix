@@ -18,6 +18,12 @@
     # Apple Silicon NVRAM is read-only from Linux; bootctl update always returns
     # non-zero even with --no-variables.  graceful makes the failure non-fatal.
     loader.systemd-boot.graceful = true;
+    # This ESP is 476M and Asahi already claims ~123M of it (m1n1, vendorfw,
+    #  asahi), leaving ~353M for kernels. Each generation costs ~91M (65M Image
+    #  + 27M initrd), and the installer keeps every generation within this
+    #  limit, so the generic builder default of 5 wants ~455M and fills the
+    #  partition mid-install. Three fits with ~79M to spare.
+    loader.systemd-boot.configurationLimit = 3;
     initrd.availableKernelModules = ["xhci_pci" "usbhid" "usb_storage"];
     initrd.kernelModules = [];
     kernelModules = [];
