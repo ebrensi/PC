@@ -169,7 +169,7 @@
         name = "adderws";
         publicKey = "srov/ElxjM0BPfQHhCFN2sb3UEkwIhFQGSS55P/HIEA=";
         allowedIPs = ["${prefix}1/128"];
-        endpoint = "73.15.57.26:55555";
+        endpoint = "192.168.1.66:51820";
       }
       {
         name = "thinkpad";
