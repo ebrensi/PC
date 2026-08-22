@@ -231,7 +231,6 @@ in {
     shellAliases = let
       flake-path = "/home/${user}/dev/PC";
     in {
-      flakeUpdate = "nix flake update --commit-lock-file --flake ${flake-path}";
       yay = ''nixos-rebuild switch --flake ${flake-path} --sudo |& nom; running=$(uname -r); new=$(ls /run/current-system/kernel-modules/lib/modules/); if [ "$running" != "$new" ]; then echo ""; echo "Kernel changed: $running -> $new. Reboot to apply."; fi'';
       N = "sudo -E nnn -dH";
       del = "trash-put";
@@ -259,6 +258,38 @@ in {
     # This runs when a new shell is started (for this user)
     # This would be like putting stuff in ~/.bashrc
     interactiveShellInit = ''
+      # Update flake inputs, then rewrite the auto-generated lock-file commit's
+      # subject to list each updated input with the date it was pinned to
+      # (instead of the generic "flake.lock: Update"), keeping the detailed
+      # per-input diff nix already writes as the commit body.
+      flakeUpdate ()
+      {
+          local flake_path="/home/${user}/dev/PC"
+          nix flake update --commit-lock-file --flake "$flake_path" || return
+          local msg names dates summary
+          msg=$(git -C "$flake_path" log -1 --pretty=%B)
+          names=$(printf '%s\n' "$msg" | grep -oP "(?<=Updated input ')[^']+(?=':)")
+          dates=$(printf '%s\n' "$msg" | grep -oP "(?<=→ ')[^']*' \(\K[0-9-]+")
+          summary=$(paste -d' ' <(printf '%s\n' "$names") <(printf '%s\n' "$dates") | awk '
+              {
+                  full = $1; date = $2
+                  split(full, a, "/"); top = a[1]
+                  if (!(top in seen)) { order[++n] = top }
+                  if (!(top in seen) || full == top) { seen[top] = date }
+              }
+              END {
+                  out = ""
+                  for (i = 1; i <= n; i++) {
+                      if (out != "") out = out ", "
+                      out = out order[i] " " seen[order[i]]
+                  }
+                  print out
+              }')
+          if [ -n "$summary" ]; then
+              git -C "$flake_path" commit --amend -m "flake.lock: Update ($summary)" -m "$(printf '%s\n' "$msg" | tail -n +2)"
+          fi
+      }
+
       n ()
       {
           # Block nesting of nnn in subshells
