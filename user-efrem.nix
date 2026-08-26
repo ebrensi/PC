@@ -28,6 +28,9 @@ in {
       lib.filter (lib.meta.availableOn pkgs.stdenv.hostPlatform) [
         # https://search.nixos.org/packages?channel=unstable&
         micro
+        git-absorb
+        git-open
+
         # termscp
         visidata
         glow

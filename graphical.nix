@@ -15,6 +15,8 @@ in {
         "--enable-zero-copy"
       ];
     })
+    gittyup
+    gitkraken
     alacritty
 
     # AI coding tools
