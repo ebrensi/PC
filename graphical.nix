@@ -33,7 +33,7 @@ in {
     ffmpeg
     gimp
     shotcut
-    libreoffice-fresh
+    libreoffice-stable
   ];
 
   programs = {
