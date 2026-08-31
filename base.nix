@@ -85,6 +85,26 @@
     };
   };
 
+  # geoclue 2.8 added an [ip] source, but the NixOS geoclue2 module generates
+  # /etc/geoclue/geoclue.conf from scratch and never emits that section. geoclue
+  # then reads method= as null, logs "Unknown IP source method '(null)',
+  # disabling source", and turns the IP fallback off entirely.
+  #
+  # That matters because our only other usable source is WiFi, and NetworkManager
+  # runs on the iwd backend (networking.networkmanager.wifi.backend = "iwd"). iwd's
+  # D-Bus API does not expose per-BSS MAC addresses, so NM hands geoclue synthetic
+  # placeholder BSSIDs (00:01:02:00:00:0X) for every AP except the connected one.
+  # BeaconDB cannot resolve those, the WiFi lookup 404s, and geoclue never emits a
+  # location -- leaving automatic-timezoned with nothing to act on.
+  #
+  # Re-adding [ip] restores a ~25km-accurate fallback, far more precision than
+  # choosing a timezone needs. mkAfter appends to the module's generated INI.
+  environment.etc."geoclue/geoclue.conf".text = lib.mkAfter ''
+    [ip]
+    enable=true
+    method=ichnaea
+  '';
+
   # fwupd-refresh fails Polkit auth in non-interactive context (fwupd 2.x regression)
   systemd.timers.fwupd-refresh.enable = false;
 
