@@ -1,0 +1,57 @@
+diff --git a/input.c b/input.c
+index 6a829a7..a49c267 100644
+--- a/input.c
++++ b/input.c
+@@ -1854,6 +1854,31 @@ keyboard_key(void *data, struct wl_keyboard *wl_keyboard, uint32_t serial,
+              uint32_t time, uint32_t key, uint32_t state)
+ {
+     struct seat *seat = data;
++
++    if (unlikely(seat->kbd_focus == NULL)) {
++        /*
++         * No focused terminal to send the key to. This happens when:
++         *
++         *  - the compositor sends key events without a preceding
++         *    keyboard_enter() (same quirk keyboard_leave() already
++         *    guards against), or
++         *
++         *  - the focused window was destroyed before the compositor
++         *    delivered the matching key *release*. fdm_shutdown()
++         *    (terminal.c) clears seat::kbd_focus when the window goes
++         *    away, but events already in flight still arrive after
++         *    that, with no keyboard_leave() in between.
++         *
++         * Without this guard, key_press_release() dereferences a NULL
++         * 'term' and crashes the whole process - which, in server
++         * mode, takes every other terminal window down with it.
++         */
++        LOG_WARN("compositor sent keyboard_key event without a focused "
++                 "surface; ignoring");
++        stop_repeater(seat, -1);
++        return;
++    }
++
+     key_press_release(seat, seat->kbd_focus, serial, key + 8, state);
+ }
+ 
+@@ -2325,8 +2350,18 @@ const struct wl_keyboard_listener keyboard_listener = {
+ void
+ input_repeat(struct seat *seat, uint32_t key)
+ {
+-    /* Should be cleared as soon as we loose focus */
+-    xassert(seat->kbd_focus != NULL);
++    /*
++     * Should be cleared as soon as we loose focus - but the window can
++     * also be destroyed while a key is being repeated, in which case
++     * fdm_shutdown() (terminal.c) clears seat::kbd_focus without
++     * disarming the repeat timer. Bail out (and disarm) instead of
++     * dereferencing NULL.
++     */
++    if (unlikely(seat->kbd_focus == NULL)) {
++        stop_repeater(seat, -1);
++        return;
++    }
++
+     struct terminal *term = seat->kbd_focus;
+ 
+     key_press_release(seat, term, seat->kbd.serial, key, XKB_KEY_DOWN);

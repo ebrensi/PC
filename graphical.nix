@@ -38,6 +38,25 @@ in {
     libreoffice-stable
   ];
 
+  # foot 1.27.0 crashes (SIGSEGV) when a key event arrives with no focused
+  # terminal. keyboard_key() passes seat->kbd_focus straight to
+  # key_press_release() without a NULL check, and key_press_release() then
+  # dereferences it (term->conf). fdm_shutdown() clears seat->kbd_focus as
+  # soon as a window is destroyed, so the key *release* that follows closing
+  # a window lands on a NULL term. cosmic-comp reliably delivers that
+  # release, so this fires on nearly every window close.
+  #
+  # In server mode the crash kills the server process, which takes *every*
+  # foot window down at once. Patch adds the missing NULL guards.
+  # TODO: drop once fixed upstream (still present on foot master).
+  nixpkgs.overlays = [
+    (_: prev: {
+      foot = prev.foot.overrideAttrs (old: {
+        patches = (old.patches or []) ++ [./patches/foot-null-kbd-focus.patch];
+      });
+    })
+  ];
+
   programs = {
     foot.enable = true;
     foot.settings = {
