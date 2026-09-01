@@ -88,6 +88,14 @@
   nix.settings = {
     extra-substituters = [
       "https://nixos-apple-silicon.cachix.org"
+      # Guardian's artifact cache. Needed because this machine is the aarch64
+      # half of Guardian's `build-test`: nix-fast-build --remote runs eval and
+      # build here, so the Jetson closures' fixed-output release tarballs have
+      # to be substitutable from here rather than pushed over by the caller.
+      # Guardian's flake declares this in nixConfig, but that is ignored on a
+      # non-interactive build (accept-flake-config = false), and the fallback
+      # fetch hits a URL that is deliberately stripped before commit -> 404.
+      "https://guardian-ops-nix.s3.us-west-2.amazonaws.com"
       # Local USB NVMe store - nix will automatically substitute from here
       # Build large packages with: nix build --store /mnt/nix-alt .#package
       # Then they're available locally without explicit copy
@@ -95,6 +103,7 @@
     ];
     extra-trusted-public-keys = [
       "nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20="
+      "guardian-nix-cache:vN2kJ7sUQSbyWv4908FErdTS0VrPnMJtKypt21WzJA0="
     ];
     # Trust unsigned paths from local alt store
     require-sigs = false;
