@@ -358,20 +358,6 @@ in {
     ${prefix}3 phone
     ${prefix}4 m1
   '';
-  # aioboto3 15.5.0 tests fail against aiohttp 3.12+ (strict duplicate-header check).
-  # Disable tests via overlay until nixpkgs fixes it upstream.
-  nixpkgs.overlays = [
-    (_: prev: {
-      python3Packages = prev.python3Packages.overrideScope (_: pyPrev: {
-        aioboto3 = pyPrev.aioboto3.overridePythonAttrs (_: {doCheck = false;});
-        fastmcp = pyPrev.fastmcp.overridePythonAttrs (_: {doCheck = false;});
-      });
-      # mcp-nixos 2.4.3 test_read_text_file is flaky: it grabs a random small
-      # text file from /nix/store and asserts "Error" isn't in it, which fails
-      # whenever the chosen file happens to contain that substring incidentally.
-      mcp-nixos = prev.mcp-nixos.overridePythonAttrs (_: {doCheck = false;});
-    })
-  ];
 
   # Claude Code system-wide managed settings. Highest precedence, so these keys
   # stay put no matter what ~/.claude/settings.json ends up containing.

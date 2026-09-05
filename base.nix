@@ -105,9 +105,6 @@
     method=ichnaea
   '';
 
-  # fwupd-refresh fails Polkit auth in non-interactive context (fwupd 2.x regression)
-  systemd.timers.fwupd-refresh.enable = false;
-
   # Auto optimize the Nix store
   nix.optimise = {
     persistent = false;

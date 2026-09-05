@@ -150,7 +150,7 @@ in {
     package = pkgs.ollama-vulkan;
     # package = pkgs.ollama-cuda;
     host = "0.0.0.0";
-    environmentVariables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
+    environmentVariables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
   };
   # CUDA binary cache — avoids having to build/fetch CUDA redist packages from source
   nix.settings = {
