@@ -28,10 +28,10 @@ in {
       lib.filter (lib.meta.availableOn pkgs.stdenv.hostPlatform) [
         # https://search.nixos.org/packages?channel=unstable&
         micro
+        ghostty
         git-absorb
         git-open
 
-        # termscp
         visidata
         glow
         nix-btm
@@ -137,11 +137,22 @@ in {
         # Enable truecolor support for foot and xterm-256color terminals
         set -ag terminal-overrides ",foot:Tc,foot-direct:Tc,xterm-256color:Tc"
 
+        # Claude Code needs these inside tmux: allow-passthrough lets desktop
+        # notifications and the progress bar reach the outer terminal, and the
+        # extended-keys pair lets tmux distinguish Shift+Enter from plain Enter
+        # so it inserts a newline instead of submitting. terminal-features is
+        # matched against the outer TERM, which is foot here (upstream docs
+        # only give xterm*).
+        # https://code.claude.com/docs/en/terminal-config#configure-tmux
+        set -g allow-passthrough on
+        set -s extended-keys on
+        set -as terminal-features ',foot*:extkeys,xterm*:extkeys'
+
         # Allow system clipboard access for nested tmux sessions
         # https://github.com/tmux/tmux/wiki/Clipboard#terminal-support---tmux-inside-tmux
         set -g set-clipboard on
         set -as terminal-features ',tmux*:clipboard'
-        set -s copy-command 'xsel -i'
+        set -s copy-command '${pkgs.wl-clipboard}/bin/wl-copy'
 
         set-option -g set-titles on
         set-option -g set-titles-string "#{pane_title}"
