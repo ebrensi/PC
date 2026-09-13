@@ -222,19 +222,39 @@ in {
   # The generated ensure-printers script uses lpadmin with model=everywhere, which
   # must contact the printer to query its capabilities. If the printer is off or
   # suspended, lpadmin exits 1 and the service fails, causing nixos-rebuild switch
-  # to exit non-zero. Override the script to treat connectivity failures as warnings
-  # so the switch always succeeds, and add a timer to retry until the printer is online.
+  # to exit non-zero. Worse, a failed lpadmin leaves no usable queue behind, and at
+  # boot the printers are always unreachable because wifi isn't up yet. Override the
+  # script to leave existing queues alone, skip printers that aren't reachable, and
+  # treat failures as warnings so the switch always succeeds; a timer retries until
+  # the printer is online.
   systemd.services.ensure-printers.script = lib.mkForce ''
     configure_printer() {
       local name="$1" uri="$2" model="$3" desc="$4" loc="$5"
+      if ${pkgs.cups}/bin/lpstat -v "$name" 2>/dev/null | ${pkgs.gnugrep}/bin/grep -qF "$uri"; then
+        return 0
+      fi
+      local hostport="''${uri#ipp://}"
+      hostport="''${hostport%%/*}"
+      if ! ${pkgs.coreutils}/bin/timeout 5 ${pkgs.bash}/bin/bash -c "</dev/tcp/''${hostport%:*}/''${hostport##*:}" 2>/dev/null; then
+        echo "ensure-printers: $name unreachable, will retry via timer"
+        return 0
+      fi
       ${pkgs.cups}/bin/lpadmin -p "$name" -E -v "$uri" -m "$model" -D "$desc" -L "$loc" \
-        || echo "ensure-printers: $name unreachable, will retry via timer"
+        || echo "ensure-printers: $name setup failed, will retry via timer"
     }
     configure_printer Brother_DCP_Direct ipp://192.168.1.24:631/ipp/print everywhere \
       "Brother DCP-L2550DW (direct)" Office
     configure_printer Canon_MF750C_Direct ipp://192.168.1.59:631/ipp/print everywhere \
       "Canon MF750C (direct)" Office
   '';
+
+  # The upstream unit sets RemainAfterExit=yes, so it stays "active" after the first
+  # run and the timer below can never start it again. Let it go inactive instead.
+  systemd.services.ensure-printers = {
+    wants = ["network-online.target"];
+    after = ["network-online.target"];
+    serviceConfig.RemainAfterExit = lib.mkForce false;
+  };
 
   # Retry every 5 minutes so queues get configured when printers come back online.
   systemd.timers.ensure-printers = {
