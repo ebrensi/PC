@@ -32,6 +32,8 @@ in {
         git-absorb
         git-open
 
+        heroku
+
         visidata
         glow
         nix-btm
