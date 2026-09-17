@@ -44,20 +44,22 @@ in rec {
     # Copy a nix store path directly to a remote machine via ssh
     # usage: copy-to <host:port> <path>
 
-    targetHost=$1
+    hostAndPort=$1
     storePath=$2
-    echo "Copying $storePath closure to $host..." >&2
+    IFS=':' read -r host port <<< "$hostAndPort"
     sshOpts="${sshOpts}"
+    [ -n "$port" ] && sshOpts="$sshOpts -p $port"
+    echo "Copying $storePath closure to $host..." >&2
 
     source ${nix-config}
 
     NIX_SSHOPTS="$sshOpts" nix copy  \
       --no-check-sigs \
       --no-update-lock-file \
-      --to "ssh-ng://$targetHost" \
+      --to "ssh-ng://$host" \
       "$storePath"
 
-    # NIX_SSHOPTS="$sshOpts" nix-copy-closure -s --gzip --to "$targetHost" "$storePath"
+    # NIX_SSHOPTS="$sshOpts" nix-copy-closure -s --gzip --to "$host" "$storePath"
     echo "Done Copying."
   '';
   deploy-binaries = pkgs.writeShellScriptBin "deploy-binaries" ''
@@ -69,18 +71,21 @@ in rec {
     source ${nix-config}
 
     flakePath=$1
-    targetHost=$2
-    system=$(${nom} build $flakePath.config.system.build.toplevel) || {
+    hostAndPort=$2
+    IFS=':' read -r host port <<< "$hostAndPort"
+    sshOpts="${sshOpts}"
+    [ -n "$port" ] && sshOpts="$sshOpts -p $port"
+
+    system=$(${nom} build --no-link --print-out-paths $flakePath.config.system.build.toplevel) || {
       echo "Failed to build system closure"
       exit 1
     }
-    ${copy-to}/bin/* "$targetHost" $system || {
+    ${copy-to}/bin/copy-to "$hostAndPort" "$system" || {
       echo "Failed to copy system closure to remote machine"
       exit 1
     }
-    sshOpts="${sshOpts}"
-    ssh $sshOpts $dest "sudo nix-env -p /nix/var/nix/profiles/system --set $system"
-    ssh $sshOpts $dest "sudo $system/bin/switch-to-configuration switch"
+    ssh $sshOpts "$host" "sudo nix-env -p /nix/var/nix/profiles/system --set $system" || exit 1
+    ssh $sshOpts "$host" "sudo $system/bin/switch-to-configuration switch"
   '';
   apply = pkgs.writeShellScriptBin "apply" ''
     storePath=$(realpath $1)

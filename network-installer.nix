@@ -13,7 +13,10 @@
     settings.PermitRootLogin = lib.mkForce "yes";
   };
   services.getty.greetingLine = lib.mkForce "   Check your network for installer.local";
-  users.users.nixos.initialHashedPassword = lib.mkForce "p";
+  # Empty string = no password, same as the upstream installation-device profile.
+  # (A bare "p" here is not a valid hash, so it locked out password login entirely.)
+  # Console access is via getty autologin; remote access is via the SSH key below.
+  users.users.nixos.initialHashedPassword = lib.mkForce "";
   networking.networkmanager.enable = lib.mkForce false;
   networking.wireless.enable = lib.mkForce true;
   services.avahi = {

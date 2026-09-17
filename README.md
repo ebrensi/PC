@@ -139,7 +139,8 @@ happens with no network at all:
 nix build .#thinkpad-offline-installer-iso   # or .#adder-ws-offline-installer-iso
 ```
 
-This takes a while. Then write it to a USB stick `/dev/sdX`:
+This takes a while, and the ISO is as big as the system closure (~7 GB for
+`thinkpad`), so use an 8 GB or larger USB stick. Write it to `/dev/sdX`:
 
 ```bash
 sudo dd if=./result/iso/*.iso of=/dev/sdX status=progress bs=4M conv=fsync oflag=direct
@@ -151,8 +152,18 @@ It boots straight to a simple install menu.
 ### Method 3: network installer ISO
 
 `nix build .#network-installer-iso` produces a minimal ISO that joins wifi and
-starts `sshd` with my key authorized, so the target can be installed remotely
-with `install-direct`.
+starts `sshd` with my key authorized, plus avahi so the target announces itself
+as `installer.local`. Boot the target off it, then install it remotely from
+here (note the `root@` — the key is only authorized for root):
+
+```bash
+install-direct .#nixosConfigurations.thinkpad root@installer.local
+```
+
+It builds the closure locally, asks whether to format the disk (answer no to
+reuse existing partitions), and hands both the disko script and the system
+closure to `nixos-anywhere`. The whole closure goes over the network, so this
+is slower than Method 2 on a slow link.
 
 ## Flake inputs
 

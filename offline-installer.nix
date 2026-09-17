@@ -49,7 +49,7 @@ in {
   environment.systemPackages = [install-script];
   services.getty.autologinUser = pkgs.lib.mkForce "root";
   environment.interactiveShellInit = "${pkgs.lib.getExe install-script}";
-  services.getty.helpLine = pkgs.lib.mkForce "Run `install-${hostName}` from the command line to install aarch64-builder to a disk";
+  services.getty.helpLine = pkgs.lib.mkForce "Run `install-${hostName}` from the command line to install ${hostName} to a disk";
   isoImage.edition = hostName;
 
   # Include the system to install in the ISO's nix store
