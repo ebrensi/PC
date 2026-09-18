@@ -179,9 +179,17 @@ in {
     mpvConfig = pkgs.writeText "mpv.conf" ''
       hwdec=vaapi
     '';
+    alacrittyConfig = (pkgs.formats.toml {}).generate "alacritty.toml" {
+      general.live_config_reload = true;
+      env.term = "xterm-256";
+      window.decorations = "None";
+      window.dynamic_padding = true;
+    };
   in [
     "d  ${HOME}/.config/mpv          755 ${user} users -"
     "L+ ${HOME}/.config/mpv/mpv.conf 644 ${user} users - ${mpvConfig}"
+    "d  ${HOME}/.config/alacritty               755 ${user} users -"
+    "L+ ${HOME}/.config/alacritty/alacritty.toml 644 ${user} users - ${alacrittyConfig}"
   ];
 
   services.printing = {
