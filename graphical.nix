@@ -177,7 +177,7 @@ in {
   systemd.tmpfiles.rules = let
     HOME = "/home/${user}";
     mpvConfig = pkgs.writeText "mpv.conf" ''
-      hwdec=vaapi
+      hwdec=auto-safe
     '';
     alacrittyConfig = (pkgs.formats.toml {}).generate "alacritty.toml" {
       general.live_config_reload = true;
