@@ -44,6 +44,7 @@ in {
         gitui
         gh
         dev-scripts.tmx
+        dev-scripts.yay
         cheese
         claude-monitor
 
@@ -240,10 +241,7 @@ in {
       bind generic 9 @sh -c "echo -n %(commit) | xclip -selection c"
     '';
     # Convenient keyboard aliases
-    shellAliases = let
-      flake-path = "/home/${user}/dev/PC";
-    in {
-      yay = ''nixos-rebuild switch --flake ${flake-path} --sudo |& nom; running=$(uname -r); new=$(ls /run/current-system/kernel-modules/lib/modules/); if [ "$running" != "$new" ]; then echo ""; echo "Kernel changed: $running -> $new. Reboot to apply."; fi'';
+    shellAliases = {
       N = "sudo -E nnn -dH";
       del = "trash-put";
       wg = "sudo wg";

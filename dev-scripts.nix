@@ -156,4 +156,64 @@ in rec {
       esac
     done
   '';
+
+  yay = pkgs.writeShellScriptBin "yay" ''
+    # Build and activate this machine's config from the flake in ~/dev/PC.
+    #
+    # A live switch across a glibc version change breaks PAM for every process
+    # started before it: they dlopen the new pam_unix.so, which needs symbols
+    # their old libc lacks, so the COSMIC lock screen rejects every password.
+    # When glibc changes, default to installing the new system for next boot.
+    set -euo pipefail
+    flake=''${YAY_FLAKE:-$HOME/dev/PC}
+    host=$(hostname -s)
+
+    new=$(${nom} build "$flake#nixosConfigurations.$host.config.system.build.toplevel" \
+      --no-link --print-out-paths)
+
+    # major.minor of the glibc systemd links against, e.g. 2.42
+    glibc() {
+      nix-store -q --references "$(readlink -f "$1/systemd")" |
+        sed -n 's|.*-glibc-\([0-9]*\.[0-9]*\)-.*|\1|p'
+    }
+    oldGlibc=$(glibc /run/current-system)
+    newGlibc=$(glibc "$new")
+
+    action=switch
+    if [ "$oldGlibc" != "$newGlibc" ]; then
+      echo ""
+      echo "glibc changed: $oldGlibc -> $newGlibc."
+      echo "A live switch breaks login/unlock until reboot (PAM can't load under the old glibc)."
+      if [ -t 0 ]; then
+        action=$(${pkgs.gum}/bin/gum choose --header "Activate how?" boot switch cancel)
+      else
+        action=boot
+      fi
+    fi
+
+    # --no-reexec: nixos-rebuild's self-update step ignores --store-path and
+    # tries to evaluate <nixos-config>, which doesn't exist on a flake system.
+    case $action in
+      boot)
+        nixos-rebuild boot --store-path "$new" --no-reexec --sudo
+        echo ""
+        echo "Installed for next boot. Reboot to apply."
+        if [ -t 0 ] && ${pkgs.gum}/bin/gum confirm --default=false "Reboot now?"; then
+          systemctl reboot
+        fi
+        ;;
+      switch)
+        nixos-rebuild switch --store-path "$new" --no-reexec --sudo
+        running=$(uname -r)
+        newKernel=$(ls "$new/kernel-modules/lib/modules/")
+        if [ "$running" != "$newKernel" ]; then
+          echo ""
+          echo "Kernel changed: $running -> $newKernel. Reboot to apply."
+        fi
+        ;;
+      *)
+        exit 1
+        ;;
+    esac
+  '';
 }
