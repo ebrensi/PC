@@ -177,7 +177,6 @@
 
   # https://search.nixos.org/options?channel=unstable&query=programs
   programs = {
-    mosh.enable = true;
     yazi.enable = true;
     starship.enable = true;
     bat.enable = true;
@@ -223,6 +222,6 @@
       "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
     ];
   };
-  nix.nixPath = ["nixpkgs=${pkgs.path}"];
+  nix.settings.nix-path = ["nixpkgs=${pkgs.path}"];
   system.stateVersion = "25.05";
 }

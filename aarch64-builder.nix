@@ -185,7 +185,6 @@
   };
 
   programs = {
-    mosh.enable = true;
     starship.enable = true;
     bat.enable = true;
     git.enable = true;

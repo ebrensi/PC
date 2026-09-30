@@ -28,11 +28,8 @@ in {
       lib.filter (lib.meta.availableOn pkgs.stdenv.hostPlatform) [
         # https://search.nixos.org/packages?channel=unstable&
         micro
-        ghostty
         git-absorb
         git-open
-
-        heroku
 
         visidata
         glow
@@ -47,7 +44,6 @@ in {
         gitui
         gh
         dev-scripts.tmx
-        slack
         cheese
         claude-monitor
 
