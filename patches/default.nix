@@ -1,0 +1,69 @@
+# Registry of every local fix to a nixpkgs package. patches/module.nix turns
+# each entry into an overlay, and nags on rebuild once an entry's `checked`
+# date is more than a month behind the pinned nixpkgs.
+#
+# To review: run `check-patches` (from `nix develop`), drop entries that are no
+# longer needed, and bump `checked` on the ones that still are.
+#
+# Entry fields:
+#   checked   date (YYYY-MM-DD) the fix was last confirmed necessary
+#   dropWhen  "unpatched-builds": a build fix; check-patches builds the stock
+#               package and reports whether the fix can go.
+#             "upstream-fixed": a behavior fix; the stock package builds either
+#               way, so check `upstream` by hand.
+#   upstream  (upstream-fixed only) where to look for the fix
+#   override  prev: old: { ... } — passed to prev.<name>.overrideAttrs
+{
+  # abseil-cpp 20260817 requires C++20 (absl/types/compare.h uses
+  # std::partial_ordering), but ET's CMakeLists.txt hardcodes C++17, so the
+  # build dies in the precompiled header.
+  eternal-terminal = {
+    checked = "2026-09-30";
+    dropWhen = "unpatched-builds";
+    override = _: old: {
+      postPatch =
+        (old.postPatch or "")
+        + ''
+          substituteInPlace CMakeLists.txt \
+            --replace-fail "set(CMAKE_CXX_STANDARD 17)" "set(CMAKE_CXX_STANDARD 20)"
+        '';
+    };
+  };
+
+  # Same abseil C++20 break: mosh's configure.ac pins C++17, so its protobuf
+  # check fails. The vendored ax_cxx_compile_stdcxx.m4 predates C++20 support,
+  # so drop it for autoconf-archive's copy.
+  mosh = {
+    checked = "2026-09-30";
+    dropWhen = "unpatched-builds";
+    override = prev: old: {
+      nativeBuildInputs = old.nativeBuildInputs ++ [prev.autoconf-archive];
+      postPatch =
+        (old.postPatch or "")
+        + ''
+          rm m4/ax_cxx_compile_stdcxx.m4
+          substituteInPlace configure.ac \
+            --replace-fail "AX_CXX_COMPILE_STDCXX([17])" "AX_CXX_COMPILE_STDCXX([20])"
+        '';
+    };
+  };
+
+  # foot 1.27.0 crashes (SIGSEGV) when a key event arrives with no focused
+  # terminal. keyboard_key() passes seat->kbd_focus straight to
+  # key_press_release() without a NULL check, and key_press_release() then
+  # dereferences it (term->conf). fdm_shutdown() clears seat->kbd_focus as
+  # soon as a window is destroyed, so the key *release* that follows closing
+  # a window lands on a NULL term. cosmic-comp reliably delivers that
+  # release, so this fires on nearly every window close.
+  #
+  # In server mode the crash kills the server process, which takes *every*
+  # foot window down at once. Patch adds the missing NULL guards.
+  foot = {
+    checked = "2026-09-30";
+    dropWhen = "upstream-fixed";
+    upstream = "https://codeberg.org/dnkl/foot/src/branch/master/input.c (NULL check on seat->kbd_focus in keyboard_key)";
+    override = _: old: {
+      patches = (old.patches or []) ++ [./foot-null-kbd-focus.patch];
+    };
+  };
+}

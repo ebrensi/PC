@@ -33,6 +33,7 @@
           self.inputs.disko.nixosModules.disko
           self.inputs.agenix.nixosModules.default
           {nixpkgs.overlays = [self.inputs.claude-code-nix.overlays.default];}
+          ./patches/module.nix
           ./base.nix
           ./user-efrem.nix
         ];

@@ -129,4 +129,31 @@ in rec {
     tmux new-session -As "$SESSION_NAME"
     echo -ne "\033]0;$$(hostname -s):$SESSION_NAME\007"
   '';
+
+  check-patches = pkgs.writeShellScriptBin "check-patches" ''
+    # Report which entries in patches/default.nix are still needed against the
+    # pinned nixpkgs. Run from anywhere inside the repo.
+    set -euo pipefail
+    root=$(git rev-parse --show-toplevel)
+    stock="(builtins.getFlake \"$root\").inputs.nixpkgs.legacyPackages.\''${builtins.currentSystem}"
+    entries=$(nix eval --json --file "$root/patches" \
+      --apply 'builtins.mapAttrs (_: e: { inherit (e) checked dropWhen; upstream = e.upstream or ""; })')
+
+    for name in $(${pkgs.jq}/bin/jq -r 'keys[]' <<<"$entries"); do
+      get() { ${pkgs.jq}/bin/jq -r --arg n "$name" ".[\$n].$1" <<<"$entries"; }
+      case $(get dropWhen) in
+        unpatched-builds)
+          echo "== $name: building stock nixpkgs version..."
+          if nix build --no-link --impure --expr "$stock.$name" 2>/dev/null; then
+            echo "   DROP: builds without the patch. Remove it from patches/default.nix."
+          else
+            echo "   KEEP: stock build still fails. Bump 'checked'."
+          fi
+          ;;
+        upstream-fixed)
+          echo "== $name: check by hand: $(get upstream)"
+          ;;
+      esac
+    done
+  '';
 }

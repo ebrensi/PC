@@ -36,6 +36,7 @@ system-base                     base.nix + user-efrem.nix + disko + agenix
 - [dev-folders.nix](./dev-folders.nix) — clones my project repos into `~/dev` on activation
 - [micro.nix](./micro.nix) — `micro` editor config and colorscheme
 - [hmon.nix](./hmon.nix) — out-of-tree package derivation (`callPackage`d from `base.nix`)
+- [patches/](./patches/default.nix) — every local fix to a nixpkgs package, applied as overlays by `patches/module.nix`; rebuilds warn once a fix goes unchecked for 30 days of nixpkgs, and `check-patches` reports which can be dropped
 
 **Graphical**
 - [desktop-cosmic.nix](./desktop-cosmic.nix) — COSMIC desktop + greeter, system76-scheduler
