@@ -83,6 +83,16 @@
       };
       denyInterfaces = ["virbr0" "docker0" "lo"];
     };
+
+    kmscon = {
+     # This gives us a nicer tty with mouse control 
+      enable = true;
+      useXkbConfig = true; # reuse services.xserver.xkb layout
+      config = {
+        hwaccel = true; # optional; drop it if rendering glitches
+      };
+      extraOptions = "--term xterm-256color";   
+    };
   };
 
   # geoclue 2.8 added an [ip] source, but the NixOS geoclue2 module generates
