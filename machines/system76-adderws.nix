@@ -11,6 +11,7 @@
 }: {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
+    ../cpu-watch.nix
   ];
 
   boot = {
