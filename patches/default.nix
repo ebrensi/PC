@@ -18,7 +18,7 @@
   # std::partial_ordering), but ET's CMakeLists.txt hardcodes C++17, so the
   # build dies in the precompiled header.
   eternal-terminal = {
-    checked = "2026-09-30";
+    checked = "2026-10-01";
     dropWhen = "unpatched-builds";
     override = _: old: {
       postPatch =
@@ -26,24 +26,6 @@
         + ''
           substituteInPlace CMakeLists.txt \
             --replace-fail "set(CMAKE_CXX_STANDARD 17)" "set(CMAKE_CXX_STANDARD 20)"
-        '';
-    };
-  };
-
-  # Same abseil C++20 break: mosh's configure.ac pins C++17, so its protobuf
-  # check fails. The vendored ax_cxx_compile_stdcxx.m4 predates C++20 support,
-  # so drop it for autoconf-archive's copy.
-  mosh = {
-    checked = "2026-09-30";
-    dropWhen = "unpatched-builds";
-    override = prev: old: {
-      nativeBuildInputs = old.nativeBuildInputs ++ [prev.autoconf-archive];
-      postPatch =
-        (old.postPatch or "")
-        + ''
-          rm m4/ax_cxx_compile_stdcxx.m4
-          substituteInPlace configure.ac \
-            --replace-fail "AX_CXX_COMPILE_STDCXX([17])" "AX_CXX_COMPILE_STDCXX([20])"
         '';
     };
   };
