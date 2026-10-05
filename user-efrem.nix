@@ -264,7 +264,11 @@ in {
       flakeUpdate ()
       {
           local flake_path="/home/${user}/dev/PC"
+          local before
+          before=$(git -C "$flake_path" rev-parse HEAD)
           nix flake update --commit-lock-file --flake "$flake_path" || return
+          # Nothing updated means no lock-file commit; don't amend whatever HEAD is.
+          [ "$(git -C "$flake_path" rev-parse HEAD)" != "$before" ] || return 0
           local msg names dates summary
           msg=$(git -C "$flake_path" log -1 --pretty=%B)
           names=$(printf '%s\n' "$msg" | grep -oP "(?<=Updated input ')[^']+(?=':)")
