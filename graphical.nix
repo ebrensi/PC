@@ -28,13 +28,18 @@ in {
     yt-dlp # Youtube downloader
     waytrogen # wallpaper manager
     mpv-unwrapped
-    imagemagick
     wlr-randr
     # zoom
-    ffmpeg
-    gimp
-    shotcut
     libreoffice-stable
+
+    # Photo/image editing
+    imagemagick
+    photoflare
+    image-roll
+    pinta
+
+    # Video
+    ffmpeg
   ];
 
   programs = {
