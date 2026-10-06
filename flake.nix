@@ -74,25 +74,49 @@
           {networking.hostName = "m1";}
         ];
       };
+
+      # Orange Pi 5 Plus (RK3588) as a Kodi TV box.
+      #  Built from base.nix alone rather than system-base: user-efrem.nix brings
+      #  dev repos and agenix credentials that have no business on a TV.
+      tv = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit (self.inputs) agenix;
+          inherit pkgs-stable;
+        };
+        modules = [
+          self.inputs.disko.nixosModules.disko
+          ./patches/module.nix
+          ./base.nix
+          ./disko-laptop-ssd.nix
+          ./machines/orangepi-5-plus.nix
+          ./tv.nix
+          {networking.hostName = "tv";}
+        ];
+      };
     };
 
     packages.x86_64-linux = let
-      pkgs = import nixpkgs {system = "x86_64-linux";};
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        config.allowUnfree = true; # rkboot (Rockchip's USB loader blobs)
+      };
       platform = pkgs.stdenv.hostPlatform.system;
       keys = import ./secrets/public-keys.nix;
       dev-scripts-attrs = import ./dev-scripts.nix {inherit pkgs;};
-      installer-base = nixpkgs.lib.nixosSystem {
-        modules = [
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"
-          self.inputs.agenix.nixosModules.default
-          ./network-installer.nix
-          {
-            nixpkgs.hostPlatform = "x86_64-linux";
-            networking.wireless.networks.CiscoKid.pskRaw = "8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55";
-            users.users.root.openssh.authorizedKeys.keys = [keys.personal-ssh-key];
-          }
-        ];
-      };
+      mkNetworkInstaller = hostPlatform:
+        nixpkgs.lib.nixosSystem {
+          modules = [
+            "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"
+            self.inputs.agenix.nixosModules.default
+            ./network-installer.nix
+            {
+              nixpkgs.hostPlatform = hostPlatform;
+              networking.wireless.networks.CiscoKid.pskRaw = "8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55";
+              users.users.root.openssh.authorizedKeys.keys = [keys.personal-ssh-key];
+            }
+          ];
+        };
+      installer-base = mkNetworkInstaller "x86_64-linux";
       mkInstaller = hostname:
         (installer-base.extendModules {
           modules = [./offline-installer.nix];
@@ -106,15 +130,42 @@
         thinkpad = self.nixosConfigurations.thinkpad.config.system.build.toplevel;
         adder-ws = self.nixosConfigurations.adder-ws.config.system.build.toplevel;
         m1 = self.nixosConfigurations.m1.config.system.build.toplevel;
+        tv = self.nixosConfigurations.tv.config.system.build.toplevel;
 
         network-installer-iso = installer-base.config.system.build.isoImage;
+        # Boots on the Orange Pi 5 Plus once tv-flash-spi has put U-Boot on it.
+        #  Use a black USB 2.0 port: U-Boot does not boot from the blue USB 3.0 ones.
+        network-installer-aarch64-iso = (mkNetworkInstaller "aarch64-linux").config.system.build.isoImage;
+
+        # Write mainline U-Boot to the Orange Pi 5 Plus SPI flash over USB.
+        #  The board must be in MaskROM mode: unplug power, hold the MaskROM
+        #  button, plug in power, release; then connect its USB-C data port
+        #  (not the power port) to this machine. `lsusb` shows 2207:350b.
+        tv-flash-spi = pkgs.writeShellApplication {
+          name = "tv-flash-spi";
+          text = let
+            uboot = self.nixosConfigurations.tv.pkgs.ubootOrangePi5Plus;
+            rkdeveloptool = pkgs.lib.getExe pkgs.rkdeveloptool;
+          in ''
+            # Rockchip's USB loader: trains DRAM and runs the flashing stub
+            loader=$(find ${pkgs.rkboot}/bin -name 'rk3588_loader_v*.bin' | sort -V | tail -1)
+            image=${uboot}/u-boot-rockchip-spi.bin
+
+            sudo ${rkdeveloptool} ld
+            sudo ${rkdeveloptool} db "$loader"
+            sudo ${rkdeveloptool} cs 9 # 9 = SPI NOR
+            sudo ${rkdeveloptool} wl 0 "$image"
+            sudo ${rkdeveloptool} rd
+            echo "U-Boot written to SPI flash; the board is rebooting."
+          '';
+        };
 
         all-systems = pkgs.linkFarm "all-systems" (
           map (name: {
             name = name;
             path = self.nixosConfigurations.${name}.config.system.build.toplevel;
           })
-          ["thinkpad" "adder-ws" "m1"]
+          ["thinkpad" "adder-ws" "m1" "tv"]
         );
         test = pkgs.writeShellScriptBin "test" ''
           source ${dev-scripts-attrs.nix-config}

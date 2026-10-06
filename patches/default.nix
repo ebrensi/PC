@@ -62,4 +62,24 @@
       patches = (old.patches or []) ++ [./foot-null-kbd-focus.patch];
     };
   };
+
+  # Kodi 21's GBM backend picks a 10-bit (XRGB2101010) GUI framebuffer whenever
+  # the plane lists that format. RK3588's VOP2 lists it but only scans 10bpc
+  # out as AFBC, and Kodi allocates it linear, so every page flip is rejected
+  # ("Only support 10bpc format with afbc"; Kodi logs "Failed to get a new FBO")
+  # and the screen stays on the text console. Force the 8-bit GUI plane.
+  # tv-only: the overlay is lazy, so other hosts never evaluate it.
+  kodi-gbm = {
+    checked = "2026-10-05";
+    dropWhen = "upstream-fixed";
+    upstream = "Kodi 22 reworked GUI plane format selection (xbmc/xbmc b20ec4eb6c, xbmc/windowing/gbm/drm/DRMUtils.cpp)";
+    override = _: old: {
+      postPatch =
+        (old.postPatch or "")
+        + ''
+          substituteInPlace xbmc/windowing/gbm/drm/DRMUtils.cpp \
+            --replace-fail "if (m_gui_plane->SupportsFormat(DRM_FORMAT_XRGB2101010))" "if (false)"
+        '';
+    };
+  };
 }
