@@ -184,6 +184,16 @@ in {
     ];
   };
 
+  services.kmscon = {
+    # This gives us a nicer tty with mouse control
+    enable = true;
+    useXkbConfig = true; # reuse services.xserver.xkb layout
+    config = {
+      hwaccel = true; # optional; drop it if rendering glitches
+    };
+    extraOptions = "--term xterm-256color";
+  };
+
   # cups-browsed's auto-discovered "implicitclass" queues for these printers
   # fail to resolve a destination ("No suitable destination host found by
   # cups-browsed") even though the printers are reachable directly, so jobs
