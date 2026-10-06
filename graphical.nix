@@ -29,7 +29,6 @@ in {
     waytrogen # wallpaper manager
     mpv-unwrapped
     wlr-randr
-    # zoom
     libreoffice-stable
 
     # Photo/image editing
@@ -40,6 +39,13 @@ in {
 
     # Video
     ffmpeg
+    pwneye
+
+    # collaboration apps
+    teams-for-linux
+    slack-term
+    # slack
+    # zoom
   ];
 
   programs = {
