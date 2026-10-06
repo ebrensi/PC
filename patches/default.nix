@@ -30,6 +30,20 @@
     };
   };
 
+  # nixpkgs' buildUBoot now rewrites -Wno-graph_child_address to
+  # -Eno-node_name_not_empty for dtc 1.8, but nixos-apple-silicon filters out
+  # the DTC= make flag, so u-boot falls back to its bundled dtc 1.7.2, which
+  # rejects the unknown check. Put DTC= back to build with nixpkgs' dtc.
+  # m1-only: the overlay is lazy, so other hosts never evaluate it.
+  uboot-asahi = {
+    checked = "2026-10-05";
+    dropWhen = "upstream-fixed";
+    upstream = "https://github.com/nix-community/nixos-apple-silicon/issues/557 (stop filtering DTC= in uboot-asahi)";
+    override = prev: old: {
+      makeFlags = ["DTC=${prev.lib.getExe prev.buildPackages.dtc}"] ++ old.makeFlags;
+    };
+  };
+
   # foot 1.27.0 crashes (SIGSEGV) when a key event arrives with no focused
   # terminal. keyboard_key() passes seat->kbd_focus straight to
   # key_press_release() without a NULL check, and key_press_release() then
