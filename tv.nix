@@ -1,12 +1,17 @@
-# TV appliance profile: Kodi fullscreen on the HDMI output, no desktop.
+# TV appliance profile: a cast target, not a media center.
 #
-# Kodi draws straight to the display through DRM/GBM (no compositor), which is
-#  what lets it switch refresh rates to match the video and hand decoded frames
-#  to the display controller without copying them.
+# The screen sits on YouTube's TV interface (youtube.com/tv) in a fullscreen
+#  browser. Nothing is browsed on the TV itself; phones push to it:
+#   - YouTube app: Cast > "Link with TV code" (code from the TV's Settings page)
+#   - Jellyfin app: cast icon > "tv" (jellyfin-mpv-shim, plays in mpv on top)
 #
-# Media comes from the Jellyfin server on adder-ws via the JellyCon add-on;
-#  phones and laptops can push to Kodi over UPnP/DLNA, the Kodi web remote, or
-#  the "Send to Kodi" browser/phone share target.
+# First boot: jellyfin-mpv-shim logs in with Jellyfin Quick Connect. It logs a
+#  6-digit code (`journalctl -u tv-session | grep -i code`); approve it in the
+#  Jellyfin web UI under your user's Quick Connect page. The token is then kept
+#  in /var/lib/tv/.config/jellyfin-mpv-shim, and later starts skip this step.
+#
+# Both run inside a minimal sway session that owns tty1, the way a display
+#  manager would.
 {
   config,
   lib,
@@ -14,15 +19,40 @@
   ...
 }: let
   user = "efrem";
+  kiosk = "tv";
   public-keys = import ./secrets/public-keys.nix;
+  jellyfinServer = "http://adder-ws.local:8096"; # home-server.nix
 
-  kodi = pkgs.kodi-gbm.withPackages (k:
-    with k; [
-      jellycon # Jellyfin client that browses the server live (no local library sync)
-      youtube # needs your own YouTube API keys; see the add-on's setup wizard
-      sendtokodi # play links shared from a phone/browser
-      sponsorblock
-    ]);
+  # youtube.com/tv redirects desktop browsers to the regular site; a TV user
+  #  agent keeps the remote-friendly TV interface and its phone pairing. It is
+  #  in the format of YouTube's own TV runtime (Cobalt), whose "(Brand, Model,
+  #  Connection)" part names this screen in the phone's cast list. A Samsung
+  #  Tizen user agent here made it show up as "Samsung Smart TV".
+  tvUserAgent = "Mozilla/5.0 (X11; Linux aarch64) Cobalt/25.lts.30.1034943-gold (unlike Gecko) v8/8.8.278.17-jit gles Starboard/15, OrangePi_RK3588_2026/1.0 (Orange Pi, TV, Wired)";
+
+  browser = lib.escapeShellArgs [
+    (lib.getExe pkgs.chromium)
+    "--kiosk"
+    "--ozone-platform=wayland"
+    "--user-agent=${tvUserAgent}"
+    "--autoplay-policy=no-user-gesture-required"
+    "--no-first-run"
+    "--noerrdialogs"
+    "--disable-session-crashed-bubble"
+    "--password-store=basic"
+    "https://www.youtube.com/tv"
+  ];
+
+  swayConfig = pkgs.writeText "tv-sway.conf" ''
+    output * bg #000000 solid_color
+    default_border none
+    seat * hide_cursor 3000
+    # A cast from the Jellyfin app opens mpv; cover the browser while it plays.
+    #  When mpv exits, the browser is the only window left and fills the screen.
+    for_window [app_id="mpv"] fullscreen enable
+    exec ${browser}
+    exec ${lib.getExe pkgs.jellyfin-mpv-shim} --no-gui --quick-connect --server ${jellyfinServer}
+  '';
 in {
   # Admin account. This box deliberately skips user-efrem.nix: a TV has no use
   #  for the dev repos it clones or the AWS/Guardian credentials it decrypts.
@@ -35,27 +65,25 @@ in {
   security.sudo.wheelNeedsPassword = false;
   nix.settings.trusted-users = [user]; # so deploy-binaries can copy closures in
 
-  # Kodi runs as its own unprivileged user, owning tty1 the way a display
-  #  manager would. Its settings and add-on data live in /var/lib/kodi/.kodi.
-  users.users.kodi = {
-    isSystemUser = true;
-    group = "kodi";
-    home = "/var/lib/kodi";
-    createHome = true;
+  # The kiosk session's user. Browser profile (YouTube pairing) and the
+  #  Jellyfin login (~/.config/jellyfin-mpv-shim) live in its home.
+  users.users.${kiosk} = {
+    isNormalUser = true;
+    home = "/var/lib/${kiosk}";
     extraGroups = ["video" "render" "input" "audio"];
   };
-  users.groups.kodi = {};
 
-  systemd.services.kodi = {
-    description = "Kodi media center";
-    after = ["systemd-user-sessions.service" "network-online.target" "sound.target"];
+  systemd.services.tv-session = {
+    description = "TV kiosk session (sway + YouTube TV + Jellyfin cast target)";
+    after = ["systemd-user-sessions.service" "network-online.target"];
     wants = ["network-online.target"];
     conflicts = ["getty@tty1.service"];
     wantedBy = ["multi-user.target"];
+    environment.XDG_SESSION_TYPE = "wayland";
     serviceConfig = {
-      User = "kodi";
-      # A PAM login session on tty1 gives Kodi a logind seat, so it can
-      #  become DRM master and open input devices.
+      User = kiosk;
+      # A PAM login session on tty1 gives sway a logind seat (DRM master,
+      #  input devices) and starts the user's PipeWire.
       PAMName = "login";
       TTYPath = "/dev/tty1";
       TTYReset = true;
@@ -63,20 +91,54 @@ in {
       TTYVTDisallocate = true;
       StandardInput = "tty";
       StandardOutput = "journal";
-      ExecStart = "${kodi}/bin/kodi-standalone";
+      ExecStart = "${lib.getExe pkgs.sway} --config ${swayConfig}";
       Restart = "always";
       RestartSec = 2;
     };
   };
+  # tty1 belongs to the kiosk. Without this, logind spawns a login prompt there
+  #  whenever the VT frees up (e.g. mid-switch), and since the two conflict, the
+  #  prompt stops tv-session. Rescue logins: tty2 (Ctrl+Alt+F2) or ssh.
+  systemd.services."getty@tty1".enable = false;
+  programs.sway.enable = true; # session plumbing: polkit, xdg portals, fonts
 
-  # HDMI-CEC: lets the TV's own remote drive Kodi (libcec uses /dev/cec0).
-  services.udev.extraRules = ''
-    KERNEL=="cec[0-9]*", GROUP="video", MODE="0660"
-  '';
-
-  # Kodi talks to ALSA directly, which is what makes HDMI audio passthrough
-  #  (Dolby/DTS to a receiver) work; a sound server would sit in the way.
-  services.pipewire.enable = lib.mkForce false;
+  # Sound only over HDMI. The board's analog codec (headphone jack) is the
+  #  first ALSA card, so it would otherwise win the default-sink pick.
+  boot.blacklistedKernelModules = ["snd_soc_es8328" "snd_soc_es8328_i2c" "snd_soc_es8328_spi"];
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+    # One sink that feeds both HDMI ports, so sound follows the picture
+    #  whichever port the TV is plugged into.
+    extraConfig.pipewire."60-hdmi-both" = {
+      "context.modules" = [
+        {
+          name = "libpipewire-module-combine-stream";
+          args = {
+            "combine.mode" = "sink";
+            "node.name" = "hdmi_both";
+            "node.description" = "HDMI (both ports)";
+            "combine.props" = {
+              "audio.position" = ["FL" "FR"];
+              "priority.session" = 3000;
+              "priority.driver" = 3000;
+            };
+            "stream.rules" = [
+              {
+                matches = [
+                  {
+                    "media.class" = "Audio/Sink";
+                    "node.name" = "~alsa_output.*";
+                  }
+                ];
+                actions.create-stream = {};
+              }
+            ];
+          };
+        }
+      ];
+    };
+  };
 
   # Never sleep; the TV is the power switch.
   systemd.targets.sleep.enable = false;
@@ -84,23 +146,9 @@ in {
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
-  # Ports for services enabled in Kodi's own settings (Settings > Services).
-  #  mDNS (5353) is already open via avahi in base.nix.
-  networking.firewall = {
-    allowedTCPPorts = [
-      8080 # web interface + HTTP JSON-RPC (Kore/Yatse remotes)
-      9090 # JSON-RPC over WebSocket (remote apps' live updates)
-    ];
-    allowedUDPPorts = [
-      1900 # UPnP/SSDP discovery, so phones see Kodi as a cast target
-      9777 # EventServer (remote apps' button presses)
-    ];
-  };
-
-  environment.systemPackages = [
-    kodi # kodi-send etc. for scripting over ssh
-    pkgs.libcec # cec-client, for debugging the TV remote
-    pkgs.v4l-utils # v4l2-ctl --list-devices, to check the hardware decoders
-    pkgs.libdrm # modetest
+  environment.systemPackages = with pkgs; [
+    v4l-utils # v4l2-ctl --list-devices, to check the hardware decoders
+    libdrm # modetest
+    pulseaudio # pactl, for checking sinks over ssh
   ];
 }
