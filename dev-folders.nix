@@ -70,6 +70,7 @@ in {
   environment.shellAliases = {
     pc = "cd /home/${user}/dev/PC";
     ap = "cd /home/${user}/dev/Guardian/provision/nix";
+    hh = "cd /home/${user}/dev/heatflask";
   };
 
   systemd.services.setup-dev-folders = {
