@@ -141,13 +141,4 @@ in {
     substituters = ["https://cache.nixos-cuda.org"];
     trusted-public-keys = ["cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="];
   };
-
-  # Media server for the `tv` box (and phones). Libraries are added in the web
-  #  UI at http://adder-ws:8096. Transcoding uses the Intel iGPU: pick
-  #  Intel QuickSync (QSV) under Dashboard > Playback > Transcoding.
-  services.jellyfin = {
-    enable = true;
-    openFirewall = true;
-  };
-  users.users.jellyfin.extraGroups = ["video" "render"];
 }

@@ -1,16 +1,10 @@
 # TV appliance profile: a cast target, not a media center.
 #
 # The screen sits on YouTube's TV interface (youtube.com/tv) in a fullscreen
-#  browser. Nothing is browsed on the TV itself; phones push to it:
-#   - YouTube app: Cast > "Link with TV code" (code from the TV's Settings page)
-#   - Jellyfin app: cast icon > "tv" (jellyfin-mpv-shim, plays in mpv on top)
+#  browser. Nothing is browsed on the TV itself; phones push to it from the
+#  YouTube app: Cast > "Link with TV code" (code from the TV's Settings page).
 #
-# First boot: jellyfin-mpv-shim logs in with Jellyfin Quick Connect. It logs a
-#  6-digit code (`journalctl -u tv-session | grep -i code`); approve it in the
-#  Jellyfin web UI under your user's Quick Connect page. The token is then kept
-#  in /var/lib/tv/.config/jellyfin-mpv-shim, and later starts skip this step.
-#
-# Both run inside a minimal sway session that owns tty1, the way a display
+# It runs inside a minimal sway session that owns tty1, the way a display
 #  manager would.
 {
   config,
@@ -21,7 +15,6 @@
   user = "efrem";
   kiosk = "tv";
   public-keys = import ./secrets/public-keys.nix;
-  jellyfinServer = "http://adder-ws.local:8096"; # home-server.nix
 
   # youtube.com/tv redirects desktop browsers to the regular site; a TV user
   #  agent keeps the remote-friendly TV interface and its phone pairing. It is
@@ -47,11 +40,7 @@
     output * bg #000000 solid_color
     default_border none
     seat * hide_cursor 3000
-    # A cast from the Jellyfin app opens mpv; cover the browser while it plays.
-    #  When mpv exits, the browser is the only window left and fills the screen.
-    for_window [app_id="mpv"] fullscreen enable
     exec ${browser}
-    exec ${lib.getExe pkgs.jellyfin-mpv-shim} --no-gui --quick-connect --server ${jellyfinServer}
   '';
 in {
   # Admin account. This box deliberately skips user-efrem.nix: a TV has no use
@@ -65,8 +54,8 @@ in {
   security.sudo.wheelNeedsPassword = false;
   nix.settings.trusted-users = [user]; # so deploy-binaries can copy closures in
 
-  # The kiosk session's user. Browser profile (YouTube pairing) and the
-  #  Jellyfin login (~/.config/jellyfin-mpv-shim) live in its home.
+  # The kiosk session's user. The browser profile (YouTube pairing) lives in
+  #  its home.
   users.users.${kiosk} = {
     isNormalUser = true;
     home = "/var/lib/${kiosk}";
@@ -74,7 +63,7 @@ in {
   };
 
   systemd.services.tv-session = {
-    description = "TV kiosk session (sway + YouTube TV + Jellyfin cast target)";
+    description = "TV kiosk session (sway + YouTube TV)";
     after = ["systemd-user-sessions.service" "network-online.target"];
     wants = ["network-online.target"];
     conflicts = ["getty@tty1.service"];
