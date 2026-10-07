@@ -36,6 +36,20 @@
   hardware = {
     deviceTree.enable = true;
     deviceTree.name = "rockchip/rk3588-orangepi-5-plus.dtb";
+    # The RTC's open-drain INT line has no pull-up in the mainline DT, so it
+    #  floats low and the level-low IRQ fires ~4k times/s (plus ~25k/s I2C
+    #  interrupts from the handler polling the chip), all on CPU0.
+    deviceTree.overlays = [
+      {
+        name = "hym8563-int-pull-up";
+        dtsText = ''
+          /dts-v1/;
+          /plugin/;
+          / { compatible = "xunlong,orangepi-5-plus"; };
+          &hym8563_int { rockchip,pins = <0 8 0 &pcfg_pull_up>; };
+        '';
+      }
+    ];
     # RTL8125 ethernet firmware, and whatever WiFi card is in the M.2 E-key slot
     enableRedistributableFirmware = true;
     graphics.enable = true;
