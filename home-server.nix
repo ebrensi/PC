@@ -45,7 +45,7 @@ in {
       }
       {
         name = "phone";
-        publicKey = "Y5PxUuaIJi0emIQMkZW5EZDkSAY6Ed4ABAJdGlzpkTI=";
+        publicKey = "ULys3foSPbCr2WEPxKLSyc9L0+nMXWwyTG7zdpGsaXw=";
         allowedIPs = ["${prefix}3/128"];
       }
       {

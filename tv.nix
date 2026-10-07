@@ -49,7 +49,7 @@ in {
     isNormalUser = true;
     extraGroups = ["wheel" "video" "audio"];
     initialPassword = "password";
-    openssh.authorizedKeys.keys = with public-keys; [personal-ssh-key phone];
+    openssh.authorizedKeys.keys = with public-keys; [personal-ssh-key phone-ssh-key];
   };
   security.sudo.wheelNeedsPassword = false;
   nix.settings.trusted-users = [user]; # so deploy-binaries can copy closures in
@@ -139,5 +139,6 @@ in {
     v4l-utils # v4l2-ctl --list-devices, to check the hardware decoders
     libdrm # modetest
     pulseaudio # pactl, for checking sinks over ssh
+    powertop
   ];
 }

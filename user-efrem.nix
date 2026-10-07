@@ -60,7 +60,7 @@ in {
     openssh.authorizedKeys.keys = with public-keys; [
       personal-ssh-key
       AP-ssh-key
-      phone
+      phone-ssh-key
     ];
   };
   nix.settings.trusted-users = [user];
