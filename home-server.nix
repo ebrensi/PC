@@ -106,7 +106,6 @@ in {
     };
     machines = [
       ["m1" "aarch64-linux" 4 1000]
-      # ["j1" "aarch64-linux" 2 1] # Jetson - disabled, too slow/unreliable
     ];
   in
     map (args: mkBuilder (builtins.elemAt args 0) (builtins.elemAt args 1) (builtins.elemAt args 2) (builtins.elemAt args 3)) machines;
@@ -137,21 +136,6 @@ in {
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
-  # RTX 4050 Mobile — 6 GB VRAM.
-  #  Best options
-  #  qwen2.5:7b — best general-purpose model that fits comfortably
-  #  qwen2.5-coder:7b — if you want coding focus
-  #   ollama pull qwen2.5:7b
-  # ollama-cuda is broken in nixpkgs-unstable: cuda12.9-libcublas-12.9.1.4-static fails to build
-  # (same recurring pattern as the old cuda_compat missing-src bugs — no merged fix as of 2026-04-24).
-  # VK_ICD_FILENAMES forces the NVIDIA Vulkan ICD so PRIME offload doesn't fall back to Intel.
-  services.ollama = {
-    enable = true;
-    package = pkgs.ollama-vulkan;
-    # package = pkgs.ollama-cuda;
-    host = "0.0.0.0";
-    environmentVariables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
-  };
   # CUDA binary cache — avoids having to build/fetch CUDA redist packages from source
   nix.settings = {
     substituters = ["https://cache.nixos-cuda.org"];
@@ -166,55 +150,4 @@ in {
     openFirewall = true;
   };
   users.users.jellyfin.extraGroups = ["video" "render"];
-
-  # Configuration for Aider to work
-  environment.systemPackages = with pkgs; [opencode qwen-code];
-
-  environment.etc."opencode/opencode.json".text = builtins.toJSON {
-    "$schema" = "https://opencode.ai/config.json";
-    autoupdate = false;
-    # model = "anthropic/claude-sonnet-4-5";
-    # small_model = "ollama/qwen2.5-coder:7b";
-    model = "ollama/qwen2.5-coder:7b";
-    provider = {
-      anthropic.options.apiKey = "{env:ANTHROPIC_API_KEY}";
-      ollama = {
-        npm = "@ai-sdk/openai-compatible";
-        name = "Ollama";
-        options.baseURL = "http://localhost:11434/v1";
-        models."qwen2.5-coder:7b".name = "Qwen 2.5 Coder 7B";
-      };
-    };
-  };
-
-  environment.etc."qwen/settings.json".text = builtins.toJSON {
-    modelProviders.openai = [
-      {
-        id = "qwen2.5-coder:7b";
-        name = "Local qwen2.5-coder";
-        baseUrl = "http://localhost:11434/v1";
-        envKey = "OLLAMA_API_KEY";
-      }
-    ];
-    env.OLLAMA_API_KEY = "ollama";
-    security.auth.selectedType = "openai";
-    model.name = "qwen2.5-coder:7b";
-  };
-
-  systemd.tmpfiles.rules = [
-    "d  /home/${user}/.config/opencode 755 ${user} users -"
-    "L+ /home/${user}/.config/opencode/opencode.json 644 ${user} users - /etc/opencode/opencode.json"
-  ];
-
-  # qwen-code writes a version field back to settings.json, so it must be a
-  # real writable file — not a symlink into the read-only Nix store.
-  # Copy on every activation so nix config changes still propagate.
-  system.activationScripts.qwen-settings.text = ''
-    install -Dm644 /etc/qwen/settings.json /home/${user}/.qwen/settings.json
-    chown ${user}:users /home/${user}/.qwen/settings.json
-  '';
-  networking.firewall.allowedTCPPorts = [11434];
-  environment.sessionVariables = {
-    OLLAMA_API_BASE = "http://localhost:11434";
-  };
 }
