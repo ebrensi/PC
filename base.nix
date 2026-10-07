@@ -6,7 +6,18 @@
   #
   agenix,
   ...
-}: {
+}: let
+  # btop's GPU support is compiled in but finds its backends at runtime:
+  # NVIDIA via dlopen("libnvidia-ml.so") — needs /run/opengl-driver/lib in the
+  # runpath (cudaSupport only adds autoAddDriverRunpath, no CUDA toolkit);
+  # AMD via librocm_smi64.so (rocmSupport, x86_64 only); Intel via the i915
+  # perf PMU, which needs CAP_PERFMON (see security.wrappers.btop below).
+  # Mali (tv / Orange Pi) and Asahi (m1) GPUs aren't supported by btop at all.
+  btop = pkgs.btop.override {
+    cudaSupport = pkgs.stdenv.hostPlatform.isx86_64;
+    rocmSupport = pkgs.stdenv.hostPlatform.isx86_64;
+  };
+in {
   boot = {
     loader = {
       systemd-boot.enable = true;
@@ -174,6 +185,14 @@
     (pkgs.callPackage ./hmon.nix {})
     agenix.packages.${pkgs.stdenv.hostPlatform.system}.agenix
   ];
+
+  # /run/wrappers/bin precedes the system profile in PATH, so `btop` resolves here.
+  security.wrappers.btop = {
+    owner = "root";
+    group = "root";
+    capabilities = "cap_perfmon+ep";
+    source = lib.getExe btop;
+  };
 
   # https://search.nixos.org/options?channel=unstable&query=programs
   programs = {

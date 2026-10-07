@@ -140,5 +140,6 @@ in {
     libdrm # modetest
     pulseaudio # pactl, for checking sinks over ssh
     powertop
+    nvtopPackages.panthor
   ];
 }
