@@ -10,6 +10,10 @@ While the TV is off, the kiosk tab is parked on about:blank, which drops
 the stream and its bandwidth; when it comes back on, the tab returns to
 the TV home screen. The check is level-triggered, so a cast that lands
 while the screen is off is parked too.
+
+The HDMI outputs stay powered on. Powering them down with sway while the
+TV was off hard-froze the board (2026-10-08), most likely CEC touching
+the HDMI block after it lost its clocks, and saves under a watt anyway.
 """
 
 import glob
