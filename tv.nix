@@ -3,6 +3,7 @@
 # The screen sits on YouTube's TV interface (youtube.com/tv) in a fullscreen
 #  browser. Nothing is browsed on the TV itself; phones push to it from the
 #  YouTube app: Cast > "Link with TV code" (code from the TV's Settings page).
+#  Desktop Chrome finds it on the LAN via DIAL (tv-dial.py), like a smart TV.
 #
 # It runs inside a minimal sway session that owns tty1, the way a display
 #  manager would.
@@ -23,9 +24,17 @@
   #  Tizen user agent here made it show up as "Samsung Smart TV".
   tvUserAgent = "Mozilla/5.0 (X11; Linux aarch64) Cobalt/25.lts.30.1034943-gold (unlike Gecko) v8/8.8.278.17-jit gles Starboard/15, OrangePi_RK3588_2026/1.0 (Orange Pi, TV, Wired)";
 
+  # tv-dial steers the kiosk tab over the DevTools protocol (localhost only).
+  #  Chrome ignores --remote-debugging-port on its default profile directory,
+  #  hence the explicit one.
+  cdpPort = 9222;
+  dialPort = 56790;
+
   browser = lib.escapeShellArgs [
     (lib.getExe pkgs.chromium)
     "--kiosk"
+    "--user-data-dir=/var/lib/${kiosk}/chromium"
+    "--remote-debugging-port=${toString cdpPort}"
     "--ozone-platform=wayland"
     "--user-agent=${tvUserAgent}"
     "--autoplay-policy=no-user-gesture-required"
@@ -90,6 +99,38 @@ in {
   #  prompt stops tv-session. Rescue logins: tty2 (Ctrl+Alt+F2) or ssh.
   systemd.services."getty@tty1".enable = false;
   programs.sway.enable = true; # session plumbing: polkit, xdg portals, fonts
+
+  # DIAL server: makes the TV show up in desktop Chrome's cast list. Desktops
+  #  also need graphical.nix's firewall rule to receive the SSDP replies.
+  systemd.services.tv-dial = let
+    tv-dial = pkgs.writers.writePython3Bin "tv-dial" {
+      libraries = [pkgs.python3Packages.websockets];
+      flakeIgnore = ["E501"];
+    } (builtins.readFile ./tv-dial.py);
+  in {
+    description = "DIAL server for casting YouTube to the TV";
+    after = ["network-online.target"];
+    wants = ["network-online.target"];
+    wantedBy = ["multi-user.target"];
+    environment = {
+      FRIENDLY_NAME = "Efrem's OrangePi TV"; # shown in Chrome's cast list, to everyone on the LAN
+      HTTP_PORT = toString dialPort;
+      CDP_PORT = toString cdpPort;
+    };
+    serviceConfig = {
+      ExecStart = "${tv-dial}/bin/tv-dial";
+      Restart = "always";
+      RestartSec = 2;
+      DynamicUser = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      NoNewPrivileges = true;
+    };
+  };
+  networking.firewall = {
+    allowedUDPPorts = [1900]; # SSDP M-SEARCH
+    allowedTCPPorts = [dialPort];
+  };
 
   # Sound only over HDMI. The board's analog codec (headphone jack) is the
   #  first ALSA card, so it would otherwise win the default-sink pick.

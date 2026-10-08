@@ -6,6 +6,15 @@
 }: let
   user = "efrem";
 in {
+  # Let Chrome discover DIAL cast targets (e.g. the tv box, Rokus). It
+  #  multicasts an SSDP M-SEARCH and devices answer by unicast from their own
+  #  address, which conntrack can't relate to the multicast query, so the
+  #  firewall would drop every reply.
+  networking.firewall.extraCommands = ''
+    iptables -A nixos-fw -p udp --sport 1900 --dport 32768:60999 \
+      -s 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16 -j nixos-fw-accept
+  '';
+
   environment.systemPackages = with pkgs; [
     (google-chrome.override {
       commandLineArgs = lib.concatStringsSep " " [
