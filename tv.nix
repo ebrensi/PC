@@ -127,6 +127,30 @@ in {
       NoNewPrivileges = true;
     };
   };
+  # Parks the kiosk tab on a blank page while the TV is off (HDMI-CEC), so
+  #  nobody streams YouTube to a dark screen.
+  systemd.services.tv-power-watch = let
+    tv-power-watch = pkgs.writers.writePython3Bin "tv-power-watch" {
+      libraries = [pkgs.python3Packages.websockets];
+      flakeIgnore = ["E501"];
+    } (builtins.readFile ./tv-power-watch.py);
+  in {
+    description = "Stop YouTube while the TV is off";
+    wantedBy = ["multi-user.target"];
+    path = [pkgs.v4l-utils]; # cec-ctl
+    environment.CDP_PORT = toString cdpPort;
+    serviceConfig = {
+      ExecStart = "${tv-power-watch}/bin/tv-power-watch";
+      Restart = "always";
+      RestartSec = 10;
+      DynamicUser = true;
+      SupplementaryGroups = ["video"]; # /dev/cec*
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      NoNewPrivileges = true;
+    };
+  };
+
   networking.firewall = {
     allowedUDPPorts = [1900]; # SSDP M-SEARCH
     allowedTCPPorts = [dialPort];
