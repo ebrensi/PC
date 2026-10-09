@@ -61,7 +61,7 @@ in {
     openssh.authorizedKeys.keys = with public-keys; [personal-ssh-key phone-ssh-key];
   };
   security.sudo.wheelNeedsPassword = false;
-  nix.settings.trusted-users = [user]; # so deploy-binaries can copy closures in
+  nix.settings.trusted-users = [user]; # so deploy can copy closures in
 
   # The kiosk session's user. The browser profile (YouTube pairing) lives in
   #  its home.
@@ -127,7 +127,7 @@ in {
       NoNewPrivileges = true;
     };
   };
-  # Parks the kiosk tab on a blank page while the TV is off (HDMI-CEC), so
+  # Parks the kiosk tab on a black page while the TV is off (HDMI-CEC), so
   #  nobody streams YouTube to a dark screen.
   systemd.services.tv-power-watch = let
     tv-power-watch = pkgs.writers.writePython3Bin "tv-power-watch" {

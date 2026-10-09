@@ -6,8 +6,10 @@ CEC poll to logical address 0 while it is on and ignores it in standby.
 (This needs nothing beyond the TV's CEC hardware; with SimpLink off it
 acks but answers no requests, so a power-status query would not do.)
 
-While the TV is off, the kiosk tab is parked on about:blank, which drops
-the stream and its bandwidth; when it comes back on, the tab returns to
+While the TV is off, the kiosk tab is parked on a black page, which drops
+the stream and its bandwidth (about:blank would too, but it is white, and
+that glares from the screen when the TV comes back on until the next poll
+notices); when it comes back on, the tab returns to
 the TV home screen. The check is level-triggered, so a cast that lands
 while the screen is off is parked too.
 
@@ -30,7 +32,8 @@ TV_URL = os.environ.get("TV_URL", "https://www.youtube.com/tv")
 OSD_NAME = os.environ.get("OSD_NAME", "TV-Pi")
 INTERVAL = 30  # seconds between polls
 OFF_AFTER = 2  # consecutive unacked polls before the TV counts as off
-PARKED = "about:blank"
+# No spaces, quotes or "#", so Chrome reports the URL back unchanged.
+PARKED = "data:text/html,<html style=background:black>"
 
 
 def log(msg):
@@ -91,7 +94,8 @@ def main():
             last = on
         try:
             target = page()
-            parked = target["url"] == PARKED
+            # about:blank is where older versions of this parked the tab.
+            parked = target["url"] in (PARKED, "about:blank")
             if not on and not parked:
                 log(f"parking {target['url']}")
                 navigate(target, PARKED)
