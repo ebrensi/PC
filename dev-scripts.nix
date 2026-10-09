@@ -62,6 +62,7 @@ in rec {
     # NIX_SSHOPTS="$sshOpts" nix-copy-closure -s --gzip --to "$host" "$storePath"
     echo "Done Copying."
   '';
+
   deploy-binaries = pkgs.writeShellScriptBin "deploy-binaries" ''
     # Build toplevel of an arbitrary flake path locally, copy the closure it directly to a remote machine,
     #  and activate it there. Use this script to update the NixOS system already running on a remote machine,
@@ -87,31 +88,22 @@ in rec {
     ssh $sshOpts "$host" "sudo nix-env -p /nix/var/nix/profiles/system --set $system" || exit 1
     ssh $sshOpts "$host" "sudo $system/bin/switch-to-configuration switch"
   '';
+
   apply = pkgs.writeShellScriptBin "apply" ''
     storePath=$(realpath $1)
     sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
     sudo $storePath/bin/switch-to-configuration switch
   '';
-  remote-build = pkgs.writeShellScriptBin "remote-build" ''
-    # Build toplevel of an arbitrary flake path *on* a remote machine and return the store path.
+
+  deploy = pkgs.writeShellScriptBin "remote-build-deploy" ''
+    # Build toplevel system closure of an arbitrary flake path on a remote machine, and switch to it.
     flakeAttr="$1"
-    dest="$2"
-    echo "Building $flakeAttr on the machine at $dest" >&2
-    flakePath="''${flakeAttr}.config.system.build.toplevel"
+    dest=''${2:-"$1.local"}
+    flakePath=".#nixosConfigurations.''${flakeAttr}.config.system.build.toplevel"
     storePath=$(${nom} build --eval-store auto --store ssh-ng://$dest $flakePath --print-out-paths) || {
       echo "Failed to build system closure on remote machine" >&2
       exit 1
     }
-    echo "Built $storePath on nix store at $dest" >&2
-    echo $storePath
-  '';
-
-  remote-build-deploy = pkgs.writeShellScriptBin "remote-build-deploy" ''
-    # Build toplevel system closure of an arbitrary flake path on a remote machine, and switch to it.
-    flakeAttr="$1"
-    dest="$2"
-    flakePath="''${flakeAttr}.config.system.build.toplevel"
-    storePath=$(${remote-build}/bin/* $flakeAttr $dest)
     echo "Switching to $storePath on nix store at $dest" >&2
     sshOpts="${sshOpts}"
     ssh $sshOpts $dest "sudo nix-env -p /nix/var/nix/profiles/system --set $storePath"
