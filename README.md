@@ -79,9 +79,7 @@ on `$PATH`:
 |---|---|
 | `apply <store-path>` | Set the system profile to a store path and switch to it |
 | `copy-to <host:port> <store-path>` | `nix copy` a closure straight to a remote machine |
-| `deploy-binaries <flakeAttr> <host:port>` | Build locally, copy the closure over, activate remotely |
-| `remote-build <flakeAttr> <host:port>` | Build a system closure *on* the remote machine, print the store path |
-| `remote-build-deploy <flakeAttr> <host:port>` | Same, then activate it there |
+| `deploy [-b] <flakeAttr> [host:port]` | Build a system closure on the remote machine (`-b`: build here and copy it over) and activate it there; host defaults to `<flakeAttr>.local` |
 | `install-direct <flakeAttr> <host:port>` | Full `nixos-anywhere` install (prompts before formatting the disk) |
 | `tmx [name]` | Create/attach a named tmux session |
 
@@ -104,7 +102,7 @@ sudo nixos-rebuild switch --flake .#<hostname>
 Deploy to another machine without making it build anything:
 
 ```bash
-deploy-binaries .#nixosConfigurations.thinkpad thinkpad
+deploy -b thinkpad thinkpad
 ```
 
 ## Build outputs

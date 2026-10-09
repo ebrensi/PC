@@ -63,51 +63,59 @@ in rec {
     echo "Done Copying."
   '';
 
-  deploy-binaries = pkgs.writeShellScriptBin "deploy-binaries" ''
-    # Build toplevel of an arbitrary flake path locally, copy the closure it directly to a remote machine,
-    #  and activate it there. Use this script to update the NixOS system already running on a remote machine,
-    #  without using the remote cache.
-    # Usage: deploy-binaries <flakePath> <host:port>
-
-    source ${nix-config}
-
-    flakePath=$1
-    hostAndPort=$2
-    IFS=':' read -r host port <<< "$hostAndPort"
-    sshOpts="${sshOpts}"
-    [ -n "$port" ] && sshOpts="$sshOpts -p $port"
-
-    system=$(${nom} build --no-link --print-out-paths .#nixosConfigurations.$flakePath.config.system.build.toplevel) || {
-      echo "Failed to build system closure"
-      exit 1
-    }
-    ${copy-to}/bin/copy-to "$hostAndPort" "$system" || {
-      echo "Failed to copy system closure to remote machine"
-      exit 1
-    }
-    ssh $sshOpts "$host" "sudo nix-env -p /nix/var/nix/profiles/system --set $system" || exit 1
-    ssh $sshOpts "$host" "sudo $system/bin/switch-to-configuration switch"
-  '';
-
   apply = pkgs.writeShellScriptBin "apply" ''
     storePath=$(realpath $1)
     sudo nix-env -p /nix/var/nix/profiles/system --set $storePath
     sudo $storePath/bin/switch-to-configuration switch
   '';
 
-  deploy = pkgs.writeShellScriptBin "remote-build-deploy" ''
-    # Build toplevel system closure of an arbitrary flake path on a remote machine, and switch to it.
-    flakeAttr="$1"
-    dest=''${2:-"$1.local"}
-    flakePath=".#nixosConfigurations.''${flakeAttr}.config.system.build.toplevel"
-    storePath=$(${nom} build --eval-store auto --store ssh-ng://$dest $flakePath --print-out-paths) || {
-      echo "Failed to build system closure on remote machine" >&2
+  deploy = pkgs.writeShellScriptBin "deploy" ''
+    # Build the toplevel system closure of a nixosConfiguration and switch to it.
+    #  By default the remote machine builds it; with -b it is built here and
+    #  the closure copied over, so the remote machine builds nothing.
+    # Usage: deploy [-b] <flakeAttr> [host[:port]]   (host defaults to <flakeAttr>.local)
+    usage() {
+      echo "Usage: deploy [-b] <flakeAttr> [host[:port]]" >&2
       exit 1
     }
-    echo "Switching to $storePath on nix store at $dest" >&2
+    buildLocal=
+    while getopts "b" opt; do
+      case "$opt" in
+        b) buildLocal=1 ;;
+        *) usage ;;
+      esac
+    done
+    shift $((OPTIND - 1))
+    [ $# -ge 1 ] && [ $# -le 2 ] || usage
+
+    flakeAttr="$1"
+    dest="''${2:-$1.local}"
+    IFS=':' read -r host port <<< "$dest"
     sshOpts="${sshOpts}"
-    ssh $sshOpts $dest "sudo nix-env -p /nix/var/nix/profiles/system --set $storePath"
-    ssh $sshOpts $dest "sudo $storePath/bin/switch-to-configuration switch"
+    [ -n "$port" ] && sshOpts="$sshOpts -p $port"
+    flakePath=".#nixosConfigurations.$flakeAttr.config.system.build.toplevel"
+
+    if [ -n "$buildLocal" ]; then
+      source ${nix-config}
+      storePath=$(${nom} build --no-link --print-out-paths "$flakePath") || {
+        echo "Failed to build system closure" >&2
+        exit 1
+      }
+      ${copy-to}/bin/copy-to "$dest" "$storePath" || {
+        echo "Failed to copy system closure to $dest" >&2
+        exit 1
+      }
+    else
+      storePath=$(NIX_SSHOPTS="$sshOpts" ${nom} build --no-link --print-out-paths \
+        --eval-store auto --store "ssh-ng://$host" "$flakePath") || {
+        echo "Failed to build system closure on $dest" >&2
+        exit 1
+      }
+    fi
+
+    echo "Switching to $storePath on $dest" >&2
+    ssh $sshOpts "$host" "sudo nix-env -p /nix/var/nix/profiles/system --set $storePath" || exit 1
+    ssh $sshOpts "$host" "sudo $storePath/bin/switch-to-configuration switch"
   '';
 
   tmx = pkgs.writeShellScriptBin "tmx" ''
