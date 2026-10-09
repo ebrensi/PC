@@ -76,7 +76,7 @@ in rec {
     sshOpts="${sshOpts}"
     [ -n "$port" ] && sshOpts="$sshOpts -p $port"
 
-    system=$(${nom} build --no-link --print-out-paths $flakePath.config.system.build.toplevel) || {
+    system=$(${nom} build --no-link --print-out-paths .#nixosConfigurations.$flakePath.config.system.build.toplevel) || {
       echo "Failed to build system closure"
       exit 1
     }
