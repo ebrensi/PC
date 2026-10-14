@@ -5,6 +5,27 @@
   ...
 }: let
   user = "efrem";
+
+  # User service that mounts rclone remote `remote:` at ~/`dir`.
+  rcloneMount = remote: dir: label: {
+    description = "Mount ${label} via rclone";
+    wantedBy = ["default.target"];
+    after = ["network-online.target"];
+    unitConfig.ConditionPathExists = "%h/.config/rclone/rclone.conf";
+    serviceConfig = {
+      Type = "notify";
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/${dir}";
+      ExecStart = ''
+        ${pkgs.rclone}/bin/rclone mount ${remote}: %h/${dir} \
+          --vfs-cache-mode full --vfs-cache-max-size 10G \
+          --dir-cache-time 1h --poll-interval 1m
+      '';
+      ExecStop = "/run/wrappers/bin/fusermount3 -u %h/${dir}";
+      Restart = "on-failure";
+      RestartSec = "10s";
+      Environment = "PATH=/run/wrappers/bin"; # rclone needs the setuid fusermount3
+    };
+  };
 in {
   # Let Chrome discover DIAL cast targets (e.g. the tv box, Rokus). It
   #  multicasts an SSDP M-SEARCH and devices answer by unicast from their own
@@ -25,6 +46,7 @@ in {
       ];
     })
     alacritty
+    rclone # cloud storage mounts, see rcloneMount
     libnotify # notify-send; foot uses it for bell notifications
 
     # AI coding tools
@@ -174,6 +196,13 @@ in {
       ];
     };
   };
+
+  programs.fuse.userAllowOther = true; # optional; only needed for --allow-other
+
+  # Cloud storage mounts. Each remote must first be created per-machine with
+  #  `rclone config` (the OAuth token lives in ~/.config/rclone/rclone.conf).
+  systemd.user.services.gdrive-mount = rcloneMount "gdrive" "GoogleDrive" "Google Drive";
+  systemd.user.services.dropbox-mount = rcloneMount "dropbox" "Dropbox" "Dropbox";
 
   systemd.tmpfiles.rules = let
     HOME = "/home/${user}";
