@@ -6,7 +6,8 @@
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-apple-silicon.url = "github:nix-community/nixos-apple-silicon";
+    # Pin the branch: upstream's default branch was switched to a stale `ci-test` (2026-10).
+    nixos-apple-silicon.url = "github:nix-community/nixos-apple-silicon/main";
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";

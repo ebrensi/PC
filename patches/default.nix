@@ -14,38 +14,8 @@
 #   upstream  (upstream-fixed only) where to look for the fix
 #   override  prev: old: { ... } — passed to prev.<name>.overrideAttrs
 {
-  # abseil-cpp 20260817 requires C++20 (absl/types/compare.h uses
-  # std::partial_ordering), but ET's CMakeLists.txt hardcodes C++17, so the
-  # build dies in the precompiled header.
-  eternal-terminal = {
-    checked = "2026-10-01";
-    dropWhen = "unpatched-builds";
-    override = _: old: {
-      postPatch =
-        (old.postPatch or "")
-        + ''
-          substituteInPlace CMakeLists.txt \
-            --replace-fail "set(CMAKE_CXX_STANDARD 17)" "set(CMAKE_CXX_STANDARD 20)"
-        '';
-    };
-  };
-
-  # nixpkgs' buildUBoot now rewrites -Wno-graph_child_address to
-  # -Eno-node_name_not_empty for dtc 1.8, but nixos-apple-silicon filters out
-  # the DTC= make flag, so u-boot falls back to its bundled dtc 1.7.2, which
-  # rejects the unknown check. Put DTC= back to build with nixpkgs' dtc.
-  # m1-only: the overlay is lazy, so other hosts never evaluate it.
-  uboot-asahi = {
-    checked = "2026-10-05";
-    dropWhen = "upstream-fixed";
-    upstream = "https://github.com/nix-community/nixos-apple-silicon/issues/557 (stop filtering DTC= in uboot-asahi)";
-    override = prev: old: {
-      makeFlags = ["DTC=${prev.lib.getExe prev.buildPackages.dtc}"] ++ old.makeFlags;
-    };
-  };
-
-  # foot 1.27.0 crashes (SIGSEGV) when a key event arrives with no focused
-  # terminal. keyboard_key() passes seat->kbd_focus straight to
+  # foot 1.27.0 (still unfixed in 1.28.0) crashes (SIGSEGV) when a key event
+  # arrives with no focused terminal. keyboard_key() passes seat->kbd_focus straight to
   # key_press_release() without a NULL check, and key_press_release() then
   # dereferences it (term->conf). fdm_shutdown() clears seat->kbd_focus as
   # soon as a window is destroyed, so the key *release* that follows closing
@@ -55,7 +25,7 @@
   # In server mode the crash kills the server process, which takes *every*
   # foot window down at once. Patch adds the missing NULL guards.
   foot = {
-    checked = "2026-09-30";
+    checked = "2026-10-15";
     dropWhen = "upstream-fixed";
     upstream = "https://codeberg.org/dnkl/foot/src/branch/master/input.c (NULL check on seat->kbd_focus in keyboard_key)";
     override = _: old: {

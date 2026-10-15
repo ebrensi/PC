@@ -206,7 +206,11 @@ in {
     wavemon.enable = true;
     usbtop.enable = true;
     htop.enable = true;
-    iotop.enable = true;
+    iotop = {
+      enable = true;
+      # Default pkgs.iotop is a Python script; security.wrappers now refuses non-ELF targets.
+      package = pkgs.iotop-c;
+    };
     fzf.fuzzyCompletion = true;
     tmux.enable = true;
     neovim = {
