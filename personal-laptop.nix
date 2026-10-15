@@ -1,10 +1,33 @@
 {
   config,
+  lib,
   pkgs,
   modulesPath,
   ...
 }: {
   imports = [./wireguard-peer.nix];
+
+  # Home server's home dir over sshfs, authenticating through the user's
+  #  ssh-agent and the `adder-ws` ssh host config.
+  systemd.user.services.adder-ws-mount = {
+    description = "Mount adder-ws home via sshfs";
+    wantedBy = ["default.target"];
+    after = ["network-online.target"];
+    serviceConfig = {
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/AdderWS";
+      ExecStart = ''
+        ${pkgs.sshfs}/bin/sshfs -f adder-ws: %h/AdderWS \
+          -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,BatchMode=yes
+      '';
+      ExecStop = "/run/wrappers/bin/fusermount3 -u %h/AdderWS";
+      Restart = "on-failure";
+      RestartSec = "10s";
+      Environment = [
+        "SSH_AUTH_SOCK=%t/ssh-agent" # socket from programs.ssh.startAgent
+        "PATH=/run/wrappers/bin:${lib.makeBinPath [pkgs.openssh]}"
+      ];
+    };
+  };
 
   # This is what would go in /etc/ssh/ssh_config in a traditional linux distro
   programs.ssh.extraConfig = ''
