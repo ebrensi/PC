@@ -25,6 +25,11 @@
   # SSD optimization
   services.fstrim.enable = true;
 
+  # Thunderbolt security level is "user": devices (e.g. Dell WD19TB dock) must
+  # be authorized before their USB/ethernet tunnels work. bolt manages that and
+  # remembers enrolled devices (see `boltctl list`).
+  services.hardware.bolt.enable = true;
+
   hardware = {
     enableRedistributableFirmware = true;
     cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
