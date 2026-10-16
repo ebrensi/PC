@@ -14,13 +14,13 @@
     unitConfig.ConditionPathExists = "%h/.config/rclone/rclone.conf";
     serviceConfig = {
       Type = "notify";
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/${dir}";
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/Mounts/${dir}";
       ExecStart = ''
-        ${pkgs.rclone}/bin/rclone mount ${remote}: %h/${dir} \
+        ${pkgs.rclone}/bin/rclone mount ${remote}: %h/Mounts/${dir} \
           --vfs-cache-mode full --vfs-cache-max-size 10G \
           --dir-cache-time 1h --poll-interval 1m
       '';
-      ExecStop = "/run/wrappers/bin/fusermount3 -u %h/${dir}";
+      ExecStop = "/run/wrappers/bin/fusermount3 -u %h/Mounts/${dir}";
       Restart = "on-failure";
       RestartSec = "10s";
       Environment = "PATH=/run/wrappers/bin"; # rclone needs the setuid fusermount3
@@ -77,6 +77,10 @@ in {
     slack-term
     # slack
     # zoom
+
+    wl-clipboard
+    gst_all_1.gstreamer
+    gst_all_1.gst-plugins-base
   ];
 
   programs = {
@@ -368,4 +372,52 @@ in {
     docker.enable = true;
     libvirtd.enable = true;
   };
+
+  # Config for thousandfold app
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+    package = pkgs.appimage-run.override {
+      extraPkgs = p: [
+        p.elfutils
+        p.zstd
+        p.zlib
+        p.openssl
+        p.libffi
+        p.expat
+        p.libdrm
+        p.mesa
+        p.libgbm
+        p.libepoxy
+        p.cups
+        p.libxkbcommon
+        p.at-spi2-atk
+        p.gnutls
+        p.libproxy
+        p.icu74
+        p.webkitgtk_4_1
+        p.libsoup_3
+        p.librsvg
+        p.gst_all_1.gstreamer
+        p.gst_all_1.gst-plugins-base
+        p.gst_all_1.gst-plugins-good
+        p.libayatana-appindicator
+      ];
+    };
+  };
+  # The AppImage's launcher shim unsets all GST_PLUGIN_* vars, and nixpkgs'
+  # gstreamer only searches its own store dir, so WebKit finds no plugins
+  # (blank window). GStreamer also scans ~/.local/share/gstreamer-1.0/plugins
+  # by default, so point that at a merged plugin dir.
+  systemd.user.tmpfiles.users.${user}.rules = let
+    gstPlugins = pkgs.symlinkJoin {
+      name = "gst-plugins-merged";
+      paths = with pkgs.gst_all_1; [gst-plugins-base gst-plugins-good];
+    };
+  in [
+    "d %h/.local/share/gstreamer-1.0 0755 - - -"
+    "L+ %h/.local/share/gstreamer-1.0/plugins - - - - ${gstPlugins}/lib/gstreamer-1.0"
+  ];
+  programs.nix-ld.enable = true;
+  xdg.portal.enable = true;
 }

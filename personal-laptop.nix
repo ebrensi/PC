@@ -14,12 +14,12 @@
     wantedBy = ["default.target"];
     after = ["network-online.target"];
     serviceConfig = {
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/AdderWS";
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/Mounts/AdderWS";
       ExecStart = ''
-        ${pkgs.sshfs}/bin/sshfs -f adder-ws: %h/AdderWS \
-          -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,BatchMode=yes
+        ${pkgs.sshfs}/bin/sshfs -f adder-ws: %h/Mounts/AdderWS \
+          -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,ConnectTimeout=10,BatchMode=yes
       '';
-      ExecStop = "/run/wrappers/bin/fusermount3 -u %h/AdderWS";
+      ExecStop = "/run/wrappers/bin/fusermount3 -u %h/Mounts/AdderWS";
       Restart = "on-failure";
       RestartSec = "10s";
       Environment = [
