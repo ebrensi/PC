@@ -18,7 +18,9 @@
   # Use systemd SSH agent (reliable and simple)
   programs.ssh.startAgent = lib.mkForce true;
   services.gnome.gcr-ssh-agent.enable = lib.mkForce false;
-  services.gnome.gnome-keyring.enable = lib.mkForce false;
+  # Secret Service provider (libsecret). SSH is handled by programs.ssh.startAgent;
+  # gnome-keyring >= 46 no longer ships its own ssh component, so no conflict.
+  services.gnome.gnome-keyring.enable = lib.mkForce true;
 
   # Provides NM secret agent needed for GUI-based WiFi credential entry
   programs.nm-applet.enable = true;
