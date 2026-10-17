@@ -45,6 +45,7 @@ in {
         "--enable-zero-copy"
       ];
     })
+    (callPackage ./carbonyl.nix {}) # Chromium in the terminal
     alacritty
     rclone # cloud storage mounts, see rcloneMount
     libnotify # notify-send; foot uses it for bell notifications
