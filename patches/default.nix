@@ -32,4 +32,55 @@
       patches = (old.patches or []) ++ [./foot-null-kbd-focus.patch];
     };
   };
+
+  # etserver 7.0.0 busy-loops a thread at 100% CPU, forever, for every session
+  # whose client drops uncleanly while forwarding is active ($SSH_AUTH_SOCK
+  # agent forwarding counts). Dead /tmp/et_forward_sock_* fds stay readable, so
+  # runTerminal()'s select/accept loop never blocks. Hit on adder-ws roughly
+  # every two weeks. Upstream issue #795, fixed on master by #809 (epoll) and
+  # #810 (FD cleanup), but unreleased; neither applies to 7.0.0, so build master.
+  #
+  # Master needs its submodules and none of nixpkgs' patches (both are already
+  # upstream). Drop this once nixpkgs ships a release newer than 7.0.0.
+  eternal-terminal = {
+    checked = "2026-10-16";
+    dropWhen = "upstream-fixed";
+    upstream = "https://github.com/MisterTea/EternalTerminal/releases (a release after 7.0.0 contains #809 + #810)";
+    override = prev: _: {
+      version = "7.0.0-unstable-2026-10-13";
+      src = prev.fetchFromGitHub {
+        owner = "MisterTea";
+        repo = "EternalTerminal";
+        rev = "7eb237e6d9822b674f4a527924b5f09117659321";
+        fetchSubmodules = true;
+        hash = "sha256-dWtEDRSGTHgXIFiL82lK5AxrTaM/v/SIStHGwPcEQ3c=";
+      };
+      patches = [];
+      # Master still reports itself as `et version 7.0.0`.
+      preVersionCheck = "version=7.0.0";
+      # Catch2 now comes from the submodule.
+      preBuild = "";
+      preCheck = ''
+        export HOME=$(mktemp -d)
+      '';
+      # Skipped tests can't pass in the build sandbox: the storage-path checks
+      # reject '/' because it isn't root-owned there, and the PTY/daemon e2e
+      # tests can't hold a real terminal or a lingering background process.
+      checkPhase = ''
+        runHook preCheck
+        ctest --output-on-failure -E '^et-test\.(${prev.lib.concatStringsSep "|" [
+          "LargeInputNoDeadlock"
+          "Creation"
+          "Server fifo accepts a parent writable by the user private group"
+          "Telemetry creates private configuration and preserves its id"
+          "Telemetry bounds existing configuration reads and migrates permissions"
+          "Daemon pid writes create private files and replace stale contents"
+          "RouterRestartRealPtySurvives"
+          "sessionHasEnded without master EOF while descendant holds PTY slave"
+          "Control-mode PTY: .*"
+        ]})$'
+        runHook postCheck
+      '';
+    };
+  };
 }
