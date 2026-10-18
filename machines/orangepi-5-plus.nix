@@ -50,8 +50,11 @@
         '';
       }
     ];
-    # RTL8125 ethernet firmware, and whatever WiFi card is in the M.2 E-key slot
+    # RTL8125 ethernet firmware, and the RTL8852BE WiFi/Bluetooth card in the
+    #  M.2 E-key slot (WiFi over PCIe via rtw89, Bluetooth over USB via btusb)
     enableRedistributableFirmware = true;
+    # bluetoothd for the card's Bluetooth half; the kernel side already works.
+    bluetooth.enable = true;
     graphics.enable = true;
   };
 

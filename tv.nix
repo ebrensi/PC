@@ -45,10 +45,17 @@
     "https://www.youtube.com/tv"
   ];
 
+  wpctl = "${pkgs.wireplumber}/bin/wpctl";
+
   swayConfig = pkgs.writeText "tv-sway.conf" ''
     output * bg #000000 solid_color
     default_border none
     seat * hide_cursor 3000
+    # Volume keys, as sent by the Bluetooth volume knob (and any remote). The
+    #  default sink is the combined HDMI one, so this follows the picture.
+    bindsym --locked XF86AudioRaiseVolume exec ${wpctl} set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
+    bindsym --locked XF86AudioLowerVolume exec ${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%-
+    bindsym --locked XF86AudioMute exec ${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle
     exec ${browser}
   '';
 in {
