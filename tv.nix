@@ -158,6 +158,15 @@ in {
     };
   };
 
+  # Home WiFi, in place of the slower powerline ethernet. NetworkManager runs
+  #  on the iwd backend and can't hand iwd a PSK, so iwd needs its own network
+  #  file; it then auto-connects and NetworkManager adopts the link (DHCP).
+  #  The key is the hashed form (same as the installer's pskRaw), not the
+  #  passphrase.
+  systemd.tmpfiles.rules = [
+    "f+ /var/lib/iwd/CiscoKid.psk 0600 root root - [Security]\\nPreSharedKey=8c1b86a16eecd3996e724f7e21ff1818b03c8c463457fc9a3901c5ef7bc14d55\\n"
+  ];
+
   networking.firewall = {
     allowedUDPPorts = [1900]; # SSDP M-SEARCH
     allowedTCPPorts = [dialPort];
