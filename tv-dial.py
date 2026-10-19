@@ -161,8 +161,32 @@ class Handler(BaseHTTPRequestHandler):
                        [("Application-URL", f"http://{ip}:{HTTP_PORT}/apps/")])
         elif path == f"/apps/{APP}":
             self.reply(200, APP_XML.encode(), 'text/xml; charset="utf-8"')
+        elif path == "/go":
+            self.go()
         else:
             self.reply(404)
+
+    def go(self):
+        """Show any web page on the TV: /go?url=https://... ("home" returns to YouTube).
+
+        A plain GET, so a bookmarklet can send the current page by opening it
+        in a popup (a fetch from an https page to this http server would be
+        blocked as mixed content).
+        """
+        query = urllib.parse.urlsplit(self.path).query
+        target = urllib.parse.parse_qs(query).get("url", [""])[0]
+        if target == "home":
+            target = TV_URL
+        if urllib.parse.urlsplit(target).scheme not in ("http", "https"):
+            return self.reply(400, b"need ?url=http(s)://... or ?url=home\n", "text/plain")
+        log(f"go: {target}")
+        try:
+            navigate(target)
+        except Exception as e:
+            log(f"go failed: {e!r}")
+            return self.reply(503, b"browser not reachable\n", "text/plain")
+        self.reply(200, b"<title>Sent to TV</title>Sent to TV<script>setTimeout(close, 800)</script>",
+                   "text/html")
 
     def do_POST(self):
         if self.path.split("?")[0] != f"/apps/{APP}":

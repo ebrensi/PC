@@ -4,6 +4,9 @@
 #  browser. Nothing is browsed on the TV itself; phones push to it from the
 #  YouTube app: Cast > "Link with TV code" (code from the TV's Settings page).
 #  Desktop Chrome finds it on the LAN via DIAL (tv-dial.py), like a smart TV.
+#  tv-dial also shows any web page on request. This bookmarklet sends the
+#  current page, and /go?url=home returns to YouTube:
+#    javascript:open('http://tv.local:56790/go?url='+encodeURIComponent(location.href),'_','width=300,height=80')
 #
 # It runs inside a minimal sway session that owns tty1, the way a display
 #  manager would.
@@ -48,6 +51,159 @@
   wpctl = "${pkgs.wireplumber}/bin/wpctl";
   wtype = lib.getExe pkgs.wtype;
 
+  # `tv-status toggle` shows a status overlay (a persistent mako notification,
+  #  redrawn every couple of seconds) above whatever the kiosk is showing.
+  #  `tv-status watch` pops the same overlay up for a few seconds, at most once
+  #  every ten minutes, when something looks wrong. Rows past their threshold
+  #  are marked red with a "!".
+  tv-status = pkgs.writeShellApplication {
+    name = "tv-status";
+    runtimeInputs = with pkgs; [procps util-linux gawk iproute2 curl jq mako libnotify wireplumber];
+    text = ''
+      runtime=/run/user/$(id -u)
+      export DBUS_SESSION_BUS_ADDRESS=unix:path=$runtime/bus
+      popupfile=$runtime/tv-status.popup
+
+      # Thresholds. Disk only marks the overlay; it never pops it up.
+      max_temp=75     # °C
+      min_wifi=40     # % link quality
+      min_mem=2048    # MB available
+      max_load5=6     # 5-minute load average, on 8 cores
+      max_disk=85     # % used
+
+      collect() {
+        temp=$(awk '{ if ($1 > m) m = $1 } END { printf "%.0f", m / 1000 }' /sys/class/thermal/thermal_zone*/temp)
+        wifi=$(awk 'NR == 3 { printf "%d", $3 * 100 / 70 }' /proc/net/wireless)
+        mem=$(awk '/^MemAvailable/ { printf "%d", $2 / 1024 }' /proc/meminfo)
+        swap=$(awk '/^SwapTotal/ { t = $2 } /^SwapFree/ { f = $2 } END { printf "%d", (t - f) / 1024 }' /proc/meminfo)
+        load=$(cut -d' ' -f1-3 /proc/loadavg)
+        load5=$(cut -d' ' -f2 /proc/loadavg)
+        disk=$(df --output=pcent / | tail -n 1 | tr -dc 0-9)
+        if tabs=$(curl -sf --max-time 2 http://127.0.0.1:${toString cdpPort}/json/list); then
+          page=$(echo "$tabs" | jq -r '[.[] | select(.type == "page")][0].url // "?"' | cut -c1-70)
+          bad_browser=0
+        else
+          page="not responding"
+          bad_browser=1
+        fi
+
+        wifi_text=none
+        if [ -n "$wifi" ]; then wifi_text="$wifi%"; fi
+        bad_temp=$((temp >= max_temp ? 1 : 0))
+        bad_wifi=0
+        if [ -n "$wifi" ] && [ "$wifi" -lt "$min_wifi" ]; then bad_wifi=1; fi
+        bad_mem=$((mem < min_mem ? 1 : 0))
+        bad_swap=$((swap > 0 ? 1 : 0))
+        bad_load=$(awk -v l="$load5" -v m="$max_load5" 'BEGIN { print (l > m) ? 1 : 0 }')
+        bad_disk=$((disk >= max_disk ? 1 : 0))
+      }
+
+      # row LABEL TEXT BAD
+      row() {
+        text=$(echo "$2" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
+        if [ "$3" = 1 ]; then
+          printf '<span foreground="#ff5555">! %-8s %s</span>\n' "$1" "$text"
+        else
+          printf '  %-8s %s\n' "$1" "$text"
+        fi
+      }
+
+      render() {
+        row Address "$(ip -4 -br addr show scope global | awk '{ printf "%s  ", $3 }')" 0
+        row WiFi "$wifi_text" "$bad_wifi"
+        row Uptime "$(uptime -p | sed 's/^up //')" 0
+        row Load "$load" "$bad_load"
+        row Temp "$temp°C" "$bad_temp"
+        row Memory "$mem MB free, swap used $swap MB" $((bad_mem + bad_swap > 0 ? 1 : 0))
+        row Disk "$disk% used" "$bad_disk"
+        row Volume "$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/Volume: //')" 0
+        row Showing "$page" "$bad_browser"
+      }
+
+      notify() {
+        notify-send -t 0 -h string:x-canonical-private-synchronous:tv-status "$1" "$(render)"
+      }
+
+      # Whether a status loop is running (no pidfile: a double press could race it).
+      overlay_on() {
+        pgrep -u "$(id -u)" -f "tv-status loop" >/dev/null
+      }
+
+      loop() {
+        while true; do
+          collect
+          notify "TV status"
+          sleep 2
+        done
+      }
+
+      watch() {
+        last=0
+        sleep 90
+        while true; do
+          collect
+          now=$(date +%s)
+          if [ $((bad_temp + bad_wifi + bad_mem + bad_swap + bad_load + bad_browser)) -gt 0 ] &&
+            [ $((now - last)) -ge 600 ] && ! overlay_on; then
+            last=$now
+            touch "$popupfile"
+            notify "TV warning"
+            sleep 10
+            # A button press during the popup has already dismissed it.
+            if [ -f "$popupfile" ]; then
+              rm -f "$popupfile"
+              makoctl dismiss -a
+            fi
+          fi
+          sleep 30
+        done
+      }
+
+      toggle() {
+        # The ring can report a press twice, or both lower buttons at once:
+        #  serialize, and ignore a press right after the last one.
+        exec 9>"$runtime/tv-status.lock"
+        flock 9
+        now=$(date +%s%N)
+        last=$(cat "$runtime/tv-status.last" 2>/dev/null || echo 0)
+        echo "$now" > "$runtime/tv-status.last"
+        if [ $(((now - last) / 1000000)) -lt 700 ]; then
+          return
+        fi
+        if [ -f "$popupfile" ]; then
+          rm -f "$popupfile"
+          makoctl dismiss -a
+        elif overlay_on; then
+          pkill -u "$(id -u)" -f "tv-status loop" || true
+          sleep 0.3 # let an in-flight notification land before dismissing
+          makoctl dismiss -a
+        else
+          setsid "$0" loop 9>&- &
+        fi
+      }
+
+      case "''${1:-toggle}" in
+        loop) loop ;;
+        watch) watch ;;
+        toggle) toggle ;;
+      esac
+    '';
+  };
+  makoConfig = pkgs.writeText "tv-mako.conf" ''
+    layer=overlay
+    anchor=top-right
+    margin=40
+    padding=24
+    width=900
+    height=420
+    font=monospace 22
+    markup=1
+    background-color=#000000d9
+    text-color=#ffffff
+    border-size=0
+    default-timeout=0
+  '';
+
   swayConfig = pkgs.writeText "tv-sway.conf" ''
     output * bg #000000 solid_color
     default_border none
@@ -58,11 +214,14 @@
     bindsym --locked XF86AudioLowerVolume exec ${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%-
     bindsym --locked XF86AudioMute exec ${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle
     # The finger-ring trackball sends right-click for its lower two buttons and
-    #  wheel ticks for its wheel. YouTube TV navigates by key only, so turn
-    #  those into Back and Up/Down.
-    bindsym --whole-window button3 exec ${wtype} -k Escape
+    #  wheel ticks for its wheel. The lower buttons (indistinguishable) toggle
+    #  the status overlay; Back is on one of its upper buttons. YouTube TV
+    #  navigates by key only, so the wheel becomes Up/Down.
+    bindsym --whole-window button3 exec ${lib.getExe tv-status} toggle
     bindsym --whole-window button4 exec ${wtype} -k Up
     bindsym --whole-window button5 exec ${wtype} -k Down
+    exec ${lib.getExe pkgs.mako} --config ${makoConfig}
+    exec ${lib.getExe tv-status} watch
     exec ${browser}
   '';
 in {
