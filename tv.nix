@@ -46,6 +46,7 @@
   ];
 
   wpctl = "${pkgs.wireplumber}/bin/wpctl";
+  wtype = lib.getExe pkgs.wtype;
 
   swayConfig = pkgs.writeText "tv-sway.conf" ''
     output * bg #000000 solid_color
@@ -56,6 +57,12 @@
     bindsym --locked XF86AudioRaiseVolume exec ${wpctl} set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
     bindsym --locked XF86AudioLowerVolume exec ${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%-
     bindsym --locked XF86AudioMute exec ${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle
+    # The finger-ring trackball sends right-click for its lower two buttons and
+    #  wheel ticks for its wheel. YouTube TV navigates by key only, so turn
+    #  those into Back and Up/Down.
+    bindsym --whole-window button3 exec ${wtype} -k Escape
+    bindsym --whole-window button4 exec ${wtype} -k Up
+    bindsym --whole-window button5 exec ${wtype} -k Down
     exec ${browser}
   '';
 in {
