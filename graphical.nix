@@ -197,7 +197,6 @@ in {
         custom.ktnrg45.vscode-cython
         oderwat.indent-rainbow
         # shardulm94.trailing-spaces
-        # stephlin.vscode-tmux-keybinding
       ];
     };
   };

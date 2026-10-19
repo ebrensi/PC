@@ -357,6 +357,7 @@ in {
     ${prefix}2 thinkpad
     ${prefix}3 phone
     ${prefix}4 m1
+    fd39:8ed9:8f8a:1ef2:61de:9fc7:3ad2:9441 tv
   '';
 
   # Claude Code system-wide managed settings. Highest precedence, so these keys

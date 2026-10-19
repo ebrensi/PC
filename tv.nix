@@ -382,11 +382,14 @@ in {
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; let
+    dev-scripts = import ./dev-scripts.nix {inherit pkgs;};
+  in [
     v4l-utils # v4l2-ctl --list-devices, to check the hardware decoders
     libdrm # modetest
     pulseaudio # pactl, for checking sinks over ssh
     powertop
     nvtopPackages.panthor
+    dev-scripts.tmx
   ];
 }
