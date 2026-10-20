@@ -40,8 +40,9 @@
   nix.settings.substituters = let
     argstr = "trusted=true&compress=true";
   in [
-    # "ssh-ng://efrem@home?priority=1000&${argstr}"  # slow due to powerline connection
-    "ssh-ng://efrem@m1?priority=500&${argstr}"
+    # Paths in public caches never reach home, so its slow powerline link only
+    # carries local builds (e.g. patches/), which beats rebuilding them here.
+    "ssh-ng://efrem@home?priority=1000&${argstr}"
   ];
   nix.settings.trusted-public-keys = with (import ./secrets/public-keys.nix); [home-cache-key];
   nix.buildMachines = let
