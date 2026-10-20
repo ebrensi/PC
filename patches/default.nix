@@ -25,7 +25,7 @@
   # In server mode the crash kills the server process, which takes *every*
   # foot window down at once. Patch adds the missing NULL guards.
   foot = {
-    checked = "2026-10-15";
+    checked = "2026-10-20";
     dropWhen = "upstream-fixed";
     upstream = "https://codeberg.org/dnkl/foot/src/branch/master/input.c (NULL check on seat->kbd_focus in keyboard_key)";
     override = _: old: {
@@ -43,7 +43,7 @@
   # Master needs its submodules and none of nixpkgs' patches (both are already
   # upstream). Drop this once nixpkgs ships a release newer than 7.0.0.
   eternal-terminal = {
-    checked = "2026-10-16";
+    checked = "2026-10-20";
     dropWhen = "upstream-fixed";
     upstream = "https://github.com/MisterTea/EternalTerminal/releases (a release after 7.0.0 contains #809 + #810)";
     override = prev: _: {

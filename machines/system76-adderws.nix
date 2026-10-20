@@ -34,6 +34,46 @@
   # System76 hardware support
   hardware.system76.enableAll = true;
 
+  # nixpkgs now signs out-of-tree modules via Kbuild's modules_install
+  # (kmodigest), and the module aggregator fails if a module has no .ko.cer.
+  # system76{,-io} still `install` the bare .ko, so the kernel-modules build
+  # breaks. Mirrors https://github.com/NixOS/nixpkgs/pull/575724 — drop once
+  # that lands. Lives here, not patches/default.nix, because the registry only
+  # overrides top-level packages.
+  nixpkgs.overlays = [
+    (_: prev: {
+      linuxPackages_latest = prev.linuxPackages_latest.extend (kfinal: kprev: let
+        modulesInstall = old: {
+          makeFlags =
+            old.makeFlags
+            ++ [
+              "INSTALL_MOD_PATH=${placeholder "out"}"
+              "INSTALL_MOD_DIR=misc"
+              "INSTALL_MOD_STRIP=1"
+              "DEPMOD=true"
+            ];
+          installTargets = ["modules_install"];
+          installFlags = [
+            "-C"
+            "${kfinal.kernel.dev}/lib/modules/${kfinal.kernel.modDirVersion}/build"
+            "M=$(PWD)"
+          ];
+          installPhase = null;
+        };
+      in {
+        system76 = kprev.system76.overrideAttrs (old:
+          modulesInstall old
+          // {
+            postInstall = ''
+              mkdir -p $out/lib/udev/hwdb.d
+              mv lib/udev/hwdb.d/* $out/lib/udev/hwdb.d
+            '';
+          });
+        system76-io = kprev.system76-io.overrideAttrs modulesInstall;
+      });
+    })
+  ];
+
   hardware = {
     enableRedistributableFirmware = true;
     cpu.intel.updateMicrocode = true;
