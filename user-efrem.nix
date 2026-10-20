@@ -185,9 +185,10 @@ in {
         ControlPath /tmp/ssh-%C
         ControlPersist 10s
 
-        # Agent forwarding configuration
+        # Agent forwarding configuration. No `IdentityAgent $SSH_AUTH_SOCK`:
+        # ssh already defaults to $SSH_AUTH_SOCK, and Eternal Terminal reads
+        # the value literally, which breaks its agent forwarding.
         ForwardAgent yes
-        IdentityAgent $SSH_AUTH_SOCK
 
       Host vm
         Hostname 127.0.0.1
