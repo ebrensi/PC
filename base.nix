@@ -84,15 +84,19 @@ in {
       enable = true;
       nssmdns4 = true;
       nssmdns6 = true;
-      ipv6 = true;
       openFirewall = true;
-      publish = {
-        # see https://linux.die.net/man/5/avahi-daemon.conf
-        enable = true;
-        userServices = true;
-        addresses = true;
+      # see https://linux.die.net/man/5/avahi-daemon.conf
+      settings = {
+        server = {
+          use-ipv6 = true;
+          deny-interfaces = ["virbr0" "docker0" "lo"];
+        };
+        publish = {
+          disable-publishing = false;
+          disable-user-service-publishing = false;
+          publish-addresses = true;
+        };
       };
-      denyInterfaces = ["virbr0" "docker0" "lo"];
     };
   };
 
