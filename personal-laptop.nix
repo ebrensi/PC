@@ -118,4 +118,57 @@
       # }
     ];
   };
+
+  # The WAN endpoints above hairpin through the router's port forward, which is
+  # slow and lossy when we're actually at home. On the home LAN, point peers at
+  # their LAN addresses instead (adder-ws's wifi, not its powerline ethernet).
+  # The LAN is identified by the gateway's MAC since 192.168.1.0/24 is common.
+  systemd.services.wg-home-endpoints = let
+    inherit (config.wireguard-peer) interface peers;
+    homeGatewayMac = "08:36:c9:e7:08:ab";
+    lanEndpoints = {
+      adderws = "192.168.1.66:51820";
+      m1 = "192.168.1.3:51820";
+    };
+    peerUnits = map (p: "wireguard-${interface}-peer-${p.name}.service") peers;
+    setEndpoints = endpointOf:
+      lib.concatMapStrings (p: ''
+        wg set ${interface} peer ${p.publicKey} endpoint ${endpointOf p}
+      '') (lib.filter (p: lanEndpoints ? ${p.name}) peers);
+  in {
+    description = "Pick LAN or WAN endpoints for ${interface} peers";
+    after = peerUnits;
+    # Peer units re-run us when they (re)start and reset the endpoints, while
+    # multi-user.target makes switch-to-configuration start us at all.
+    wantedBy = peerUnits ++ ["multi-user.target"];
+    path = with pkgs; [iproute2 iputils gawk wireguard-tools];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      mac=
+      gw=$(ip -4 route show default | awk '{print $3; exit}')
+      if [ -n "$gw" ]; then
+        ping -c1 -W1 "$gw" >/dev/null || true # populate the neighbor table
+        mac=$(ip neigh show "$gw" | awk '{print $5; exit}')
+      fi
+      if [ "$mac" = "${homeGatewayMac}" ]; then
+        echo "On home LAN, using LAN endpoints"
+        ${setEndpoints (p: lanEndpoints.${p.name})}
+      else
+        echo "Not on home LAN, using WAN endpoints"
+        ${setEndpoints (p: p.endpoint)}
+      fi
+    '';
+  };
+  networking.networkmanager.dispatcherScripts = [
+    {
+      type = "basic";
+      source = pkgs.writeShellScript "wg-home-endpoints-dispatch" ''
+        case "$2" in
+          up | down | dhcp4-change | connectivity-change)
+            ${pkgs.systemd}/bin/systemctl start --no-block wg-home-endpoints.service
+            ;;
+        esac
+      '';
+    }
+  ];
 }
