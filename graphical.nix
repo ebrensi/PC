@@ -45,7 +45,6 @@ in {
         "--enable-zero-copy"
       ];
     })
-    (callPackage ./carbonyl.nix {}) # Chromium in the terminal
     alacritty
     rclone # cloud storage mounts, see rcloneMount
     libnotify # notify-send; foot uses it for bell notifications
@@ -61,7 +60,7 @@ in {
     waytrogen # wallpaper manager
     mpv-unwrapped
     wlr-randr
-    libreoffice-stable
+    # libreoffice-stable
 
     # Photo/image editing
     imagemagick
@@ -72,12 +71,6 @@ in {
     # Video
     ffmpeg
     pwneye
-
-    # collaboration apps
-    teams-for-linux
-    slack-term
-    # slack
-    # zoom
 
     wl-clipboard
     gst_all_1.gstreamer
@@ -150,7 +143,6 @@ in {
         ms-python.python
         ms-python.vscode-pylance
         ms-python.pylint
-        # ms-python.flake8
         ms-python.mypy-type-checker
         ms-python.isort
         ms-python.debugpy
@@ -181,7 +173,6 @@ in {
 
         # Utilities
         redhat.vscode-yaml
-        saoudrizwan.claude-dev
         yzane.markdown-pdf
         wakatime.vscode-wakatime
         waderyan.gitblame
@@ -196,7 +187,6 @@ in {
         wmaurer.change-case
         custom.ktnrg45.vscode-cython
         oderwat.indent-rainbow
-        # shardulm94.trailing-spaces
       ];
     };
   };
