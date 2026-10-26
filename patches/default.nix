@@ -13,7 +13,27 @@
 #               way, so check `upstream` by hand.
 #   upstream  (upstream-fixed only) where to look for the fix
 #   override  prev: old: { ... } — passed to prev.<name>.overrideAttrs
+#   package   prev: <derivation> — replaces prev.<name> outright, for fixes
+#               overrideAttrs can't express (e.g. swapping a dependency).
+#               Use instead of `override`.
 {
+  # fastmcp 3.4.7 still needs mcp 1.x, but nixpkgs moved `mcp` to 2.x and
+  # marks fastmcp-slim broken whenever mcp >= 2, which blocks mcp-nixos (the
+  # Claude Code MCP server in user-efrem.nix). nixpkgs keeps 1.x as `mcp_1`,
+  # so build mcp-nixos against a python set where mcp = mcp_1. Drop once
+  # fastmcp supports mcp 2 (stock mcp-nixos evaluates again).
+  mcp-nixos = {
+    checked = "2026-10-26";
+    dropWhen = "unpatched-builds";
+    package = prev: let
+      python = prev.python3.override {
+        self = python;
+        packageOverrides = pyFinal: _: {mcp = pyFinal.mcp_1;};
+      };
+    in
+      prev.mcp-nixos.override {python3Packages = python.pkgs;};
+  };
+
   # foot 1.27.0 (still unfixed in 1.28.0) crashes (SIGSEGV) when a key event
   # arrives with no focused terminal. keyboard_key() passes seat->kbd_focus straight to
   # key_press_release() without a NULL check, and key_press_release() then

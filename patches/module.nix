@@ -23,7 +23,12 @@
   registry;
 in {
   nixpkgs.overlays = [
-    (_: prev: lib.mapAttrs (name: e: prev.${name}.overrideAttrs (e.override prev)) registry)
+    (_: prev:
+      lib.mapAttrs (name: e:
+        if e ? package
+        then e.package prev
+        else prev.${name}.overrideAttrs (e.override prev))
+      registry)
   ];
 
   warnings = lib.mapAttrsToList (name: e: "patches/default.nix: '${name}' was last checked ${e.checked}, over ${toString maxAgeDays} days behind this nixpkgs. Run `check-patches`, then drop it or bump `checked`.") stale;
