@@ -33,9 +33,58 @@
   cdpPort = 9222;
   dialPort = 56790;
 
+  # Caps YouTube at 1080p, the TV's resolution. With the Cobalt user agent,
+  #  YouTube picks its stream by asking Cobalt-style
+  #  `isTypeSupported('video/webm; codecs="vp9"; width=3840; height=2160')`.
+  #  Chromium ignores the size, says yes, and plays 4K, which it decodes in
+  #  software (~3 cores, enough to trip tv-status's load warning).
+  maxResManifest = pkgs.writeText "manifest.json" (builtins.toJSON {
+    manifest_version = 3;
+    name = "Cap video at 1080p";
+    version = "1";
+    content_scripts = [
+      {
+        matches = ["https://www.youtube.com/*"];
+        js = ["cap.js"];
+        run_at = "document_start";
+        world = "MAIN";
+        all_frames = true;
+      }
+    ];
+  });
+  maxResScript = pkgs.writeText "cap.js" ''
+    (() => {
+      const tooBig = (w, h) => w > 1920 || h > 1080;
+      const param = (type, name) => Number((type.match(new RegExp(name + "=(\\d+)")) || [])[1] || 0);
+      const orig = MediaSource.isTypeSupported.bind(MediaSource);
+      MediaSource.isTypeSupported = (type) =>
+        !tooBig(param(type, "width"), param(type, "height")) && orig(type);
+      if (navigator.mediaCapabilities) {
+        const decodingInfo = navigator.mediaCapabilities.decodingInfo.bind(navigator.mediaCapabilities);
+        navigator.mediaCapabilities.decodingInfo = (config) => {
+          const v = config && config.video;
+          if (v && tooBig(v.width, v.height)) {
+            return Promise.resolve({supported: false, smooth: false, powerEfficient: false});
+          }
+          return decodingInfo(config);
+        };
+      }
+    })();
+  '';
+  # Real files, not symlinks: Chromium won't inject a content script whose
+  #  file resolves outside the extension's directory.
+  maxResExtension = pkgs.runCommand "tv-max-res-extension" {} ''
+    mkdir $out
+    cp ${maxResManifest} $out/manifest.json
+    cp ${maxResScript} $out/cap.js
+  '';
+
   browser = lib.escapeShellArgs [
     (lib.getExe pkgs.chromium)
     "--kiosk"
+    "--load-extension=${maxResExtension}"
+    # Chromium ignores --load-extension (silently) unless this is turned off.
+    "--disable-features=DisableLoadExtensionCommandLineSwitch"
     "--user-data-dir=/var/lib/${kiosk}/chromium"
     "--remote-debugging-port=${toString cdpPort}"
     "--ozone-platform=wayland"
