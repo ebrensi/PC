@@ -38,7 +38,8 @@
   # Priority is set high (1000) so it's only used after public caches
   # This prevents timeout issues while still allowing substitution from home
   nix.settings.substituters = let
-    argstr = "trusted=true&compress=true";
+    # SSH stores open one connection by default, so paths download serially.
+    argstr = "trusted=true&compress=true&max-connections=4";
   in [
     # Paths in public caches never reach home, so its slow powerline link only
     # carries local builds (e.g. patches/), which beats rebuilding them here.
