@@ -5,8 +5,6 @@
   lib,
   pkgs,
   modulesPath,
-  #
-  pkgs-stable,
   ...
 }: {
   imports = [
@@ -133,7 +131,7 @@
     vulkan-tools # vulkaninfo
     intel-gpu-tools # intel_gpu_top
     nvitop
-    pkgs-stable.nvtopPackages.full
+    nvtopPackages.full
     zenith-nvidia
   ];
 }
