@@ -38,8 +38,10 @@
   # Priority is set high (1000) so it's only used after public caches
   # This prevents timeout issues while still allowing substitution from home
   nix.settings.substituters = let
-    # SSH stores open one connection by default, so paths download serially.
-    argstr = "trusted=true&compress=true&max-connections=4";
+    # No max-connections: above 1, Nix 2.34.9 shares an SSH ControlMaster and
+    # its "started" readiness line can leak into the protocol stream, breaking
+    # every connection ("protocol mismatch, got 'started'").
+    argstr = "trusted=true&compress=true";
   in [
     # Paths in public caches never reach home, so its slow powerline link only
     # carries local builds (e.g. patches/), which beats rebuilding them here.
