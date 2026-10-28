@@ -17,20 +17,18 @@
     initrd.kernelModules = ["i915"]; # Load Intel GPU early for console
     kernelModules = ["kvm-intel" "iwlwifi"];
     extraModulePackages = [];
-  };
-  networking.useDHCP = lib.mkDefault true;
 
-  # Stops eno0 from winning ARP for wlan0's IP; Chrome WebRTC binds sockets per-interface and never receives misrouted return traffic.
-  boot.kernel.sysctl = {
-    "net.ipv4.conf.eno0.arp_ignore" = 2;
-    "net.ipv4.conf.eno0.arp_announce" = 2;
+    # Stops eno0 from winning ARP for wlan0's IP; Chrome WebRTC binds sockets per-interface and never receives misrouted return traffic.
+    kernel.sysctl = {
+      "net.ipv4.conf.eno0.arp_ignore" = 2;
+      "net.ipv4.conf.eno0.arp_announce" = 2;
+    };
   };
+
+  networking.useDHCP = lib.mkDefault true;
 
   # SSD optimization (from common-pc-ssd)
   services.fstrim.enable = true;
-
-  # System76 hardware support
-  hardware.system76.enableAll = true;
 
   # nixpkgs now signs out-of-tree modules via Kbuild's modules_install
   # (kmodigest), and the module aggregator fails if a module has no .ko.cer.
@@ -73,6 +71,7 @@
   ];
 
   hardware = {
+    system76.enableAll = true;
     enableRedistributableFirmware = true;
     cpu.intel.updateMicrocode = true;
     firmware = [pkgs.linux-firmware];

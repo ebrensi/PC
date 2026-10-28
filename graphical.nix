@@ -78,33 +78,38 @@ in {
   ];
 
   programs = {
-    foot.enable = true;
-    foot.settings = {
-      # Claude Code rings BEL when it finishes or needs permission (see
-      # preferredNotifChannel in ~/.claude/settings.json). foot is not one of
-      # the terminals Claude Code sends a native desktop notification to, so
-      # turn the bell into one here. foot only does this while the window is
-      # unfocused, which is exactly when it is wanted.
-      bell = {
-        notify = "yes";
-        urgent = "yes";
-      };
-      # foot-server runs as a systemd user unit with a minimal PATH, so refer
-      # to notify-send by store path instead of relying on a PATH lookup.
-      desktop-notifications = {
-        command = "${pkgs.libnotify}/bin/notify-send --app-name=foot --urgency=\${urgency} -- \${title} \${body}";
-      };
-      main = {
-        initial-color-theme = "dark";
-        font = "Noto Sans Mono:size=12";
-      };
-      colors-dark = {
-        alpha = 0.7;
-      };
-      csd = {
-        preferred = "none";
+    fuse.userAllowOther = true; # optional; only needed for --allow-other
+
+    foot = {
+      enable = true;
+      settings = {
+        # Claude Code rings BEL when it finishes or needs permission (see
+        # preferredNotifChannel in ~/.claude/settings.json). foot is not one of
+        # the terminals Claude Code sends a native desktop notification to, so
+        # turn the bell into one here. foot only does this while the window is
+        # unfocused, which is exactly when it is wanted.
+        bell = {
+          notify = "yes";
+          urgent = "yes";
+        };
+        # foot-server runs as a systemd user unit with a minimal PATH, so refer
+        # to notify-send by store path instead of relying on a PATH lookup.
+        desktop-notifications = {
+          command = "${pkgs.libnotify}/bin/notify-send --app-name=foot --urgency=\${urgency} -- \${title} \${body}";
+        };
+        main = {
+          initial-color-theme = "dark";
+          font = "Noto Sans Mono:size=12";
+        };
+        colors-dark = {
+          alpha = 0.7;
+        };
+        csd = {
+          preferred = "none";
+        };
       };
     };
+
     firefox = {
       enable = true;
       preferences = {
@@ -114,7 +119,9 @@ in {
         "gfx.webrender.all" = true;
       };
     };
+
     xwayland.enable = true;
+
     vscode = {
       enable = true;
       # No gnome-keyring on COSMIC; use plaintext storage to suppress the popup
@@ -191,30 +198,104 @@ in {
     };
   };
 
-  programs.fuse.userAllowOther = true; # optional; only needed for --allow-other
+  systemd = {
+    # Cloud storage mounts. Each remote must first be created per-machine with
+    #  `rclone config` (the OAuth token lives in ~/.config/rclone/rclone.conf).
+    user.services.gdrive-mount = rcloneMount "gdrive" "GoogleDrive" "Google Drive";
+    user.services.dropbox-mount = rcloneMount "dropbox" "Dropbox" "Dropbox";
 
-  # Cloud storage mounts. Each remote must first be created per-machine with
-  #  `rclone config` (the OAuth token lives in ~/.config/rclone/rclone.conf).
-  systemd.user.services.gdrive-mount = rcloneMount "gdrive" "GoogleDrive" "Google Drive";
-  systemd.user.services.dropbox-mount = rcloneMount "dropbox" "Dropbox" "Dropbox";
+    tmpfiles.rules = let
+      HOME = "/home/${user}";
+      mpvConfig = pkgs.writeText "mpv.conf" ''
+        hwdec=auto-safe
+      '';
+      alacrittyConfig = (pkgs.formats.toml {}).generate "alacritty.toml" {
+        general.live_config_reload = true;
+        env.term = "xterm-256";
+        window.decorations = "None";
+        window.dynamic_padding = true;
+      };
+    in [
+      "d  ${HOME}/.config/mpv          755 ${user} users -"
+      "L+ ${HOME}/.config/mpv/mpv.conf 644 ${user} users - ${mpvConfig}"
+      "d  ${HOME}/.config/alacritty               755 ${user} users -"
+      "L+ ${HOME}/.config/alacritty/alacritty.toml 644 ${user} users - ${alacrittyConfig}"
+    ];
 
-  systemd.tmpfiles.rules = let
-    HOME = "/home/${user}";
-    mpvConfig = pkgs.writeText "mpv.conf" ''
-      hwdec=auto-safe
+    # The generated ensure-printers script uses lpadmin with model=everywhere, which
+    # must contact the printer to query its capabilities. If the printer is off or
+    # suspended, lpadmin exits 1 and the service fails, causing nixos-rebuild switch
+    # to exit non-zero. Worse, a failed lpadmin leaves no usable queue behind, and at
+    # boot the printers are always unreachable because wifi isn't up yet. Override the
+    # script to leave existing queues alone, skip printers that aren't reachable, and
+    # treat failures as warnings so the switch always succeeds; a timer retries until
+    # the printer is online.
+    services.ensure-printers.script = lib.mkForce ''
+      configure_printer() {
+        local name="$1" uri="$2" model="$3" desc="$4" loc="$5"
+        if ${pkgs.cups}/bin/lpstat -v "$name" 2>/dev/null | ${pkgs.gnugrep}/bin/grep -qF "$uri"; then
+          return 0
+        fi
+        local hostport="''${uri#ipp://}"
+        hostport="''${hostport%%/*}"
+        if ! ${pkgs.coreutils}/bin/timeout 5 ${pkgs.bash}/bin/bash -c "</dev/tcp/''${hostport%:*}/''${hostport##*:}" 2>/dev/null; then
+          echo "ensure-printers: $name unreachable, will retry via timer"
+          return 0
+        fi
+        ${pkgs.cups}/bin/lpadmin -p "$name" -E -v "$uri" -m "$model" -D "$desc" -L "$loc" \
+          || echo "ensure-printers: $name setup failed, will retry via timer"
+      }
+      configure_printer Brother_DCP_Direct ipp://192.168.1.24:631/ipp/print everywhere \
+        "Brother DCP-L2550DW (direct)" Office
+      configure_printer Canon_MF750C_Direct ipp://192.168.1.59:631/ipp/print everywhere \
+        "Canon MF750C (direct)" Office
     '';
-    alacrittyConfig = (pkgs.formats.toml {}).generate "alacritty.toml" {
-      general.live_config_reload = true;
-      env.term = "xterm-256";
-      window.decorations = "None";
-      window.dynamic_padding = true;
+
+    # The upstream unit sets RemainAfterExit=yes, so it stays "active" after the first
+    # run and the timer below can never start it again. Let it go inactive instead.
+    services.ensure-printers = {
+      wants = ["network-online.target"];
+      after = ["network-online.target"];
+      serviceConfig.RemainAfterExit = lib.mkForce false;
     };
-  in [
-    "d  ${HOME}/.config/mpv          755 ${user} users -"
-    "L+ ${HOME}/.config/mpv/mpv.conf 644 ${user} users - ${mpvConfig}"
-    "d  ${HOME}/.config/alacritty               755 ${user} users -"
-    "L+ ${HOME}/.config/alacritty/alacritty.toml 644 ${user} users - ${alacrittyConfig}"
-  ];
+
+    # Retry every 5 minutes so queues get configured when printers come back online.
+    timers.ensure-printers = {
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        OnBootSec = "2min";
+        OnUnitActiveSec = "5min";
+      };
+    };
+
+    # Enable foot-server for user session with correct target
+    user.services.foot-server = {
+      description = "Foot terminal server";
+      wantedBy = ["cosmic-session.target"];
+      after = ["cosmic-session.target"];
+      partOf = ["cosmic-session.target"];
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${pkgs.foot}/bin/foot --server";
+        Restart = "always";
+        RestartSec = "1s";
+      };
+    };
+
+    # The AppImage's launcher shim unsets all GST_PLUGIN_* vars, and nixpkgs'
+    # gstreamer only searches its own store dir, so WebKit finds no plugins
+    # (blank window). GStreamer also scans ~/.local/share/gstreamer-1.0/plugins
+    # by default, so point that at a merged plugin dir.
+    user.tmpfiles.users.${user}.rules = let
+      gstPlugins = pkgs.symlinkJoin {
+        name = "gst-plugins-merged";
+        paths = with pkgs.gst_all_1; [gst-plugins-base gst-plugins-good];
+      };
+    in [
+      "d %h/.local/share/gstreamer-1.0 0755 - - -"
+      "L+ %h/.local/share/gstreamer-1.0/plugins - - - - ${gstPlugins}/lib/gstreamer-1.0"
+    ];
+  };
 
   services.printing = {
     # see https://wiki.nixos.org/wiki/Printing
@@ -259,66 +340,6 @@ in {
         model = "everywhere";
       }
     ];
-  };
-
-  # The generated ensure-printers script uses lpadmin with model=everywhere, which
-  # must contact the printer to query its capabilities. If the printer is off or
-  # suspended, lpadmin exits 1 and the service fails, causing nixos-rebuild switch
-  # to exit non-zero. Worse, a failed lpadmin leaves no usable queue behind, and at
-  # boot the printers are always unreachable because wifi isn't up yet. Override the
-  # script to leave existing queues alone, skip printers that aren't reachable, and
-  # treat failures as warnings so the switch always succeeds; a timer retries until
-  # the printer is online.
-  systemd.services.ensure-printers.script = lib.mkForce ''
-    configure_printer() {
-      local name="$1" uri="$2" model="$3" desc="$4" loc="$5"
-      if ${pkgs.cups}/bin/lpstat -v "$name" 2>/dev/null | ${pkgs.gnugrep}/bin/grep -qF "$uri"; then
-        return 0
-      fi
-      local hostport="''${uri#ipp://}"
-      hostport="''${hostport%%/*}"
-      if ! ${pkgs.coreutils}/bin/timeout 5 ${pkgs.bash}/bin/bash -c "</dev/tcp/''${hostport%:*}/''${hostport##*:}" 2>/dev/null; then
-        echo "ensure-printers: $name unreachable, will retry via timer"
-        return 0
-      fi
-      ${pkgs.cups}/bin/lpadmin -p "$name" -E -v "$uri" -m "$model" -D "$desc" -L "$loc" \
-        || echo "ensure-printers: $name setup failed, will retry via timer"
-    }
-    configure_printer Brother_DCP_Direct ipp://192.168.1.24:631/ipp/print everywhere \
-      "Brother DCP-L2550DW (direct)" Office
-    configure_printer Canon_MF750C_Direct ipp://192.168.1.59:631/ipp/print everywhere \
-      "Canon MF750C (direct)" Office
-  '';
-
-  # The upstream unit sets RemainAfterExit=yes, so it stays "active" after the first
-  # run and the timer below can never start it again. Let it go inactive instead.
-  systemd.services.ensure-printers = {
-    wants = ["network-online.target"];
-    after = ["network-online.target"];
-    serviceConfig.RemainAfterExit = lib.mkForce false;
-  };
-
-  # Retry every 5 minutes so queues get configured when printers come back online.
-  systemd.timers.ensure-printers = {
-    wantedBy = ["timers.target"];
-    timerConfig = {
-      OnBootSec = "2min";
-      OnUnitActiveSec = "5min";
-    };
-  };
-
-  # Enable foot-server for user session with correct target
-  systemd.user.services.foot-server = {
-    description = "Foot terminal server";
-    wantedBy = ["cosmic-session.target"];
-    after = ["cosmic-session.target"];
-    partOf = ["cosmic-session.target"];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.foot}/bin/foot --server";
-      Restart = "always";
-      RestartSec = "1s";
-    };
   };
 
   # Enable sound with pipewire (not Pulse Audio).
@@ -395,19 +416,7 @@ in {
       ];
     };
   };
-  # The AppImage's launcher shim unsets all GST_PLUGIN_* vars, and nixpkgs'
-  # gstreamer only searches its own store dir, so WebKit finds no plugins
-  # (blank window). GStreamer also scans ~/.local/share/gstreamer-1.0/plugins
-  # by default, so point that at a merged plugin dir.
-  systemd.user.tmpfiles.users.${user}.rules = let
-    gstPlugins = pkgs.symlinkJoin {
-      name = "gst-plugins-merged";
-      paths = with pkgs.gst_all_1; [gst-plugins-base gst-plugins-good];
-    };
-  in [
-    "d %h/.local/share/gstreamer-1.0 0755 - - -"
-    "L+ %h/.local/share/gstreamer-1.0/plugins - - - - ${gstPlugins}/lib/gstreamer-1.0"
-  ];
+
   programs.nix-ld.enable = true;
   xdg.portal.enable = true;
 }

@@ -55,30 +55,31 @@ in {
     };
   };
 
-  # Allows fallback to other DNS servers if this LAN's DNS is slow or failing
-  # Fixes problem with nix S3 cache uploads going into timeout loop
-  services.resolved = {
-    enable = true;
-    settings.Resolve = {
-      DNSSEC = "no"; # fix for Slack bug
-      MulticastDNS = "no";
-      FallbackDNS = ["1.1.1.1" "8.8.8.8"];
-    };
-  };
-
   services = {
+    # See https://discourse.nixos.org/t/timezones-how-to-setup-on-a-laptop/33853/7
+    automatic-timezoned.enable = true;
+    geoclue2.geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
+
+    # Firmware updating
+    fwupd.enable = true;
+
+    resolved = {
+      # Allows fallback to other DNS servers if this LAN's DNS is slow or failing
+      # Fixes problem with nix S3 cache uploads going into timeout loop
+      enable = true;
+      settings.Resolve = {
+        DNSSEC = "no"; # fix for Slack bug
+        MulticastDNS = "no";
+        FallbackDNS = ["1.1.1.1" "8.8.8.8"];
+      };
+    };
+
     openssh = {
       enable = true;
       settings = {
         AllowAgentForwarding = true;
       };
     };
-
-    fwupd.enable = true;
-
-    # See https://discourse.nixos.org/t/timezones-how-to-setup-on-a-laptop/33853/7
-    automatic-timezoned.enable = true;
-    geoclue2.geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
 
     avahi = {
       enable = true;
@@ -119,20 +120,6 @@ in {
     enable=true
     method=ichnaea
   '';
-
-  # Auto optimize the Nix store
-  nix.optimise = {
-    persistent = false;
-    automatic = true;
-    dates = ["03:45"];
-  };
-
-  # Automatic garbage collection for Nix store
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 30d";
-  };
 
   # Allow unfree packages (needed for NVIDIA drivers and some software)
   nixpkgs.config.allowUnfree = true;
@@ -239,17 +226,36 @@ in {
     nerd-fonts.droid-sans-mono
   ];
 
-  nix.settings = {
-    experimental-features = ["nix-command" "flakes"];
-    substituters = [
-      "https://nix-community.cachix.org"
-      "https://claude-code.cachix.org"
-    ];
-    trusted-public-keys = [
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
-    ];
+  nix = {
+    # Auto optimize the Nix store
+    optimise = {
+      persistent = false;
+      automatic = true;
+      dates = ["03:45"];
+    };
+
+    # Automatic garbage collection for Nix store
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
+
+    channel.enable = false; # drops the channel entries from NIX_PATH
+
+    settings = {
+      nix-path = ["nixpkgs=${pkgs.path}"];
+      experimental-features = ["nix-command" "flakes"];
+      substituters = [
+        "https://nix-community.cachix.org"
+        "https://claude-code.cachix.org"
+      ];
+      trusted-public-keys = [
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+      ];
+    };
   };
-  nix.settings.nix-path = ["nixpkgs=${pkgs.path}"];
+
   system.stateVersion = "25.05";
 }
