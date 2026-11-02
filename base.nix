@@ -28,6 +28,7 @@ in {
 
   networking = {
     useDHCP = lib.mkDefault true;
+    tempAddresses = "disabled";
     enableIPv6 = true;
     networkmanager = {
       enable = true;
