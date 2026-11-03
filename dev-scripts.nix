@@ -73,20 +73,29 @@ in rec {
     # Build the toplevel system closure of a nixosConfiguration and switch to it.
     #  By default the remote machine builds it; with -b it is built here and
     #  the closure copied over, so the remote machine builds nothing.
-    # Usage: deploy [-b] <flakeAttr> [host[:port]]   (host defaults to <flakeAttr>.local)
+    #  With -r <builder> it is built in the builder's store (evaluated here;
+    #  only .drv files leave this machine) and the target pulls the closure
+    #  straight from the builder, so no outputs pass through this machine.
+    #  Needs: this user trusted by nix on the target, and the builder
+    #  reachable from the target with the forwarded ssh agent.
+    # Usage: deploy [-b | -r builder] <flakeAttr> [host[:port]]
+    #  (host defaults to <flakeAttr>.local)
     usage() {
-      echo "Usage: deploy [-b] <flakeAttr> [host[:port]]" >&2
+      echo "Usage: deploy [-b | -r builder] <flakeAttr> [host[:port]]" >&2
       exit 1
     }
     buildLocal=
-    while getopts "b" opt; do
+    builder=
+    while getopts "br:" opt; do
       case "$opt" in
         b) buildLocal=1 ;;
+        r) builder="$OPTARG" ;;
         *) usage ;;
       esac
     done
     shift $((OPTIND - 1))
     [ $# -ge 1 ] && [ $# -le 2 ] || usage
+    [ -n "$buildLocal" ] && [ -n "$builder" ] && usage
 
     flakeAttr="$1"
     dest="''${2:-$1.local}"
@@ -103,6 +112,19 @@ in rec {
       }
       ${copy-to}/bin/copy-to "$dest" "$storePath" || {
         echo "Failed to copy system closure to $dest" >&2
+        exit 1
+      }
+    elif [ -n "$builder" ]; then
+      storePath=$(NIX_SSHOPTS="${sshOpts}" ${nom} build --no-link --print-out-paths \
+        --eval-store auto --store "ssh-ng://$builder" "$flakePath") || {
+        echo "Failed to build system closure on $builder" >&2
+        exit 1
+      }
+      echo "Copying $storePath from $builder to $dest..." >&2
+      ssh $sshOpts "$host" \
+        "NIX_SSHOPTS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+         nix copy --from 'ssh-ng://$builder' '$storePath'" || {
+        echo "Failed to copy system closure from $builder to $dest" >&2
         exit 1
       }
     else
