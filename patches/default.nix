@@ -17,6 +17,21 @@
 #               overrideAttrs can't express (e.g. swapping a dependency).
 #               Use instead of `override`.
 {
+  # opencode 2.2.5's node_modules FOD hash in nixpkgs is stale: bun resolves a
+  # different dependency set than when the hash was recorded, so the build
+  # fails with a hash mismatch (the "patches/... no longer applies" warnings
+  # in the log are harmless noise). Upstream fix: NixOS/nixpkgs#582675
+  # (issue #582673). Drop once that lands in the pinned nixpkgs.
+  opencode = {
+    checked = "2026-11-04";
+    dropWhen = "unpatched-builds";
+    override = _: old: {
+      node_modules = old.node_modules.overrideAttrs {
+        outputHash = "sha256-prx9dX7kUvs/E3zopkaPk5LXh3xJAy5sZeum/W8L7cA=";
+      };
+    };
+  };
+
   # fastmcp 3.4.7 still needs mcp 1.x, but nixpkgs moved `mcp` to 2.x and
   # marks fastmcp-slim broken whenever mcp >= 2, which blocks mcp-nixos (the
   # Claude Code MCP server in user-efrem.nix). nixpkgs keeps 1.x as `mcp_1`,

@@ -120,11 +120,15 @@ in rec {
         echo "Failed to build system closure on $builder" >&2
         exit 1
       }
-      echo "Copying $storePath from $builder to $dest..." >&2
+      # A bare builder name (e.g. m1) may only resolve here (WireGuard
+      # /etc/hosts entry); the target is on the LAN, so give it the mDNS name.
+      targetBuilder="$builder"
+      [[ "$builder" == *.* || "$builder" == *:* ]] || targetBuilder="$builder.local"
+      echo "Copying $storePath from $targetBuilder to $dest..." >&2
       ssh $sshOpts "$host" \
         "NIX_SSHOPTS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-         nix copy --from 'ssh-ng://$builder' '$storePath'" || {
-        echo "Failed to copy system closure from $builder to $dest" >&2
+         nix copy --no-check-sigs --from 'ssh-ng://$targetBuilder' '$storePath'" || {
+        echo "Failed to copy system closure from $targetBuilder to $dest" >&2
         exit 1
       }
     else
