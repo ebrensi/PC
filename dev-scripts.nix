@@ -124,10 +124,13 @@ in rec {
       # /etc/hosts entry); the target is on the LAN, so give it the mDNS name.
       targetBuilder="$builder"
       [[ "$builder" == *.* || "$builder" == *:* ]] || targetBuilder="$builder.local"
+      # -s: the target substitutes whatever its own caches have (zstd NARs,
+      #  ~7x smaller: linux is 34 MB vs 242 MB) and pulls only the rest from
+      #  the builder, which sends uncompressed NARs over ssh-ng.
       echo "Copying $storePath from $targetBuilder to $dest..." >&2
       ssh $sshOpts "$host" \
         "NIX_SSHOPTS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-         nix copy --no-check-sigs --from 'ssh-ng://$targetBuilder' '$storePath'" || {
+         nix copy -s --no-check-sigs --from 'ssh-ng://$targetBuilder' '$storePath'" || {
         echo "Failed to copy system closure from $targetBuilder to $dest" >&2
         exit 1
       }
