@@ -17,37 +17,7 @@
 #               overrideAttrs can't express (e.g. swapping a dependency).
 #               Use instead of `override`.
 {
-  # opencode 2.2.5's node_modules FOD hash in nixpkgs is stale: bun resolves a
-  # different dependency set than when the hash was recorded, so the build
-  # fails with a hash mismatch (the "patches/... no longer applies" warnings
-  # in the log are harmless noise). Upstream fix: NixOS/nixpkgs#582675
-  # (issue #582673). Drop once that lands in the pinned nixpkgs.
-  opencode = {
-    checked = "2026-11-04";
-    dropWhen = "unpatched-builds";
-    override = _: old: {
-      node_modules = old.node_modules.overrideAttrs {
-        outputHash = "sha256-prx9dX7kUvs/E3zopkaPk5LXh3xJAy5sZeum/W8L7cA=";
-      };
-    };
-  };
 
-  # fastmcp 3.4.7 still needs mcp 1.x, but nixpkgs moved `mcp` to 2.x and
-  # marks fastmcp-slim broken whenever mcp >= 2, which blocks mcp-nixos (the
-  # Claude Code MCP server in user-efrem.nix). nixpkgs keeps 1.x as `mcp_1`,
-  # so build mcp-nixos against a python set where mcp = mcp_1. Drop once
-  # fastmcp supports mcp 2 (stock mcp-nixos evaluates again).
-  mcp-nixos = {
-    checked = "2026-10-26";
-    dropWhen = "unpatched-builds";
-    package = prev: let
-      python = prev.python3.override {
-        self = python;
-        packageOverrides = pyFinal: _: {mcp = pyFinal.mcp_1;};
-      };
-    in
-      prev.mcp-nixos.override {python3Packages = python.pkgs;};
-  };
 
   # foot 1.27.0 (still unfixed in 1.28.0) crashes (SIGSEGV) when a key event
   # arrives with no focused terminal. keyboard_key() passes seat->kbd_focus straight to
@@ -60,7 +30,7 @@
   # In server mode the crash kills the server process, which takes *every*
   # foot window down at once. Patch adds the missing NULL guards.
   foot = {
-    checked = "2026-10-20";
+    checked = "2026-11-08";
     dropWhen = "upstream-fixed";
     upstream = "https://codeberg.org/dnkl/foot/src/branch/master/input.c (NULL check on seat->kbd_focus in keyboard_key)";
     override = _: old: {
@@ -72,27 +42,25 @@
   # whose client drops uncleanly while forwarding is active ($SSH_AUTH_SOCK
   # agent forwarding counts). Dead /tmp/et_forward_sock_* fds stay readable, so
   # runTerminal()'s select/accept loop never blocks. Hit on adder-ws roughly
-  # every two weeks. Upstream issue #795, fixed on master by #809 (epoll) and
-  # #810 (FD cleanup), but unreleased; neither applies to 7.0.0, so build master.
+  # every two weeks. Upstream issue #795, fixed by #809 (epoll) and #810 (FD
+  # cleanup), first released in 7.1.0; nixpkgs is still on 7.0.0, so build 7.1.1.
   #
-  # Master needs its submodules and none of nixpkgs' patches (both are already
-  # upstream). Drop this once nixpkgs ships a release newer than 7.0.0.
+  # 7.1.x needs its submodules and none of nixpkgs' 7.0.0 patches (both are
+  # already upstream). Drop this once nixpkgs ships 7.1.0 or newer.
   eternal-terminal = {
-    checked = "2026-10-20";
+    checked = "2026-11-08";
     dropWhen = "upstream-fixed";
-    upstream = "https://github.com/MisterTea/EternalTerminal/releases (a release after 7.0.0 contains #809 + #810)";
+    upstream = "https://github.com/MisterTea/EternalTerminal/releases (nixpkgs eternal-terminal >= 7.1.0)";
     override = prev: _: {
-      version = "7.0.0-unstable-2026-10-13";
+      version = "7.1.1";
       src = prev.fetchFromGitHub {
         owner = "MisterTea";
         repo = "EternalTerminal";
-        rev = "7eb237e6d9822b674f4a527924b5f09117659321";
+        tag = "et-v7.1.1";
         fetchSubmodules = true;
-        hash = "sha256-dWtEDRSGTHgXIFiL82lK5AxrTaM/v/SIStHGwPcEQ3c=";
+        hash = "sha256-cuPNPNUohRUAq90W29Vhm37OPmcgdYwX2jS/pPIEsOo=";
       };
       patches = [];
-      # Master still reports itself as `et version 7.0.0`.
-      preVersionCheck = "version=7.0.0";
       # Catch2 now comes from the submodule.
       preBuild = "";
       preCheck = ''

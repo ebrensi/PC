@@ -351,7 +351,8 @@ in {
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    jack.enable = true;
+    # No jack.enable: deprecated (sets LD_LIBRARY_PATH globally). Nothing here
+    # uses JACK; run a JACK app under `pw-jack` (pipewire.jack) if one appears.
   };
 
   hardware.bluetooth = {
