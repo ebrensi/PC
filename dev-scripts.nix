@@ -144,7 +144,15 @@ in rec {
 
     echo "Switching to $storePath on $dest" >&2
     ssh $sshOpts "$host" "sudo nix-env -p /nix/var/nix/profiles/system --set $storePath" || exit 1
-    ssh $sshOpts "$host" "sudo $storePath/bin/switch-to-configuration switch"
+    ssh $sshOpts "$host" "sudo $storePath/bin/switch-to-configuration switch" || exit 1
+
+    # Same check as yay, against the target's running kernel.
+    read -r running newKernel < <(ssh $sshOpts "$host" \
+      "echo \$(uname -r) \$(ls $storePath/kernel-modules/lib/modules/)")
+    if [ -n "$running" ] && [ "$running" != "$newKernel" ]; then
+      echo ""
+      echo "Kernel changed on $dest: $running -> $newKernel. Reboot to apply."
+    fi
   '';
 
   tmx = pkgs.writeShellScriptBin "tmx" ''
