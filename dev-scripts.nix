@@ -163,8 +163,12 @@ in rec {
       exit 0
     fi
     SESSION_NAME=$1
-    tmux new-session -As "$SESSION_NAME"
-    echo -ne "\033]0;$$(hostname -s):$SESSION_NAME\007"
+    # tmux owns the terminal title while attached (set-titles), so set the
+    # title format on this session rather than echoing an escape sequence.
+    # Session-scoped: plain `tmux` sessions keep the global #{pane_title}.
+    tmux new-session -As "$SESSION_NAME" \; \
+      set-option set-titles on \; \
+      set-option set-titles-string "#h:#S"
   '';
 
   check-patches = pkgs.writeShellScriptBin "check-patches" ''
