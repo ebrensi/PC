@@ -385,6 +385,12 @@ in {
     libvirtd.enable = true;
   };
 
+  # Lightweight screen-recorder.
+  programs.gpu-screen-recorder = {
+    enable = true;
+    ui.enable = true; # For overlay
+  };
+
   # Config for thousandfold app
   programs.appimage = {
     enable = true;
