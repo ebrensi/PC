@@ -55,6 +55,7 @@ in {
     opencode
 
     # Media
+    v4l-utils
     mpvpaper # video wallpaper
     yt-dlp # Youtube downloader
     waytrogen # wallpaper manager
