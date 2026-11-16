@@ -90,7 +90,7 @@ in {
       # see https://linux.die.net/man/5/avahi-daemon.conf
       settings = {
         server = {
-          use-ipv6 = true;
+          use-ipv6 = false;
           deny-interfaces = ["virbr0" "docker0" "lo"];
         };
         publish = {
