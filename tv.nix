@@ -100,6 +100,60 @@
   wpctl = "${pkgs.wireplumber}/bin/wpctl";
   wtype = lib.getExe pkgs.wtype;
 
+  # `tv-seek 1|-1` jogs the kiosk tab's video forward or back by one knob
+  #  click, over the DevTools protocol, and flashes its position on screen.
+  #  The step accelerates: a click within jogGapMs of the previous one (same
+  #  direction) extends a streak, and longer streaks take bigger steps, so a
+  #  slow turn is precise and a fast spin crosses a long video in a few
+  #  seconds. The streak lives in the page, where clicks evaluate one at a
+  #  time, so overlapping runs can't race; the click's own timestamp is passed
+  #  in, so startup jitter doesn't break a streak. One-shot shell pipeline (not
+  #  Python) to start fast, since a spin fires one run per click. A page
+  #  without a <video> is left alone. No template literals: Nix owns "\${".
+  jogGapMs = 400;
+  jogScript = pkgs.writeText "tv-jog.js" ''
+    (dir, now) => {
+      const v = document.querySelector("video");
+      if (!v || !isFinite(v.duration)) return null;
+      const s = window.__tvJog || {t: 0, dir: 0, streak: 0};
+      const streak = dir === s.dir && Math.abs(now - s.t) < ${toString jogGapMs} ? s.streak + 1 : 0;
+      window.__tvJog = {t: Math.max(now, s.t), dir, streak};
+      const step = streak < 3 ? 5 : streak < 8 ? 30 : Math.max(120, v.duration * 0.02);
+      const pos = Math.min(Math.max(0, v.currentTime + dir * step), Math.max(0, v.duration - 1));
+      v.currentTime = pos;
+      const p = (n) => String(n).padStart(2, "0");
+      const hms = (x) => {
+        x = Math.floor(x);
+        const h = Math.floor(x / 3600), m = Math.floor(x / 60) % 60;
+        return (h ? h + ":" + p(m) : m) + ":" + p(x % 60);
+      };
+      const width = 40, fill = Math.round(pos / v.duration * width);
+      return {
+        summary: (dir > 0 ? "▶▶  +" : "◀◀  −") + (step >= 60 ? Math.round(step / 60) + " min" : step + " s"),
+        body: "━".repeat(fill) + "●" + "─".repeat(width - fill) + "\n" + hms(pos) + " / " + hms(v.duration),
+      };
+    }
+  '';
+  tv-seek = pkgs.writeShellApplication {
+    name = "tv-seek";
+    runtimeInputs = with pkgs; [curl jq websocat libnotify];
+    text = ''
+      now=$(date +%s%3N)
+      dir=$1
+      DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
+      export DBUS_SESSION_BUS_ADDRESS
+      ws=$(curl -sf --max-time 2 http://127.0.0.1:${toString cdpPort}/json/list |
+        jq -r '[.[] | select(.type == "page")][0].webSocketDebuggerUrl')
+      expr="($(cat ${jogScript}))($dir, $now)"
+      res=$(jq -cn --arg e "$expr" \
+        '{id: 1, method: "Runtime.evaluate", params: {expression: $e, returnByValue: true}}' |
+        timeout 3 websocat -n1 "$ws" | jq -c '.result.result.value // empty')
+      [ -n "$res" ] || exit 0
+      notify-send -a tv-seek -t 1500 -h string:x-canonical-private-synchronous:tv-seek \
+        "$(jq -r .summary <<<"$res")" "$(jq -r .body <<<"$res")"
+    '';
+  };
+
   # `tv-status toggle` shows a status overlay (a persistent mako notification,
   #  redrawn every couple of seconds) above whatever the kiosk is showing.
   #  `tv-status watch` pops the same overlay up for a few seconds, at most once
@@ -251,6 +305,13 @@
     text-color=#ffffff
     border-size=0
     default-timeout=0
+
+    # tv-seek's position flash: along the bottom, clear of the status panel.
+    [app-name=tv-seek]
+    anchor=bottom-center
+    width=1000
+    height=200
+    text-alignment=center
   '';
 
   swayConfig = pkgs.writeText "tv-sway.conf" ''
@@ -262,6 +323,11 @@
     bindsym --locked XF86AudioRaiseVolume exec ${wpctl} set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
     bindsym --locked XF86AudioLowerVolume exec ${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%-
     bindsym --locked XF86AudioMute exec ${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle
+    # Turning the knob while it is pushed in sends Next/Previous track. Jog
+    #  within the video instead of skipping to the next one in the playlist.
+    #  (Pushing it alone sends Play/Pause, which YouTube handles itself.)
+    bindsym --locked XF86AudioNext exec ${lib.getExe tv-seek} 1
+    bindsym --locked XF86AudioPrev exec ${lib.getExe tv-seek} -1
     # The finger-ring trackball sends right-click for its lower two buttons and
     #  wheel ticks for its wheel. The lower buttons (indistinguishable) toggle
     #  the status overlay; Back is on one of its upper buttons. YouTube TV
