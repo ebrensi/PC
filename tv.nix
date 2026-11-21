@@ -154,6 +154,57 @@
     '';
   };
 
+  # `tv-speedtest [FILE]` measures download speed from YouTube's video cache
+  #  (googlevideo.com), the path playback actually depends on, rather than an
+  #  Ookla server (speedtest-cli, which also under-reads on this board). It
+  #  asks yt-dlp for a real 1080p stream URL, then fetches a few chunks at
+  #  random offsets the way the player does. Speed counts from each chunk's
+  #  first byte; the wait for it (high when the cache has to fetch the chunk
+  #  from upstream) is reported separately. Chunks stay under 10 MB: YouTube
+  #  throttles a longer request to about playback rate (~3 Mbps), which is
+  #  what made a single 30 MB fetch read as a slow network (2026-11-20).
+  #  With FILE, also records "EPOCH MBPS TTFB_MS" (or "EPOCH failed") there,
+  #  for tv-status.
+  speedtestFile = "/run/tv-speedtest/result";
+  tv-speedtest = pkgs.writeShellApplication {
+    name = "tv-speedtest";
+    runtimeInputs = with pkgs; [yt-dlp curl gawk coreutils];
+    text = ''
+      video=aqz-KE-bpKQ # Big Buck Bunny: long, popular, so likely cached nearby
+      chunk=8000000
+      chunks=4
+
+      # Called from `if`, where set -e is off: check each step by hand.
+      measure() {
+        url=$(yt-dlp -q --no-warnings -g \
+          -f 'bv*[height<=1080][vcodec^=vp]/bv*[height<=1080]' \
+          "https://www.youtube.com/watch?v=$video") || return 1
+        clen=$(grep -o '[?&]clen=[0-9]*' <<<"$url" | cut -d= -f2 || true)
+        : "''${clen:=$((chunk * chunks))}"
+        for _ in $(seq "$chunks"); do
+          start=$(((RANDOM * 32768 + RANDOM) % (clen - chunk)))
+          curl -sf --max-time 30 -r "$start-$((start + chunk - 1))" -o /dev/null \
+            -w '%{size_download} %{time_total} %{time_starttransfer}\n' "$url"
+        done | awk '{ b += $1; t += $2 - $3; f += $3 }
+          END { if (t > 0) printf "%d %d\n", b * 8 / t / 1e6, f / NR * 1000; else exit 1 }'
+      }
+
+      now=$(date +%s)
+      if result=$(measure); then
+        read -r mbps ttfb <<<"$result"
+        echo "$mbps Mbps from YouTube's cache, $ttfb ms to first byte"
+      else
+        result=failed
+        echo "speed test failed" >&2
+      fi
+      if [ -n "''${1:-}" ]; then
+        echo "$now $result" > "$1.tmp"
+        mv "$1.tmp" "$1"
+      fi
+      [ "$result" != failed ]
+    '';
+  };
+
   # `tv-status toggle` shows a status overlay (a persistent mako notification,
   #  redrawn every couple of seconds) above whatever the kiosk is showing.
   #  `tv-status watch` pops the same overlay up for a few seconds, at most once
@@ -173,6 +224,7 @@
       min_mem=2048    # MB available
       max_load5=6     # 5-minute load average, on 8 cores
       max_disk=85     # % used
+      min_speed=20    # Mbps from YouTube's cache; 1080p60 VP9 needs ~10
 
       collect() {
         temp=$(awk '{ if ($1 > m) m = $1 } END { printf "%.0f", m / 1000 }' /sys/class/thermal/thermal_zone*/temp)
@@ -199,6 +251,24 @@
         bad_swap=$((swap > 0 ? 1 : 0))
         bad_load=$(awk -v l="$load5" -v m="$max_load5" 'BEGIN { print (l > m) ? 1 : 0 }')
         bad_disk=$((disk >= max_disk ? 1 : 0))
+
+        # A failed test (likely yt-dlp vs a YouTube change) only marks the
+        #  overlay; a slow one also pops it up.
+        speed_text="not measured yet"
+        bad_speed=0
+        mark_speed=0
+        if read -r at mbps ttfb 2>/dev/null <${speedtestFile}; then
+          ago=$((($(date +%s) - at) / 60))
+          if [ "$ago" -ge 120 ]; then ago="$((ago / 60)) h ago"; else ago="$ago min ago"; fi
+          if [ "$mbps" = failed ]; then
+            speed_text="test failed ($ago)"
+            mark_speed=1
+          else
+            speed_text="$mbps Mbps, $ttfb ms ($ago)"
+            bad_speed=$((mbps < min_speed ? 1 : 0))
+            mark_speed=$bad_speed
+          fi
+        fi
       }
 
       # row LABEL TEXT BAD
@@ -214,6 +284,7 @@
       render() {
         row Address "$(ip -4 -br addr show scope global | awk '{ printf "%s  ", $3 }')" 0
         row WiFi "$wifi_text" "$bad_wifi"
+        row Speed "$speed_text" "$mark_speed"
         row Uptime "$(uptime -p | sed 's/^up //')" 0
         row Load "$load" "$bad_load"
         row Temp "$temp°C" "$bad_temp"
@@ -246,7 +317,7 @@
         while true; do
           collect
           now=$(date +%s)
-          if [ $((bad_temp + bad_wifi + bad_mem + bad_swap + bad_load + bad_browser)) -gt 0 ] &&
+          if [ $((bad_temp + bad_wifi + bad_mem + bad_swap + bad_load + bad_browser + bad_speed)) -gt 0 ] &&
             [ $((now - last)) -ge 600 ] && ! overlay_on; then
             last=$now
             touch "$popupfile"
@@ -298,7 +369,7 @@
     margin=40
     padding=24
     width=900
-    height=420
+    height=470
     font=monospace 22
     markup=1
     background-color=#000000d9
@@ -439,6 +510,38 @@ in {
     };
   };
 
+  # Hourly YouTube speed test for tv-status's Speed row. Also on demand:
+  #  `sudo systemctl start tv-speedtest`, or plain `tv-speedtest` over ssh.
+  systemd.services.tv-speedtest = {
+    description = "Measure download speed from YouTube's video cache";
+    after = ["network-online.target"];
+    wants = ["network-online.target"];
+    environment.XDG_CACHE_HOME = "/var/cache/tv-speedtest"; # yt-dlp's and deno's
+    serviceConfig = {
+      # Not DynamicUser: that hides the runtime directory under /run/private,
+      #  out of tv-status's reach.
+      User = kiosk;
+      Type = "oneshot";
+      ExecStart = "${lib.getExe tv-speedtest} ${speedtestFile}";
+      TimeoutStartSec = 180;
+      CacheDirectory = "tv-speedtest";
+      RuntimeDirectory = "tv-speedtest";
+      RuntimeDirectoryMode = "0755";
+      RuntimeDirectoryPreserve = true; # keep the result between runs
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      NoNewPrivileges = true;
+    };
+  };
+  systemd.timers.tv-speedtest = {
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnBootSec = "3min";
+      OnUnitActiveSec = "1h";
+      RandomizedDelaySec = "5min";
+    };
+  };
+
   # Home WiFi, in place of the slower powerline ethernet. NetworkManager runs
   #  on the iwd backend and can't hand iwd a PSK, so iwd needs its own network
   #  file; it then auto-connects and NetworkManager adopts the link (DHCP).
@@ -506,5 +609,6 @@ in {
     powertop
     nvtopPackages.panthor
     dev-scripts.tmx
+    tv-speedtest
   ];
 }
