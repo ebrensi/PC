@@ -45,6 +45,7 @@ in {
         "--enable-zero-copy"
       ];
     })
+    satty
     alacritty
     rclone # cloud storage mounts, see rcloneMount
     libnotify # notify-send; foot uses it for bell notifications
